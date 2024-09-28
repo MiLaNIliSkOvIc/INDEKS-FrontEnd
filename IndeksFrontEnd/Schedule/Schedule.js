@@ -22,7 +22,7 @@ const Schedule = () => {
     Dimensions.addEventListener('change', handleResize);
 
     return () => {
-      Dimensions.removeEventListener('change', handleResize);
+     // Dimensions.removeEventListener('change', handleResize);
     };
   }, []);
 
@@ -37,7 +37,7 @@ const Schedule = () => {
     setSidebarVisible(!isSidebarVisible);
   };
 
-
+  // Handle text change
   const handleTextChange = (timeIndex, dayIndex, text) => {
     const updatedSchedule = scheduleData.map((row, rowIndex) => 
       rowIndex === timeIndex 
@@ -49,6 +49,7 @@ const Schedule = () => {
   };
 
   const sendToBack = (timeIndex, dayIndex, text) => {
+    // Placeholder for sending to backend
     console.log(`Sending to backend: time ${times[timeIndex]}, day ${days[dayIndex]}, text ${text}`);
   };
 
@@ -59,9 +60,6 @@ const Schedule = () => {
   const handleBlur = () => {
     setEditingCell({ timeIndex: null, dayIndex: null });
   };
-
-  const gridWidth = days.length ; 
-  const gridHeight = times.length ;
 
   return (
     <View style={styles.container}>
@@ -84,16 +82,16 @@ const Schedule = () => {
         </TouchableOpacity>
       </View>
 
-    
       <ScrollView
         horizontal={true}
         minimumZoomScale={0.5} 
         maximumZoomScale={3} 
         pinchGestureEnabled={true} 
-        contentContainerStyle={{ minWidth: gridWidth, minHeight: gridHeight }}  
+        contentContainerStyle={{ flexGrow: 1 }}
       >
         <ScrollView minimumZoomScale={0.5} maximumZoomScale={3} pinchGestureEnabled={true}>
           <View>
+           
             <View style={styles.daysRow}>
               <Text style={styles.timeColumnHeader}>Vrijeme</Text>
               {days.map((day, index) => (
@@ -103,6 +101,7 @@ const Schedule = () => {
               ))}
             </View>
 
+          
             {times.map((time, timeIndex) => (
               <View key={timeIndex} style={styles.row}>
                 <View style={styles.timeCell}>
@@ -143,13 +142,13 @@ const Schedule = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#DCDCDC',
+    backgroundColor: '#C7C7C7',
   },
   header: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
-    backgroundColor: '#EDEDED',
+    backgroundColor: '#C7C7C7',
     paddingTop: 40,
     paddingVertical: 10,
     paddingHorizontal: 15,
@@ -207,7 +206,9 @@ const styles = StyleSheet.create({
     paddingVertical: 10,
     alignItems: 'center',
     justifyContent: 'center',
-    backgroundColor: '#EDEDED',
+    backgroundColor: '#C7C7C7',
+    borderRightColor:"#fff",
+    borderRightWidth:1
   },
   timeText: {
     fontWeight: 'bold',
@@ -217,7 +218,7 @@ const styles = StyleSheet.create({
     height: 100, 
     borderRightWidth: 1,
     borderRightColor: '#ddd',
-    backgroundColor: '#F5F5F5',
+    backgroundColor: '#C7C7C7',
     justifyContent: 'center',
     alignItems: 'center',
   },

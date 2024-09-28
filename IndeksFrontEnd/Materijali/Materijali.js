@@ -1,68 +1,52 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { View, Text, FlatList, StyleSheet, Image, TouchableOpacity } from 'react-native';
-import { useState } from 'react';
 import Sidebar from '../Sidebar/sidebar';
 import Icon from 'react-native-vector-icons/FontAwesome';
 import { useNavigation } from '@react-navigation/native';
 
 const data = [
-  { id: '1', year: 'I', title: 'Prva godina' },
-  { id: '2', year: 'II', title: 'Druga godina' },
-  { id: '3', year: 'III', title: 'Treća godina' },
-  { id: '4', year: 'IV', title: 'Četvrta godina' },
+  { id: '1', year: 'I', title: 'Prva godina', lecturer: 'Milan Iliskovic' },
+  { id: '2', year: 'II', title: 'Druga godina', lecturer: 'Igor Piljagic' },
+  { id: '3', year: 'III', title: 'Treća godina', lecturer: 'Dejan Janjic' },
+  { id: '4', year: 'IV', title: 'Četvrta godina', lecturer: 'Tijana Lazendic' },
 ];
 
 const MaterialsScreen = () => {
-    
-    const [isSidebarVisible, setSidebarVisible] = useState(false);
+  const [isSidebarVisible, setSidebarVisible] = useState(false);
+  const toggleSidebar = () => {
+    setSidebarVisible(!isSidebarVisible);
+  };
+  const navigation = useNavigation();
 
-    const toggleSidebar = () => {
-      //console.log("milan")
-      setSidebarVisible(!isSidebarVisible);
-    };
-    const navigation = useNavigation();
+  const handleItemPress = (id) => {
+    navigation.navigate('PrvaGodina', { title: data.find(item => item.id === id).title });
+  };
 
-    const handleItemPress = (id) => {
-        switch (id) {
-          case '1':
-            navigation.navigate('PrvaGodina', { title: 'Prva godina' }); 
-
-            break;
-          case '2':
-            navigation.navigate('PrvaGodina', { title: 'Druga godina' });
-            break;
-          case '3':
-            navigation.navigate('PrvaGodina', { title: 'Treca godina' });
-            break;
-          case '4':
-            navigation.navigate('PrvaGodina', { title: 'Cetvrta godina' });
-            break;
-          default:
-            break;
-        }
-      };
-      
   const renderItem = ({ item }) => (
-  <TouchableOpacity
-    style={styles.itemContainer}
-    onPress={() => handleItemPress(item.id)}
-  >
-    <View style={styles.iconContainer}>
-      <Text style={styles.iconText}>{item.year}</Text>
-    </View>
-    <Text style={styles.itemText}>{item.title}</Text>
-  </TouchableOpacity>
-);
+    <TouchableOpacity
+      style={styles.itemContainer}
+      onPress={() => handleItemPress(item.id)}
+    >
+      <View style={styles.iconContainer}>
+        <View style={styles.numberCircle}>
+          <Text style={styles.numberText}>{item.year}</Text>
+        </View>
+      </View>
+      <View style={styles.detailsContainer}>
+        <Text style={styles.itemTitle}>{item.title}</Text>
+      </View>
+    </TouchableOpacity>
+  );
 
   const Header = () => (
     <View style={styles.header}>
       <TouchableOpacity onPress={toggleSidebar}>
-      <Icon name="bars" size={30} color="#888" style={styles.headerIcon} />
+      <Icon name="bars" size={28} color="#fff" />
       </TouchableOpacity>
       <Image source={require('../pictures/logo.png')} style={styles.headerLogo} resizeMode="contain" />
       <Text style={styles.headerText}>Indeks</Text>
       <TouchableOpacity>
-        <Image source={require('../pictures/search.png')} style={styles.headerIcon} />
+        <Image source={require('../pictures/search.png')} style={styles.icon} />
       </TouchableOpacity>
     </View>
   );
@@ -87,88 +71,84 @@ const MaterialsScreen = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#DCDCDC',
+    backgroundColor: '#F5F5F5',
   },
   header: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
-    backgroundColor: '#DCDCDC',
+    backgroundColor: '#013868',
     paddingTop: 50,
     paddingVertical: 10,
     paddingHorizontal: 15,
-    borderBottomWidth: 1,
-    borderBottomColor: '#C7C7C7',
-  },
-  headerIcon: {
-    width: 50,
-    height: 40,
-    paddingTop : 8,
-    right : -7
   },
   headerLogo: {
     width: 100,
     height: 40,
-    marginRight: -100,
-    
+    marginRight : 20
+  
   },
   headerText: {
-    paddingTop:5,
+    marginRight:30,
+    marginLeft : -100,
     fontSize: 18,
     fontWeight: 'bold',
-    color: '#013868',
-    right : -10
+    color: '#fff',
   },
   title: {
-    fontSize: 20,
+    fontSize: 22,
     fontWeight: 'bold',
-    color: '#555',
+    color: '#013868',
     textAlign: 'center',
-    marginVertical: 20,
+    marginVertical: 15,
   },
   itemContainer: {
     flexDirection: 'row',
     alignItems: 'center',
     paddingVertical: 15,
-    paddingHorizontal: 20,
-    borderBottomWidth: 1,
-    borderBottomColor: '#ddd',
-     borderBottomWidth: 1,
-    borderBottomColor : '#C7C7C7',
-    borderTopWidth : 1,
-    borderTopColor : '#C7C7C7',
-
+    paddingHorizontal: 15,
+    backgroundColor: '#fff',
+    marginVertical: 5,
+    marginHorizontal: 20,
+    borderRadius: 8,
+    shadowColor: '#000',
+    shadowOpacity: 0.1,
+    shadowOffset: { width: 0, height: 2 },
+    shadowRadius: 8,
+    elevation: 2,
   },
   iconContainer: {
-    width: 50,
-    height: 50,
-    borderRadius: 30,
-    backgroundColor: '#f7f7f7',
+    marginRight: 15,
+  },
+  numberCircle: {
+    backgroundColor: '#E8EAF6',
+    width: 40,
+    height: 40,
+    borderRadius: 20,
     justifyContent: 'center',
     alignItems: 'center',
-    borderColor: '#ddd',
-    borderWidth: 1,
-   
   },
-  iconText: {
-    fontSize: 30,
-    fontWeight: 'bold',
-    color: '#DCDCDC',
-  },
-
-  itemText: {
-    marginLeft: 20,
+  numberText: {
     fontSize: 18,
-    color: '#555',
+    fontWeight: 'bold',
+    color: '#013868',
+  },
+  detailsContainer: {
+    flex: 1,
+  },
+  itemTitle: {
+    fontSize: 16,
+    fontWeight: 'bold',
+    color: '#013868',
   },
   floatingButton: {
     position: 'absolute',
     right: 20,
     bottom: 60,
-    width: 80,
-    height: 80,
+    width: 60,
+    height: 60,
     backgroundColor: '#013868',
-    borderRadius: 50,
+    borderRadius: 30,
     justifyContent: 'center',
     alignItems: 'center',
     elevation: 8,
@@ -177,9 +157,10 @@ const styles = StyleSheet.create({
     color: '#fff',
     fontSize: 30,
     fontWeight: 'bold',
-    top : -3,
-    left :1
-    
+  },
+  icon: {
+    width: 30,
+    height: 30,
   },
 });
 

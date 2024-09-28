@@ -108,7 +108,7 @@ const styles = StyleSheet.create({
   headerLogo: {
       width: 40,
       height: 40,
-      marginRight: -80,
+      marginRight: -75,
   },
   headerText: {
       fontSize: 18,

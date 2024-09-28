@@ -9,6 +9,8 @@ import ChatComponent from '../ChatComponents/messageComp';
 import MaterialsScreen from '../Materijali/Materijali'
 import GodinaScreen from '../Materijali/PrvaGodinaComponent'
 import Schedule from '../Schedule/Schedule'
+import Instruction from '../Instructor/Instruction';
+import InstructionInfo from '../Instructor/InstructionInfo';
 
 const Stack = createStackNavigator();
 
@@ -26,6 +28,9 @@ const AppNavigator = () => {
         <Stack.Screen name="Materijali" component={MaterialsScreen} options={{ headerShown: false }}/>
         <Stack.Screen name="PrvaGodina" component={GodinaScreen} options={{ headerShown: false }}/>
         <Stack.Screen name="Schedule" component={Schedule} options={{ headerShown: false }}/>
+        <Stack.Screen name="Instruction" component={Instruction} options={{ headerShown: false }}/>
+        <Stack.Screen name="InstructionInfo" component={InstructionInfo} options={{ headerShown: false }}/>
+
       </Stack.Navigator>
     </NavigationContainer>
   );
