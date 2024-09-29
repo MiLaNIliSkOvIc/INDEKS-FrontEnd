@@ -1,8 +1,11 @@
 import React from 'react';
 import { Modal, View, TouchableOpacity, Text, ScrollView, StyleSheet } from 'react-native';
-import Icon from 'react-native-vector-icons/FontAwesome'; // Adjust the import according to the icon library you use
+import Icon from 'react-native-vector-icons/FontAwesome'; 
 import { useNavigation } from '@react-navigation/native';
 import { useState } from 'react';
+
+
+
 
 const Sidebar = ({ visible, onClose }) => {
   const navigation = useNavigation();
@@ -22,6 +25,21 @@ const Sidebar = ({ visible, onClose }) => {
       onClose()
       navigation.navigate('Schedule');
       };
+      
+      const handleInstructionPress = () => {
+        //console.log('milan')
+        onClose()
+        navigation.navigate('Instruction');
+        };
+        const handleOsnovneGrupe = () => {
+          //console.log('milan')
+          onClose()
+          navigation.navigate('OsnovneGrupeScreen');
+          };
+        const handleLogoutPress = () => {
+          onClose()
+          navigation.navigate('Login');
+          };
 
   return (
     <Modal animationType="fade" transparent={true} visible={visible}>
@@ -58,16 +76,16 @@ const Sidebar = ({ visible, onClose }) => {
                 <Icon name="bullhorn" size={25} color="#013868" />
                 <Text style={styles.sidebarMenuText}>Oglasi</Text>
               </TouchableOpacity>
-              <TouchableOpacity style={styles.sidebarMenuItem}>
+              <TouchableOpacity style={styles.sidebarMenuItem}  onPress={handleInstructionPress}>
                 <Icon name="book" size={25} color="#013868" />
                 <Text style={styles.sidebarMenuText}>Instrukcije</Text>
               </TouchableOpacity>
-              <TouchableOpacity style={styles.sidebarMenuItem}>
+              <TouchableOpacity style={styles.sidebarMenuItem} onPress={handleOsnovneGrupe}>
                 <Icon name="users" size={25} color="#013868" />
                 <Text style={styles.sidebarMenuText}>Osnovne grupe</Text>
               </TouchableOpacity>
             </ScrollView>
-            <TouchableOpacity style={[styles.sidebarMenuItem, styles.sidebarLogout]}>
+            <TouchableOpacity style={[styles.sidebarMenuItem, styles.sidebarLogout]} onPress={handleLogoutPress}>
               <Icon name="sign-out" size={25} color="#ff4b5c" />
               <Text style={[styles.sidebarMenuText, { color: '#ff4b5c' }]}>Odjavi se</Text>
             </TouchableOpacity>

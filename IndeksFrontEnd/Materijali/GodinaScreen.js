@@ -1,29 +1,27 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { View, Text, FlatList, StyleSheet, Image, TouchableOpacity } from 'react-native';
-import { useState } from 'react';
 import Sidebar from '../Sidebar/sidebar';
 import Icon from 'react-native-vector-icons/FontAwesome';
 
 const data = [
-  { id: '1', logo: 'M', title: 'Matematika 1' },
-  { id: '2', logo: 'F', title: 'Fizika' },
-  { id: '3', logo: 'E', title: 'ElektroTehnika' },
-  { id: '4', logo: 'O', title: 'Osnovi racunarske tehnike' },
+  { id: '1', icon: 'calculator', title: 'Matematika 1' },
+  { id: '2', icon: 'flask', title: 'Fizika' },
+  { id: '3', icon: 'bolt', title: 'ElektroTehnika' },
+  { id: '4', icon: 'desktop', title: 'Osnovi racunarske tehnike' },
 ];
 
-const GodinaScreen = ({route}) => {
-    const { title } = route.params; 
-    const [isSidebarVisible, setSidebarVisible] = useState(false);
+const GodinaScreen = ({ route, navigation }) => {
+  const { title } = route.params; 
+  const [isSidebarVisible, setSidebarVisible] = useState(false);
 
-    const toggleSidebar = () => {
-      //console.log("milan")
-      setSidebarVisible(!isSidebarVisible);
-    };
+  const toggleSidebar = () => {
+    setSidebarVisible(!isSidebarVisible);
+  };
 
   const renderItem = ({ item }) => (
-    <View style={styles.itemContainer}>
+    <View style={styles.cardContainer}>
       <View style={styles.iconContainer}>
-        <Text style={styles.iconText}>{item.logo}</Text>
+        <Icon name={item.icon} size={22} color="#013868" />
       </View>
       <Text style={styles.itemText}>{item.title}</Text>
     </View>
@@ -31,8 +29,8 @@ const GodinaScreen = ({route}) => {
 
   const Header = () => (
     <View style={styles.header}>
-      <TouchableOpacity onPress={toggleSidebar}>
-      <Icon name="bars" size={30} color="#888" style={styles.headerIcon} />
+      <TouchableOpacity onPress={() => navigation.goBack()}>
+        <Icon name="arrow-left" size={20} color="#fff" /> 
       </TouchableOpacity>
       <Image source={require('../pictures/logo.png')} style={styles.headerLogo} resizeMode="contain" />
       <Text style={styles.headerText}>Indeks</Text>
@@ -50,6 +48,7 @@ const GodinaScreen = ({route}) => {
         data={data}
         renderItem={renderItem}
         keyExtractor={item => item.id}
+        contentContainerStyle={styles.cardList}
       />
       <TouchableOpacity style={styles.floatingButton}>
         <Text style={styles.floatingButtonText}>+</Text>
@@ -62,14 +61,14 @@ const GodinaScreen = ({route}) => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#DCDCDC',
+    backgroundColor: '#c7c7c7',
   },
   header: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
-    backgroundColor: '#DCDCDC',
-    paddingTop: 50,
+    backgroundColor: '#013868',
+    paddingTop: 37,
     paddingVertical: 10,
     paddingHorizontal: 15,
     borderBottomWidth: 1,
@@ -78,72 +77,68 @@ const styles = StyleSheet.create({
   headerIcon: {
     width: 50,
     height: 40,
-    paddingTop : 8,
-    right : -7
   },
   headerLogo: {
     width: 100,
     height: 40,
-    marginRight: -100,
-    
+    marginRight: 30,
   },
   headerText: {
-    paddingTop:5,
+    marginRight: 30,
+    marginLeft: -100,
     fontSize: 18,
     fontWeight: 'bold',
-    color: '#013868',
-    right : -10
+    color: '#fff',
   },
   title: {
     fontSize: 20,
     fontWeight: 'bold',
-    color: '#555',
+    color: '#013868',
     textAlign: 'center',
-    marginVertical: 20,
+    marginVertical: 15,
   },
-  itemContainer: {
+  cardList: {
+    marginTop: -10,
+    padding: 20,
+  },
+  cardContainer: {
     flexDirection: 'row',
     alignItems: 'center',
-    paddingVertical: 15,
-    paddingHorizontal: 20,
-    borderBottomWidth: 1,
-    borderBottomColor: '#ddd',
-     borderBottomWidth: 1,
-    borderBottomColor : '#C7C7C7',
-    borderTopWidth : 1,
-    borderTopColor : '#C7C7C7',
-
+    backgroundColor: '#fff',
+    borderRadius: 8,
+    padding: 13,
+    marginBottom: 10,
+    shadowColor: '#000',
+    shadowOffset: {
+      width: 0,
+      height: 1,
+    },
+    shadowOpacity: 0.1,
+    shadowRadius: 2,
+    elevation: 3,
   },
   iconContainer: {
-    width: 50,
-    height: 50,
-    borderRadius: 30,
-    backgroundColor: '#f7f7f7',
+    width: 45,
+    height: 45,
     justifyContent: 'center',
     alignItems: 'center',
-    borderColor: '#ddd',
-    borderWidth: 1,
-   
+    backgroundColor:'#EDEDED',
+    borderRadius : 90,
   },
-  iconText: {
-    fontSize: 30,
-    fontWeight: 'bold',
-    color: '#DCDCDC',
-  },
-
   itemText: {
     marginLeft: 20,
-    fontSize: 18,
-    color: '#555',
+    fontSize: 16,
+    fontWeight: 'bold',
+    color: '#013868',
   },
   floatingButton: {
     position: 'absolute',
-    right: 20,
+    right: 30,
     bottom: 60,
-    width: 80,
-    height: 80,
+    width: 60,
+    height: 60,
     backgroundColor: '#013868',
-    borderRadius: 50,
+    borderRadius: 30,
     justifyContent: 'center',
     alignItems: 'center',
     elevation: 8,
@@ -152,10 +147,9 @@ const styles = StyleSheet.create({
     color: '#fff',
     fontSize: 30,
     fontWeight: 'bold',
-    top : -3,
-    left :1
-    
+    textAlign: 'center',
+    lineHeight: 33,
   },
 });
 
-export default GodinaScreen;
+export default GodinaScreen;  

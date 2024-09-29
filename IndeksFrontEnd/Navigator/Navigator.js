@@ -7,9 +7,11 @@ import InicialPage from '../StartPages/InicialPage';
 import ChatList from '../ChatComponents/ChatList';
 import ChatComponent from '../ChatComponents/messageComp';
 import MaterialsScreen from '../Materijali/Materijali'
-import GodinaScreen from '../Materijali/PrvaGodinaComponent'
+import GodinaScreen from '../Materijali/GodinaScreen'
 import Schedule from '../Schedule/Schedule'
-
+import Instruction from '../Instructor/Instruction';
+import InstructionInfo from '../Instructor/InstructionInfo';
+import OsnovneGrupeScreen from '../OsnovneGrupe/OsnovneGrupeScreen';
 const Stack = createStackNavigator();
 
 const AppNavigator = () => {
@@ -24,8 +26,11 @@ const AppNavigator = () => {
         <Stack.Screen name="ChatList" component={ChatList} options={{ headerShown: false }}/>
         <Stack.Screen name="Chat" component={ChatComponent} options={{ headerShown: false }}/>
         <Stack.Screen name="Materijali" component={MaterialsScreen} options={{ headerShown: false }}/>
-        <Stack.Screen name="PrvaGodina" component={GodinaScreen} options={{ headerShown: false }}/>
+        <Stack.Screen name="GodinaScreen" component={GodinaScreen} options={{ headerShown: false }}/>
         <Stack.Screen name="Schedule" component={Schedule} options={{ headerShown: false }}/>
+        <Stack.Screen name="Instruction" component={Instruction} options={{ headerShown: false }}/>
+        <Stack.Screen name="InstructionInfo" component={InstructionInfo} options={{ headerShown: false }}/>
+        <Stack.Screen name="OsnovneGrupeScreen" component={OsnovneGrupeScreen} options={{ headerShown: false }}/>
       </Stack.Navigator>
     </NavigationContainer>
   );
