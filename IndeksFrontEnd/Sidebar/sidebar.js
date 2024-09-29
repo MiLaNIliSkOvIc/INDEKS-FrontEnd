@@ -31,6 +31,11 @@ const Sidebar = ({ visible, onClose }) => {
         onClose()
         navigation.navigate('Instruction');
         };
+        const handleOsnovneGrupe = () => {
+          //console.log('milan')
+          onClose()
+          navigation.navigate('OsnovneGrupeScreen');
+          };
         const handleLogoutPress = () => {
           onClose()
           navigation.navigate('Login');
@@ -75,7 +80,7 @@ const Sidebar = ({ visible, onClose }) => {
                 <Icon name="book" size={25} color="#013868" />
                 <Text style={styles.sidebarMenuText}>Instrukcije</Text>
               </TouchableOpacity>
-              <TouchableOpacity style={styles.sidebarMenuItem}>
+              <TouchableOpacity style={styles.sidebarMenuItem} onPress={handleOsnovneGrupe}>
                 <Icon name="users" size={25} color="#013868" />
                 <Text style={styles.sidebarMenuText}>Osnovne grupe</Text>
               </TouchableOpacity>

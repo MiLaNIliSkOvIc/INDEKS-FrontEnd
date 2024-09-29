@@ -3,7 +3,7 @@ import { View, Text, FlatList, StyleSheet, Image, TouchableOpacity } from 'react
 import Sidebar from '../Sidebar/sidebar';
 import Icon from 'react-native-vector-icons/FontAwesome';
 import { useNavigation } from '@react-navigation/native';
-
+import HeaderComponent from '../Header/Header';
 const data = [
   { id: '1', year: 'I', title: 'Prva godina', lecturer: 'Milan Iliskovic' },
   { id: '2', year: 'II', title: 'Druga godina', lecturer: 'Igor Piljagic' },
@@ -19,7 +19,7 @@ const MaterialsScreen = () => {
   const navigation = useNavigation();
 
   const handleItemPress = (id) => {
-    navigation.navigate('PrvaGodina', { title: data.find(item => item.id === id).title });
+    navigation.navigate('GodinaScreen', { title: data.find(item => item.id === id).title });
   };
 
   const renderItem = ({ item }) => (
@@ -38,22 +38,11 @@ const MaterialsScreen = () => {
     </TouchableOpacity>
   );
 
-  const Header = () => (
-    <View style={styles.header}>
-      <TouchableOpacity onPress={toggleSidebar}>
-      <Icon name="bars" size={28} color="#fff" />
-      </TouchableOpacity>
-      <Image source={require('../pictures/logo.png')} style={styles.headerLogo} resizeMode="contain" />
-      <Text style={styles.headerText}>Indeks</Text>
-      <TouchableOpacity>
-        <Image source={require('../pictures/search.png')} style={styles.icon} />
-      </TouchableOpacity>
-    </View>
-  );
+ 
 
   return (
     <View style={styles.container}>
-      <Header />
+      <HeaderComponent toggleSidebar={toggleSidebar} />
       <Text style={styles.title}>Materijali</Text>
       <FlatList
         data={data}
@@ -72,28 +61,6 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: '#F5F5F5',
-  },
-  header: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    backgroundColor: '#013868',
-    paddingTop: 50,
-    paddingVertical: 10,
-    paddingHorizontal: 15,
-  },
-  headerLogo: {
-    width: 100,
-    height: 40,
-    marginRight : 20
-  
-  },
-  headerText: {
-    marginRight:30,
-    marginLeft : -100,
-    fontSize: 18,
-    fontWeight: 'bold',
-    color: '#fff',
   },
   title: {
     fontSize: 22,

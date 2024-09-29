@@ -1,9 +1,9 @@
 import React, { useState } from 'react';
-import { View, Text, FlatList, StyleSheet, Image, TouchableOpacity, Platform } from 'react-native';
+import { View, Text, FlatList, StyleSheet, Image, TouchableOpacity, TouchableWithoutFeedback } from 'react-native';
 import Icon from 'react-native-vector-icons/FontAwesome';
-import { BlurView } from '@react-native-community/blur';
+import { BlurView } from 'expo-blur'; 
 import Sidebar from '../Sidebar/sidebar';
-
+import HeaderComponent from '../Header/Header';
 const data = [
   { id: '1', title: 'Prva godina', description: '' },
   { id: '2', title: 'Druga godina', description: 'Računarstvo i informatika' },
@@ -19,7 +19,7 @@ const data = [
 
 const OsnovneGrupeScreen = ({ navigation }) => {
   const [isSidebarVisible, setSidebarVisible] = useState(false);
-  const [blurredItem, setBlurredItem] = useState(null); // Track which item is blurred
+  const [blurredItem, setBlurredItem] = useState(null); 
 
   const toggleSidebar = () => {
     setSidebarVisible(!isSidebarVisible);
@@ -33,25 +33,27 @@ const OsnovneGrupeScreen = ({ navigation }) => {
     setBlurredItem(null); // Remove blur when the close button is pressed
   };
 
+  const handleOutsidePress = () => {
+    setBlurredItem(null); 
+  };
+
   const renderItem = ({ item }) => (
     <TouchableOpacity onLongPress={() => handleLongPress(item)}>
       <View style={styles.cardContainer}>
-        {/* Apply blur effect if this item is long-pressed */}
+   
         {blurredItem === item.id ? (
           <BlurView
             style={styles.absoluteBlur}
-            blurType="light"
-            blurAmount={10}
-            reducedTransparencyFallbackColor="white"
+            intensity={50}
           >
             <View style={styles.iconOverlayContainer}>
-              {/* Close (X) icon */}
+             
               <TouchableOpacity onPress={handleClose}>
                 <View style={styles.iconCircle}>
                   <Icon name="close" size={15} color="#fff" />
                 </View>
               </TouchableOpacity>
-              {/* Alert (!) icon */}
+             
               <TouchableOpacity>
                 <View style={styles.iconCircle}>
                   <Icon name="exclamation" size={15} color="#fff" />
@@ -87,20 +89,22 @@ const OsnovneGrupeScreen = ({ navigation }) => {
   );
 
   return (
-    <View style={styles.container}>
-      <Header />
-      <Text style={styles.screenTitle}>Osnovne grupe</Text>
-      <FlatList
-        data={data}
-        renderItem={renderItem}
-        keyExtractor={item => item.id}
-        contentContainerStyle={styles.cardList}
-      />
-      <TouchableOpacity style={styles.floatingButton}>
-        <Text style={styles.floatingButtonText}>+</Text>
-      </TouchableOpacity>
-      <Sidebar visible={isSidebarVisible} onClose={toggleSidebar} />
-    </View>
+    <TouchableWithoutFeedback onPress={handleOutsidePress}>
+      <View style={styles.container}>
+      <HeaderComponent toggleSidebar={toggleSidebar} />
+        <Text style={styles.screenTitle}>Osnovne grupe</Text>
+        <FlatList
+          data={data}
+          renderItem={renderItem}
+          keyExtractor={item => item.id}
+          contentContainerStyle={styles.cardList}
+        />
+        <TouchableOpacity style={styles.floatingButton}>
+          <Text style={styles.floatingButtonText}>+</Text>
+        </TouchableOpacity>
+        <Sidebar visible={isSidebarVisible} onClose={toggleSidebar} />
+      </View>
+    </TouchableWithoutFeedback>
   );
 };
 
@@ -123,12 +127,11 @@ const styles = StyleSheet.create({
   headerLogo: {
     width: 100,
     height: 40,
-    marginRight : 20
-  
+    marginRight: 20,
   },
   headerTitle: {
-    marginRight:40,
-    marginLeft : -100,
+    marginRight: 40,
+    marginLeft: -100,
     fontSize: 18,
     fontWeight: 'bold',
     color: '#fff',
@@ -158,7 +161,7 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.1,
     shadowRadius: 2,
     elevation: 3,
-    position: 'relative', // for absolute positioning of blur
+    position: 'relative', 
   },
   iconContainer: {
     width: 50,
@@ -205,18 +208,21 @@ const styles = StyleSheet.create({
   },
   iconOverlayContainer: {
     flexDirection: 'row',
-    justifyContent: 'flex-end',
+    justifyContent: 'center', 
     alignItems: 'center',
-    paddingRight: 10,
+    paddingVertical: 7, 
+    position: 'absolute',
+    bottom: 10,
+    right: 10,
   },
   iconCircle: {
-    width: 30,
-    height: 30,
+    width: 40,
+    height: 40,
     backgroundColor: '#013868',
-    borderRadius: 15,
+    borderRadius: 20,
     justifyContent: 'center',
     alignItems: 'center',
-    marginLeft: 10,
+    marginHorizontal: 3, 
   },
 });
 

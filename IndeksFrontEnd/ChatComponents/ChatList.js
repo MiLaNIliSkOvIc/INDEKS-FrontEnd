@@ -3,7 +3,7 @@ import { View, Text, FlatList, StyleSheet, Image, TouchableOpacity,ScrollView, M
 import { useNavigation } from '@react-navigation/native';
 import { useState } from 'react';
 import Icon from 'react-native-vector-icons/FontAwesome';
-import { FontAwesome } from '@expo/vector-icons';
+import HeaderComponent from '../Header/Header';
 import Sidebar from '../Sidebar/sidebar';
 
 const chats = [
@@ -72,7 +72,7 @@ const ChatList = () => {
 
   return (
       <View style={styles.container}>
-      <Header />
+     <Header />
       <FlatList
           data={chats}
           renderItem={renderItem}

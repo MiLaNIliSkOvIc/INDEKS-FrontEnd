@@ -4,7 +4,7 @@ import Icon from 'react-native-vector-icons/FontAwesome';
 import { useState } from 'react';
 import Sidebar from '../Sidebar/sidebar';
 import { useNavigation } from '@react-navigation/native';
-
+import HeaderComponent from '../Header/Header';
 const data = [
   { id: '1', course: 'Matematika 1', teacher: 'Milan Iliskovic', rating: 5, icon: 'calculator' },
   { id: '2', course: 'OET 1', teacher: 'Igor Piljagic', rating: 5, icon: 'bolt' },
@@ -67,29 +67,12 @@ const Instruction = () => {
 
   const handleCoursePress = (course) => {
     console.log("Selected course:", course);
-    // Add logic for navigation or displaying more course information
   };
 
   return (
     <View style={styles.container}>
     
-      <View style={styles.header}>
-        <TouchableOpacity style={styles.iconButton} onPress={toggleSidebar}>
-          <Icon name="bars" size={28} color="#fff" />
-        </TouchableOpacity>
-
-        <View style={styles.logoContainer}>
-          <Image 
-            source={require('../pictures/logo.png')}  
-            style={styles.logo}
-          />
-          <Text style={styles.logoText}>INDEKS</Text>  
-        </View>
-
-        <TouchableOpacity style={styles.iconButton}>
-          <Icon name="search" size={28} color="#fff" />
-        </TouchableOpacity>
-      </View>
+    <HeaderComponent toggleSidebar={toggleSidebar} />
 
       <Text style={styles.title}>Instrukcije</Text>
 
