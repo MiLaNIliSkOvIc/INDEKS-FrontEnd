@@ -160,9 +160,9 @@ const styles = StyleSheet.create({
     height: 30,
   },
   headerLogo: {
-    width: 70,
-    height: 50,
-    marginRight: -60,
+    width: 50,
+    height: 40,
+    marginRight: -70,
   },
   headerText: {
     fontSize: 18,
