@@ -60,7 +60,7 @@ const MaterialsScreen = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#F5F5F5',
+    backgroundColor: '#c7c7c7',
   },
   title: {
     fontSize: 22,
