@@ -61,6 +61,7 @@ const ChatList = () => {
           resizeMode="contain"
       />
       <Text style={styles.headerText}>Indeks</Text>
+      
       <TouchableOpacity>
           <Image 
           source={require('../pictures/search.png')} 

@@ -101,46 +101,45 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: 'rgba(0, 0, 0, 0.5)',
     justifyContent: 'center',
-    alignItems: 'flex-start', // Aligns the overlay to the left
+    alignItems: 'flex-start',
   },
   sidebarContainer: {
-    width: 350, // Adjust width as needed
+    width: 350, 
     height: '100%',
     padding: 0,
-    position: 'absolute', // Position the container absolutely
-    left: 0, // Align the container to the left
-    top: 0, // Ensure it starts from the top
-    bottom: 0, // Ensure it extends to the bottom
+    position: 'absolute', 
+    left: 0, 
+    top: 0, 
+    bottom: 0, 
   },
   sidebarCloseButton: {
     paddingTop : 30,
     alignItems: 'flex-end',
     marginBottom: 20,
-    backgroundColor: '#013868', // Blue background color for close button area
-    padding: 10,
+    backgroundColor: '#013868', 
     left : 140
   },
   sidebarProfileSection: {
-    backgroundColor: '#013868', // Blue background color for the profile section
+    backgroundColor: '#013868', 
     padding: 15,
-    alignItems: 'center', // Center the profile picture and details
+    alignItems: 'center', 
     borderBottomWidth: 1,
-    borderBottomColor: '#ffffff', // Optional: add a border below the profile section
+    borderBottomColor: '#ffffff', 
   },
   sidebarProfilePicture: {
-    marginBottom: 10, // Space between picture and details
-    backgroundColor: '#ffffff', // Background color inside the circle
-    borderRadius: 100, // Ensure this is half of the width/height to make it a circle
-    borderWidth: 3, // Thickness of the border
-    borderColor: '#ffffff', // Color of the border
-    width: 120, // Width of the container
-    height: 120, // Height of the container
-    justifyContent: 'center', // Center the content
-    alignItems: 'center', // Center the content
+    marginBottom: 10, 
+    backgroundColor: '#ffffff', 
+    borderRadius: 100, 
+    borderWidth: 3, 
+    borderColor: '#ffffff', 
+    width: 120, 
+    height: 120, 
+    justifyContent: 'center', 
+    alignItems: 'center', 
   },
   sidebarProfileDetails: {
     padding : 20,
-    alignItems: 'right', // Center the profile details below the picture
+    alignItems: 'right', 
     right : 20,
     marginBottom : -10
   },
@@ -154,7 +153,7 @@ const styles = StyleSheet.create({
   },
   sidebarMenuSection: {
     flex: 1,
-    backgroundColor: '#ffffff', // White background color for the menu section
+    backgroundColor: '#ffffff', 
     padding: 20,
     
   },
@@ -165,21 +164,21 @@ const styles = StyleSheet.create({
   sidebarMenuItem: {
     flexDirection: 'row',
     alignItems: 'center',
-    paddingVertical: 8, // Adjust padding as needed
+    paddingVertical: 8, 
     marginBottom: 15,
     paddingHorizontal: -100,
-    borderBottomWidth: 1, // Use borderBottomWidth to create a line under each item
-    borderBottomColor: '#007BFF', // Color of the line
+    borderBottomWidth: 1, 
+    borderBottomColor: '#007BFF', 
     borderBottomColor : '#C7C7C7'
 
   },
   sidebarMenuText: {
     color: '#007BFF',
-    fontSize: 18, // Adjust font size as needed
-    marginLeft: 15, // Adjust margin as needed
+    fontSize: 18,
+    marginLeft: 15, 
   },
   sidebarLogout: {
-    marginTop: 'auto', // Ensure logout button is at the bottom
+    marginTop: 'auto',
     borderTopWidth: 1,
     borderTopColor: '#007BFF', 
     paddingTop: 10,
