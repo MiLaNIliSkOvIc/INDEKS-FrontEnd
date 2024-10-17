@@ -13,7 +13,7 @@ const Schedule = () => {
   const [scheduleData, setScheduleData] = useState([]);
   const [dimensions, setDimensions] = useState(Dimensions.get('window'));
 
-  // Handle screen rotation
+ 
   useEffect(() => {
     const handleResize = () => {
       setDimensions(Dimensions.get('window'));
@@ -37,7 +37,7 @@ const Schedule = () => {
     setSidebarVisible(!isSidebarVisible);
   };
 
-  // Handle text change
+
   const handleTextChange = (timeIndex, dayIndex, text) => {
     const updatedSchedule = scheduleData.map((row, rowIndex) => 
       rowIndex === timeIndex 
@@ -49,8 +49,8 @@ const Schedule = () => {
   };
 
   const sendToBack = (timeIndex, dayIndex, text) => {
-    // Placeholder for sending to backend
-    console.log(`Sending to backend: time ${times[timeIndex]}, day ${days[dayIndex]}, text ${text}`);
+   
+    console.log(`saljemo ${times[timeIndex]}, day ${days[dayIndex]}, text ${text}`);
   };
 
   const handleCellPress = (timeIndex, dayIndex) => {

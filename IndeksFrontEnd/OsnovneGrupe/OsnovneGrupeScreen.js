@@ -85,7 +85,7 @@ const OsnovneGrupeScreen = ({ navigation }) => {
           </BlurView>
         ) : null}
 
-        {/* Item content */}
+        
         <View style={styles.iconContainer}>
           <Icon name="group" size={30} color="#013868" /> 
         </View>
