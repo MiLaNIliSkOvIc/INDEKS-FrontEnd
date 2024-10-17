@@ -5,6 +5,7 @@ import { useState } from 'react';
 import Sidebar from '../Sidebar/sidebar';
 import { useNavigation } from '@react-navigation/native';
 import HeaderComponent from '../Header/Header';
+
 const data = [
   { id: '1', course: 'Matematika 1', teacher: 'Milan Iliskovic', rating: 5, icon: 'calculator' },
   { id: '2', course: 'OET 1', teacher: 'Igor Piljagic', rating: 5, icon: 'bolt' },

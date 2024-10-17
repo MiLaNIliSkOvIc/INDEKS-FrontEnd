@@ -1,7 +1,7 @@
 class HttpService {
   
 
-    baseUrl = 'https://nesto.com';
+    baseUrl = 'http://192.168.100.31:8080/api/v1';
   
 
     async handleResponse(response) {
@@ -26,7 +26,20 @@ class HttpService {
     }
   
 
-    async get(resource, id = '') {
+    async get(resource) {
+      console.log(`${this.baseUrl}/${resource}`);
+      const response = await fetch(`${this.baseUrl}/${resource}`, {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      });
+      return this.handleResponse(response);
+    }
+    
+   
+    async getById(resource, id = '') {
+      console.log(`${this.baseUrl}/${resource}`);
       const response = await fetch(`${this.baseUrl}/${resource}/${id}`, {
         method: 'GET',
         headers: {
