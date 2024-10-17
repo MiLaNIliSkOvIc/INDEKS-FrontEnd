@@ -1,25 +1,47 @@
-import React, { useState } from 'react';
+import React, { useState,useEffect } from 'react';
 import { View, Text, FlatList, StyleSheet, Image, TouchableOpacity, TouchableWithoutFeedback } from 'react-native';
 import Icon from 'react-native-vector-icons/FontAwesome';
 import { BlurView } from 'expo-blur'; 
 import Sidebar from '../Sidebar/sidebar';
 import HeaderComponent from '../Header/Header';
-const data = [
-  { id: '1', title: 'Prva godina', description: '' },
-  { id: '2', title: 'Druga godina', description: 'Računarstvo i informatika' },
-  { id: '3', title: 'Druga godina', description: 'Elektronika i telekomunikacije' },
-  { id: '4', title: 'Druga godina', description: 'Elektroenergetika i automatika' },
-  { id: '5', title: 'Treća godina', description: 'Računarstvo i informatika' },
-  { id: '6', title: 'Treća godina', description: 'Elektronika i telekomunikacije' },
-  { id: '7', title: 'Treća godina', description: 'Elektroenergetika i automatika' },
-  { id: '8', title: 'Četvrta godina', description: 'Računarstvo i informatika' },
-  { id: '9', title: 'Četvrta godina', description: 'Elektronika i telekomunikacije' },
-  { id: '10', title: 'Četvrta godina', description: 'Elektroenergetika i automatika' },
-];
+import HttpService from '../HttpService/httpService';
+import ElementaryGroup from '../model/ElementaryGroup';
+
+// const data = [
+//   { id: '1', title: 'Prva godina', description: '' },
+//   { id: '2', title: 'Druga godina', description: 'Računarstvo i informatika' },
+//   { id: '3', title: 'Druga godina', description: 'Elektronika i telekomunikacije' },
+//   { id: '4', title: 'Druga godina', description: 'Elektroenergetika i automatika' },
+//   { id: '5', title: 'Treća godina', description: 'Računarstvo i informatika' },
+//   { id: '6', title: 'Treća godina', description: 'Elektronika i telekomunikacije' },
+//   { id: '7', title: 'Treća godina', description: 'Elektroenergetika i automatika' },
+//   { id: '8', title: 'Četvrta godina', description: 'Računarstvo i informatika' },
+//   { id: '9', title: 'Četvrta godina', description: 'Elektronika i telekomunikacije' },
+//   { id: '10', title: 'Četvrta godina', description: 'Elektroenergetika i automatika' },
+// ];
 
 const OsnovneGrupeScreen = ({ navigation }) => {
   const [isSidebarVisible, setSidebarVisible] = useState(false);
   const [blurredItem, setBlurredItem] = useState(null); 
+  const [data, setData] = useState([])
+
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const result = await HttpService.get('elementaryGroup'); 
+        const formattedData = result.map(item => new ElementaryGroup(
+          item.groupChat.id,
+          item.groupChat.name
+        ));
+        setData(formattedData); 
+      } catch (error) {
+        console.error('Error fetching data:', error);
+      }
+    };
+
+    fetchData();
+  }, []);
 
   const toggleSidebar = () => {
     setSidebarVisible(!isSidebarVisible);
@@ -30,7 +52,7 @@ const OsnovneGrupeScreen = ({ navigation }) => {
   };
 
   const handleClose = () => {
-    setBlurredItem(null); // Remove blur when the close button is pressed
+    setBlurredItem(null); 
   };
 
   const handleOutsidePress = () => {
