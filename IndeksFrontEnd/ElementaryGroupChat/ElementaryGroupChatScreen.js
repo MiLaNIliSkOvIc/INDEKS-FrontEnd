@@ -1,5 +1,5 @@
 import React, { useState,useEffect } from 'react';
-import { View, Text, FlatList, StyleSheet, Image, TouchableOpacity, TouchableWithoutFeedback } from 'react-native';
+import { View, Text, FlatList, StyleSheet, Image, TouchableOpacity, TouchableWithoutFeedback,ActivityIndicator } from 'react-native';
 import Icon from 'react-native-vector-icons/FontAwesome';
 import { BlurView } from 'expo-blur'; 
 import Sidebar from '../Sidebar/sidebar';
@@ -20,23 +20,27 @@ import ElementaryGroup from '../model/ElementaryGroup';
 //   { id: '10', title: 'Četvrta godina', description: 'Elektroenergetika i automatika' },
 // ];
 
-const OsnovneGrupeScreen = ({ navigation }) => {
+const ElementaryGroupChatScreen = ({ navigation }) => {
   const [isSidebarVisible, setSidebarVisible] = useState(false);
   const [blurredItem, setBlurredItem] = useState(null); 
   const [data, setData] = useState([])
+  const [isLoading, setIsLoading] = useState(true)
 
 
   useEffect(() => {
     const fetchData = async () => {
       try {
+        setIsLoading(true);
         const result = await HttpService.get('elementaryGroup'); 
         const formattedData = result.map(item => new ElementaryGroup(
           item.groupChat.id,
           item.groupChat.name
         ));
-        setData(formattedData); 
+        setData(formattedData);
       } catch (error) {
         console.error('Error fetching data:', error);
+      } finally {
+        setIsLoading(false);
       }
     };
 
@@ -97,30 +101,32 @@ const OsnovneGrupeScreen = ({ navigation }) => {
     </TouchableOpacity>
   );
 
-  const Header = () => (
-    <View style={styles.header}>
-      <TouchableOpacity onPress={() => toggleSidebar()}>
-        <Icon name="bars" size={25} color="#fff" />
-      </TouchableOpacity>
-      <Image source={require('../pictures/logo.png')} style={styles.headerLogo} resizeMode="contain" />
-      <Text style={styles.headerTitle}>INDEKS</Text>
-      <TouchableOpacity>
-        <Icon name="search" size={25} color="#fff" />
-      </TouchableOpacity>
-    </View>
-  );
 
-  return (
-    <TouchableWithoutFeedback onPress={handleOutsidePress}>
-      <View style={styles.container}>
-      <HeaderComponent toggleSidebar={toggleSidebar} />
-        <Text style={styles.screenTitle}>Osnovne grupe</Text>
+  //ovo je se poziva da se vrti ono pri dohvacanju iz baze
+  const loading = () => {
+    if (isLoading) {
+      return (
+        <ActivityIndicator size="large" color="#013868" style={styles.loadingIndicator} />
+      );
+    } else {
+      return (
         <FlatList
           data={data}
           renderItem={renderItem}
           keyExtractor={item => item.id}
           contentContainerStyle={styles.cardList}
         />
+      );
+    }
+  };
+
+
+  return (
+    <TouchableWithoutFeedback onPress={handleOutsidePress}>
+      <View style={styles.container}>
+      <HeaderComponent toggleSidebar={toggleSidebar} />
+        <Text style={styles.screenTitle}>Osnovne grupe</Text>
+      {loading()}
         <TouchableOpacity style={styles.floatingButton}>
           <Text style={styles.floatingButtonText}>+</Text>
         </TouchableOpacity>
@@ -246,6 +252,9 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     marginHorizontal: 3, 
   },
+  loadingIndicator: {
+    marginTop: 300,
+  },
 });
 
-export default OsnovneGrupeScreen;
+export default ElementaryGroupChatScreen;

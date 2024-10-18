@@ -11,7 +11,7 @@ import GodinaScreen from '../Materijali/GodinaScreen'
 import Schedule from '../Schedule/Schedule'
 import Instruction from '../Instructor/Instruction';
 import InstructionInfo from '../Instructor/InstructionInfo';
-import OsnovneGrupeScreen from '../OsnovneGrupe/OsnovneGrupeScreen';
+import ElementaryGroupChatScreen from '../ElementaryGroupChat/ElementaryGroupChatScreen';
 const Stack = createStackNavigator();
 
 const AppNavigator = () => {
@@ -30,7 +30,7 @@ const AppNavigator = () => {
         <Stack.Screen name="Schedule" component={Schedule} options={{ headerShown: false }}/>
         <Stack.Screen name="Instruction" component={Instruction} options={{ headerShown: false }}/>
         <Stack.Screen name="InstructionInfo" component={InstructionInfo} options={{ headerShown: false }}/>
-        <Stack.Screen name="OsnovneGrupeScreen" component={OsnovneGrupeScreen} options={{ headerShown: false }}/>
+        <Stack.Screen name="ElementaryGroupChat" component={ElementaryGroupChatScreen} options={{ headerShown: false }}/>
       </Stack.Navigator>
     </NavigationContainer>
   );

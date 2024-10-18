@@ -50,7 +50,7 @@ const Sidebar = ({ visible, onClose }) => {
 
   const handleOsnovneGrupe = () => {
     onClose();
-    navigation.navigate('OsnovneGrupeScreen');
+    navigation.navigate('ElementaryGroupChat');
   };
 
   const handleLogoutPress = () => {
