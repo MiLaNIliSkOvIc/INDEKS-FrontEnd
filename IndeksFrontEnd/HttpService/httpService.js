@@ -1,7 +1,7 @@
 class HttpService {
   
 
-    baseUrl = 'http://172.20.10.3:8080/api/v1';
+    baseUrl = 'http://192.168.100.31:8080/api/v1';
   
 
     async handleResponse(response) {

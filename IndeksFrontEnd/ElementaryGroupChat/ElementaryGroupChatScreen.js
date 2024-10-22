@@ -7,18 +7,6 @@ import HeaderComponent from '../Header/Header';
 import HttpService from '../HttpService/httpService';
 import ElementaryGroup from '../model/ElementaryGroup';
 
-// const data = [
-//   { id: '1', title: 'Prva godina', description: '' },
-//   { id: '2', title: 'Druga godina', description: 'Računarstvo i informatika' },
-//   { id: '3', title: 'Druga godina', description: 'Elektronika i telekomunikacije' },
-//   { id: '4', title: 'Druga godina', description: 'Elektroenergetika i automatika' },
-//   { id: '5', title: 'Treća godina', description: 'Računarstvo i informatika' },
-//   { id: '6', title: 'Treća godina', description: 'Elektronika i telekomunikacije' },
-//   { id: '7', title: 'Treća godina', description: 'Elektroenergetika i automatika' },
-//   { id: '8', title: 'Četvrta godina', description: 'Računarstvo i informatika' },
-//   { id: '9', title: 'Četvrta godina', description: 'Elektronika i telekomunikacije' },
-//   { id: '10', title: 'Četvrta godina', description: 'Elektroenergetika i automatika' },
-// ];
 
 const ElementaryGroupChatScreen = ({ navigation }) => {
   const [isSidebarVisible, setSidebarVisible] = useState(false);
@@ -127,9 +115,6 @@ const ElementaryGroupChatScreen = ({ navigation }) => {
       <HeaderComponent toggleSidebar={toggleSidebar} />
         <Text style={styles.screenTitle}>Osnovne grupe</Text>
       {loading()}
-        <TouchableOpacity style={styles.floatingButton}>
-          <Text style={styles.floatingButtonText}>+</Text>
-        </TouchableOpacity>
         <Sidebar visible={isSidebarVisible} onClose={toggleSidebar} />
       </View>
     </TouchableWithoutFeedback>
@@ -211,25 +196,7 @@ const styles = StyleSheet.create({
     fontSize: 14,
     color: '#737373',
   },
-  floatingButton: {
-    position: 'absolute',
-    right: 30,
-    bottom: 60,
-    width: 60,
-    height: 60,
-    backgroundColor: '#013868',
-    borderRadius: 30,
-    justifyContent: 'center',  
-    alignItems: 'center',     
-    elevation: 8,
-  },
-  floatingButtonText: {
-    color: '#fff',
-    fontSize: 30,
-    fontWeight: 'bold',
-    textAlign: 'center',       
-    lineHeight: 33,   
-  },
+ 
   absoluteBlur: {
     ...StyleSheet.absoluteFillObject,
     borderRadius: 8,

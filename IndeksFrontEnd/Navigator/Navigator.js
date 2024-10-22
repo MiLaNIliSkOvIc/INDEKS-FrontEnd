@@ -12,6 +12,7 @@ import Schedule from '../Schedule/Schedule'
 import Instruction from '../Instructor/Instruction';
 import InstructionInfo from '../Instructor/InstructionInfo';
 import ElementaryGroupChatScreen from '../ElementaryGroupChat/ElementaryGroupChatScreen';
+import Ads from '../Ads/Ads';
 const Stack = createStackNavigator();
 
 const AppNavigator = () => {
@@ -31,6 +32,7 @@ const AppNavigator = () => {
         <Stack.Screen name="Instruction" component={Instruction} options={{ headerShown: false }}/>
         <Stack.Screen name="InstructionInfo" component={InstructionInfo} options={{ headerShown: false }}/>
         <Stack.Screen name="ElementaryGroupChat" component={ElementaryGroupChatScreen} options={{ headerShown: false }}/>
+        <Stack.Screen name="Ads" component={Ads} options={{ headerShown: false }}/>
       </Stack.Navigator>
     </NavigationContainer>
   );

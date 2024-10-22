@@ -47,7 +47,11 @@ const Sidebar = ({ visible, onClose }) => {
     onClose();
     navigation.navigate('Instruction');
   };
-
+  const handleOglasiPress = () => {
+    onClose();
+    navigation.navigate('Ads');
+  };
+  
   const handleOsnovneGrupe = () => {
     onClose();
     navigation.navigate('ElementaryGroupChat');
@@ -88,7 +92,7 @@ const Sidebar = ({ visible, onClose }) => {
                 <Icon name="calendar" size={25} color="#013868" />
                 <Text style={styles.sidebarMenuText}>Raspored</Text>
               </TouchableOpacity>
-              <TouchableOpacity style={styles.sidebarMenuItem}>
+              <TouchableOpacity style={styles.sidebarMenuItem} onPress={handleOglasiPress}>
                 <Icon name="bullhorn" size={25} color="#013868" />
                 <Text style={styles.sidebarMenuText}>Oglasi</Text>
               </TouchableOpacity>
