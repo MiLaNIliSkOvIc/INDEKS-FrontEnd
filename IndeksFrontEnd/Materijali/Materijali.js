@@ -5,10 +5,10 @@ import Icon from 'react-native-vector-icons/FontAwesome';
 import { useNavigation } from '@react-navigation/native';
 import HeaderComponent from '../Header/Header';
 const data = [
-  { id: '1', year: 'I', title: 'Prva godina', lecturer: 'Milan Iliskovic' },
-  { id: '2', year: 'II', title: 'Druga godina', lecturer: 'Igor Piljagic' },
-  { id: '3', year: 'III', title: 'Treća godina', lecturer: 'Dejan Janjic' },
-  { id: '4', year: 'IV', title: 'Četvrta godina', lecturer: 'Tijana Lazendic' },
+  { id: '1', year: 'I', title: 'Prva godina' },
+  { id: '2', year: 'II', title: 'Druga godina' },
+  { id: '3', year: 'III', title: 'Treća godina'},
+  { id: '4', year: 'IV', title: 'Četvrta godina' },
 ];
 
 const MaterialsScreen = () => {

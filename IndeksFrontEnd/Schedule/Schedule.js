@@ -57,10 +57,7 @@ const Schedule = () => {
     setEditingCell({ timeIndex, dayIndex });
   };
 
-  const handleBlur = () => {
-    setEditingCell({ timeIndex: null, dayIndex: null });
-  };
-
+ 
   return (
     <View style={styles.container}>
     
@@ -117,7 +114,7 @@ const Schedule = () => {
                           scrollEnabled={true}
                           value={scheduleData[timeIndex] && scheduleData[timeIndex][dayIndex]}
                           onChangeText={(text) => handleTextChange(timeIndex, dayIndex, text)}
-                          onBlur={handleBlur}
+                  
                           autoFocus={true}
                         />
                       ) : (
