@@ -11,7 +11,7 @@ import {
   Dimensions,
 } from "react-native";
 import Icon from "react-native-vector-icons/FontAwesome";
-import Sidebar from "../app/components/SidebarComponent";
+import Sidebar from "../components/SidebarComponent";
 import "react-native-gesture-handler";
 
 const days = ["Pon", "Uto", "Sri", "Čet", "Pet", "Sub", "Ned"];
@@ -33,7 +33,7 @@ const times = [
   "22:15",
 ];
 
-const Schedule = () => {
+const ScheduleScreen = () => {
   const [isSidebarVisible, setSidebarVisible] = useState(false);
   const [editingCell, setEditingCell] = useState({
     timeIndex: null,
@@ -96,14 +96,14 @@ const Schedule = () => {
           <Icon name="bars" size={30} color="#888" style={styles.headerIcon} />
         </TouchableOpacity>
         <Image
-          source={require("../app/assets/logo.png")}
+          source={require("../assets/logo.png")}
           style={styles.headerLogo}
           resizeMode="contain"
         />
         <Text style={styles.headerText}>Raspored</Text>
         <TouchableOpacity>
           <Image
-            source={require("../app/assets/search.png")}
+            source={require("../assets/search.png")}
             style={styles.headerEditIcon}
           />
         </TouchableOpacity>
@@ -278,4 +278,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default Schedule;
+export default ScheduleScreen;

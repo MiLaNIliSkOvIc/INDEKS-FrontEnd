@@ -11,7 +11,7 @@ import Icon from "react-native-vector-icons/FontAwesome";
 import { useState } from "react";
 import Sidebar from "../app/components/SidebarComponent";
 import { useNavigation } from "@react-navigation/native";
-import HeaderComponent from "../Header/Header";
+import HeaderComponent from "../app/components/HeaderComponent";
 
 const data = [
   {

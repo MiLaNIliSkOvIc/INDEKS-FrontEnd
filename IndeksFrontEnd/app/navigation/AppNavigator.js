@@ -1,28 +1,28 @@
 import React from "react";
 import { createStackNavigator } from "@react-navigation/stack";
 import { NavigationContainer } from "@react-navigation/native";
-import RegisterScreen from "../app/screens/RegisterScreen";
-import LoginScreen from "../app/screens/LoginScreen";
-import InitialScreen from "../app/screens/InitialScreen";
-import ChatList from "../app/screens/ChatListScreen";
-import ChatScreen from "../app/screens/ChatScreen";
-import MaterialsScreen from "../Materijali/Materijali";
-import GodinaScreen from "../Materijali/GodinaScreen";
-import Schedule from "../Schedule/Schedule";
-import Instruction from "../Instructor/Instruction";
-import InstructionInfo from "../Instructor/InstructionInfo";
-import ElementaryGroupChatScreen from "../app/screens/ElementaryGroupsListScreen";
-import AnnouncementsList from "../Ads/AnnouncementsList";
-import HeaderComponent from "../app/components/HeaderComponent";
+import RegisterScreen from "../screens/RegisterScreen";
+import LoginScreen from "../screens/LoginScreen";
+import InitialScreen from "../screens/InitialScreen";
+import ChatList from "../screens/ChatListScreen";
+import ChatScreen from "../screens/ChatScreen";
+import MaterialsScreen from "../screens/MaterialsScreen";
+import GodinaScreen from "../screens/GodinaScreen";
+import ScheduleScreen from "../screens/ScheduleScreen";
+import Instruction from "../../Instructor/Instruction";
+import InstructionInfo from "../../Instructor/InstructionInfo";
+import ElementaryGroupChatScreen from "../screens/ElementaryGroupsListScreen";
+import AnnouncementsList from "../../Ads/AnnouncementsList";
+import HeaderComponent from "../components/HeaderComponent";
 const Stack = createStackNavigator();
 
 const AppNavigator = () => {
   return (
     <NavigationContainer>
-      <Stack.Navigator initialRouteName="Inicial">
+      <Stack.Navigator initialRouteName="Initial">
         <Stack.Screen
-          name="Inicial"
-          component={Instruction}
+          name="Initial"
+          component={InitialScreen}
           options={{ headerShown: false }}
         />
         <Stack.Screen
@@ -57,7 +57,7 @@ const AppNavigator = () => {
         />
         <Stack.Screen
           name="Schedule"
-          component={Schedule}
+          component={ScheduleScreen}
           options={{ headerShown: false }}
         />
         <Stack.Screen

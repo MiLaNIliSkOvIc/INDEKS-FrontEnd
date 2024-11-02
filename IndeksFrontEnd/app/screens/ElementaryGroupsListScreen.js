@@ -13,8 +13,8 @@ import Icon from "react-native-vector-icons/FontAwesome";
 import { BlurView } from "expo-blur";
 import Sidebar from "../components/SidebarComponent";
 import HeaderComponent from "../components/HeaderComponent";
-import HttpService from "../../HttpService/httpService";
-import ElementaryGroup from "../../model/ElementaryGroup";
+import HttpService from "../services/HttpService";
+import ElementaryGroup from "../model/ElementaryGroup";
 
 const ElementaryGroupsListScreen = ({ navigation }) => {
   const [isSidebarVisible, setSidebarVisible] = useState(false);

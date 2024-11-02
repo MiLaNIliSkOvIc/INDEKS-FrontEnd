@@ -7,7 +7,7 @@ import {
   Image,
   TouchableOpacity,
 } from "react-native";
-import Sidebar from "../app/components/SidebarComponent";
+import Sidebar from "../components/SidebarComponent";
 import Icon from "react-native-vector-icons/FontAwesome";
 
 const data = [
@@ -40,14 +40,14 @@ const GodinaScreen = ({ route, navigation }) => {
         <Icon name="arrow-left" size={20} color="#fff" />
       </TouchableOpacity>
       <Image
-        source={require("../app/assets/logo.png")}
+        source={require("../assets/logo.png")}
         style={styles.headerLogo}
         resizeMode="contain"
       />
       <Text style={styles.headerText}>Indeks</Text>
       <TouchableOpacity>
         <Image
-          source={require("../app/assets/search.png")}
+          source={require("../assets/search.png")}
           style={styles.headerIcon}
         />
       </TouchableOpacity>

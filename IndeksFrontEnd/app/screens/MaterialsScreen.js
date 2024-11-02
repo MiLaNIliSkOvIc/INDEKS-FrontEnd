@@ -7,10 +7,10 @@ import {
   Image,
   TouchableOpacity,
 } from "react-native";
-import Sidebar from "../app/components/SidebarComponent";
+import Sidebar from "../components/SidebarComponent";
 import Icon from "react-native-vector-icons/FontAwesome";
 import { useNavigation } from "@react-navigation/native";
-import HeaderComponent from "../app/components/HeaderComponent";
+import HeaderComponent from "../components/HeaderComponent";
 const data = [
   { id: "1", year: "I", title: "Prva godina" },
   { id: "2", year: "II", title: "Druga godina" },

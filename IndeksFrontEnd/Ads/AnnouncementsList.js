@@ -10,8 +10,8 @@ import {
 import Sidebar from "../app/components/SidebarComponent";
 import Icon from "react-native-vector-icons/FontAwesome";
 import HeaderComponent from "../app/components/HeaderComponent";
-import httpService from "../HttpService/httpService";
-import Announcement from "../model/Announcements";
+import httpService from "../app/services/HttpService";
+import Announcement from "../app/model/Announcements";
 
 const AnnouncementsList = () => {
   const [isSidebarVisible, setSidebarVisible] = useState(false);
