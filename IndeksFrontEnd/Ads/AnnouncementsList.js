@@ -1,39 +1,49 @@
-import React, { useEffect, useState } from 'react';
-import { View, Text, FlatList, StyleSheet, TouchableOpacity, ActivityIndicator } from 'react-native';
-import Sidebar from '../Sidebar/sidebar';
-import Icon from 'react-native-vector-icons/FontAwesome';
-import HeaderComponent from '../Header/Header';
-import httpService from '../HttpService/httpService';
-import AdsModel from '../model/AdsModel'; 
+import React, { useEffect, useState } from "react";
+import {
+  View,
+  Text,
+  FlatList,
+  StyleSheet,
+  TouchableOpacity,
+  ActivityIndicator,
+} from "react-native";
+import Sidebar from "../app/components/SidebarComponent";
+import Icon from "react-native-vector-icons/FontAwesome";
+import HeaderComponent from "../app/components/HeaderComponent";
+import httpService from "../HttpService/httpService";
+import Announcement from "../model/Announcements";
 
-const Ads = () => {
+const AnnouncementsList = () => {
   const [isSidebarVisible, setSidebarVisible] = useState(false);
   const [expandedCard, setExpandedCard] = useState(null);
-  const [adsData, setAdsData] = useState({}); 
-  const [isLoading, setIsLoading] = useState(false); 
+  const [adsData, setAdsData] = useState({});
+  const [isLoading, setIsLoading] = useState(false);
   const toggleSidebar = () => {
     setSidebarVisible(!isSidebarVisible);
   };
 
   const fetchAdsByYear = async (year) => {
     try {
-        console.log("123123")
+      console.log("123123");
       setIsLoading(true);
-      const result = await httpService.get(`announcements/year/${year}`); 
-      const formattedData = result.map(item => new AdsModel(
-        item.id,
-        item.title,
-        item.header,
-        item.content,
-        item.signature,
-        item.timeOfCreation,
-        item.timeOfDeletion,
-        item.year,
-        item.announcementAttachment
-      ));
-      setAdsData(prevData => ({ ...prevData, [year]: formattedData }));// ovde imamo kao 1 : pa oglasi njegovi 2: pa oglsi njegovi da bi mogli lakse dole parsirat to
+      const result = await httpService.get(`announcements/year/${year}`);
+      const formattedData = result.map(
+        (item) =>
+          new AdsModel(
+            item.id,
+            item.title,
+            item.header,
+            item.content,
+            item.signature,
+            item.timeOfCreation,
+            item.timeOfDeletion,
+            item.year,
+            item.announcementAttachment
+          )
+      );
+      setAdsData((prevData) => ({ ...prevData, [year]: formattedData })); // ovde imamo kao 1 : pa oglasi njegovi 2: pa oglsi njegovi da bi mogli lakse dole parsirat to
     } catch (error) {
-      console.error('Problemmm ', error);
+      console.error("Problemmm ", error);
     } finally {
       setIsLoading(false);
     }
@@ -41,30 +51,28 @@ const Ads = () => {
 
   const handleItemPress = (year) => {
     if (expandedCard === year) {
-      setExpandedCard(null); 
+      setExpandedCard(null);
     } else {
       setExpandedCard(year);
-     
-     
-        fetchAdsByYear(year);
-      
+
+      fetchAdsByYear(year);
     }
   };
 
   const renderOglasi = (year) => {
-    const oglasi = adsData[year] || []; 
+    const oglasi = adsData[year] || [];
     return (
       <View style={styles.oglasiContainer}>
         {oglasi.length > 0 ? (
           oglasi.map((oglas, index) => (
             <View key={index} style={styles.oglasCard}>
               <Text style={styles.oglasDate}>
-                {new Date(oglas.timeOfCreation).toLocaleString('sr-RS', {
-                  day: '2-digit',
-                  month: '2-digit',
-                  year: 'numeric',
-                  hour: '2-digit',
-                  minute: '2-digit',
+                {new Date(oglas.timeOfCreation).toLocaleString("sr-RS", {
+                  day: "2-digit",
+                  month: "2-digit",
+                  year: "numeric",
+                  hour: "2-digit",
+                  minute: "2-digit",
                 })}
               </Text>
               <Text style={styles.oglasTitle}>{oglas.title}</Text>
@@ -82,17 +90,17 @@ const Ads = () => {
   };
 
   const yearTitles = [
-    { year: 'I', title: 'Prva godina' },
-    { year: 'II', title: 'Druga godina' },
-    { year: 'III', title: 'Treća godina' },
-    { year: 'IV', title: 'Četvrta godina' },
+    { year: "I", title: "Prva godina" },
+    { year: "II", title: "Druga godina" },
+    { year: "III", title: "Treća godina" },
+    { year: "IV", title: "Četvrta godina" },
   ];
 
   const renderItem = ({ index }) => {
-    const year = index + 1; 
+    const year = index + 1;
     return (
       <>
-        <TouchableOpacity 
+        <TouchableOpacity
           style={styles.itemContainer}
           onPress={() => handleItemPress(year)}
         >
@@ -104,7 +112,11 @@ const Ads = () => {
           <View style={styles.detailsContainer}>
             <Text style={styles.itemTitle}>{yearTitles[index].title}</Text>
           </View>
-          <Icon name={expandedCard === year ? 'chevron-up' : 'chevron-down'} size={20} color="#013868" />
+          <Icon
+            name={expandedCard === year ? "chevron-up" : "chevron-down"}
+            size={20}
+            color="#013868"
+          />
         </TouchableOpacity>
 
         {expandedCard === year && renderOglasi(year)}
@@ -129,25 +141,25 @@ const Ads = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#c7c7c7',
+    backgroundColor: "#c7c7c7",
   },
   title: {
     fontSize: 22,
-    fontWeight: 'bold',
-    color: '#013868',
-    textAlign: 'center',
+    fontWeight: "bold",
+    color: "#013868",
+    textAlign: "center",
     marginVertical: 15,
   },
   itemContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
+    flexDirection: "row",
+    alignItems: "center",
     paddingVertical: 7,
     paddingHorizontal: 15,
-    backgroundColor: '#fff',
+    backgroundColor: "#fff",
     marginVertical: 5,
     marginHorizontal: 20,
     borderRadius: 8,
-    shadowColor: '#000',
+    shadowColor: "#000",
     shadowOpacity: 0.1,
     shadowOffset: { width: 0, height: 2 },
     shadowRadius: 8,
@@ -157,38 +169,38 @@ const styles = StyleSheet.create({
     marginRight: 15,
   },
   numberCircle: {
-    backgroundColor: '#E8EAF6',
+    backgroundColor: "#E8EAF6",
     width: 40,
     height: 40,
     borderRadius: 20,
-    justifyContent: 'center',
-    alignItems: 'center',
+    justifyContent: "center",
+    alignItems: "center",
   },
   numberText: {
     fontSize: 18,
-    fontWeight: 'bold',
-    color: '#013868',
+    fontWeight: "bold",
+    color: "#013868",
   },
   detailsContainer: {
     flex: 1,
   },
   itemTitle: {
     fontSize: 16,
-    fontWeight: 'bold',
-    color: '#013868',
+    fontWeight: "bold",
+    color: "#013868",
   },
   oglasiContainer: {
     paddingLeft: 20,
     paddingRight: 20,
     paddingTop: 5,
-    flexDirection: 'column',
+    flexDirection: "column",
   },
   oglasCard: {
-    backgroundColor: '#ffffff',
+    backgroundColor: "#ffffff",
     borderRadius: 8,
     padding: 10,
     marginBottom: 10,
-    shadowColor: '#000',
+    shadowColor: "#000",
     shadowOpacity: 0.1,
     shadowOffset: { width: 0, height: 1 },
     shadowRadius: 5,
@@ -196,32 +208,32 @@ const styles = StyleSheet.create({
   },
   oglasDate: {
     fontSize: 12,
-    color: '#757575',
+    color: "#757575",
     marginBottom: 5,
   },
   oglasTitle: {
     fontSize: 16,
-    fontWeight: 'bold',
-    color: '#013868',
+    fontWeight: "bold",
+    color: "#013868",
     marginBottom: 8,
   },
   oglasBody: {
     fontSize: 14,
-    color: '#013868',
+    color: "#013868",
   },
   oglasSignature: {
     fontSize: 14,
-    fontWeight: 'bold',
-    color: '#013868',
+    fontWeight: "bold",
+    color: "#013868",
     marginTop: 15,
   },
   noAdsText: {
     fontSize: 14,
-    color: '#757575',
-    textAlign: 'center',
+    color: "#757575",
+    textAlign: "center",
     marginTop: 2,
     marginBottom: 5,
   },
 });
 
-export default Ads;
+export default AnnouncementsList;

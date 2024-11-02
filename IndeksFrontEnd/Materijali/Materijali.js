@@ -1,14 +1,21 @@
-import React, { useState } from 'react';
-import { View, Text, FlatList, StyleSheet, Image, TouchableOpacity } from 'react-native';
-import Sidebar from '../Sidebar/sidebar';
-import Icon from 'react-native-vector-icons/FontAwesome';
-import { useNavigation } from '@react-navigation/native';
-import HeaderComponent from '../Header/Header';
+import React, { useState } from "react";
+import {
+  View,
+  Text,
+  FlatList,
+  StyleSheet,
+  Image,
+  TouchableOpacity,
+} from "react-native";
+import Sidebar from "../app/components/SidebarComponent";
+import Icon from "react-native-vector-icons/FontAwesome";
+import { useNavigation } from "@react-navigation/native";
+import HeaderComponent from "../app/components/HeaderComponent";
 const data = [
-  { id: '1', year: 'I', title: 'Prva godina' },
-  { id: '2', year: 'II', title: 'Druga godina' },
-  { id: '3', year: 'III', title: 'Treća godina'},
-  { id: '4', year: 'IV', title: 'Četvrta godina' },
+  { id: "1", year: "I", title: "Prva godina" },
+  { id: "2", year: "II", title: "Druga godina" },
+  { id: "3", year: "III", title: "Treća godina" },
+  { id: "4", year: "IV", title: "Četvrta godina" },
 ];
 
 const MaterialsScreen = () => {
@@ -19,7 +26,9 @@ const MaterialsScreen = () => {
   const navigation = useNavigation();
 
   const handleItemPress = (id) => {
-    navigation.navigate('GodinaScreen', { title: data.find(item => item.id === id).title });
+    navigation.navigate("GodinaScreen", {
+      title: data.find((item) => item.id === id).title,
+    });
   };
 
   const renderItem = ({ item }) => (
@@ -38,8 +47,6 @@ const MaterialsScreen = () => {
     </TouchableOpacity>
   );
 
- 
-
   return (
     <View style={styles.container}>
       <HeaderComponent toggleSidebar={toggleSidebar} />
@@ -47,7 +54,7 @@ const MaterialsScreen = () => {
       <FlatList
         data={data}
         renderItem={renderItem}
-        keyExtractor={item => item.id}
+        keyExtractor={(item) => item.id}
       />
       <TouchableOpacity style={styles.floatingButton}>
         <Text style={styles.floatingButtonText}>+</Text>
@@ -60,25 +67,25 @@ const MaterialsScreen = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#c7c7c7',
+    backgroundColor: "#c7c7c7",
   },
   title: {
     fontSize: 22,
-    fontWeight: 'bold',
-    color: '#013868',
-    textAlign: 'center',
+    fontWeight: "bold",
+    color: "#013868",
+    textAlign: "center",
     marginVertical: 15,
   },
   itemContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
+    flexDirection: "row",
+    alignItems: "center",
     paddingVertical: 15,
     paddingHorizontal: 15,
-    backgroundColor: '#fff',
+    backgroundColor: "#fff",
     marginVertical: 5,
     marginHorizontal: 20,
     borderRadius: 8,
-    shadowColor: '#000',
+    shadowColor: "#000",
     shadowOpacity: 0.1,
     shadowOffset: { width: 0, height: 2 },
     shadowRadius: 8,
@@ -88,42 +95,42 @@ const styles = StyleSheet.create({
     marginRight: 15,
   },
   numberCircle: {
-    backgroundColor: '#E8EAF6',
+    backgroundColor: "#E8EAF6",
     width: 40,
     height: 40,
     borderRadius: 20,
-    justifyContent: 'center',
-    alignItems: 'center',
+    justifyContent: "center",
+    alignItems: "center",
   },
   numberText: {
     fontSize: 18,
-    fontWeight: 'bold',
-    color: '#013868',
+    fontWeight: "bold",
+    color: "#013868",
   },
   detailsContainer: {
     flex: 1,
   },
   itemTitle: {
     fontSize: 16,
-    fontWeight: 'bold',
-    color: '#013868',
+    fontWeight: "bold",
+    color: "#013868",
   },
   floatingButton: {
-    position: 'absolute',
+    position: "absolute",
     right: 20,
     bottom: 60,
     width: 60,
     height: 60,
-    backgroundColor: '#013868',
+    backgroundColor: "#013868",
     borderRadius: 30,
-    justifyContent: 'center',
-    alignItems: 'center',
+    justifyContent: "center",
+    alignItems: "center",
     elevation: 8,
   },
   floatingButtonText: {
-    color: '#fff',
+    color: "#fff",
     fontSize: 30,
-    fontWeight: 'bold',
+    fontWeight: "bold",
   },
   icon: {
     width: 30,

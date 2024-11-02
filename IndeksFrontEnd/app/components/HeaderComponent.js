@@ -1,6 +1,6 @@
-import React from 'react';
-import { View, Text, Image, TouchableOpacity, StyleSheet } from 'react-native';
-import Icon from 'react-native-vector-icons/FontAwesome';
+import React from "react";
+import { View, Text, Image, TouchableOpacity, StyleSheet } from "react-native";
+import Icon from "react-native-vector-icons/FontAwesome";
 
 const HeaderComponent = ({ toggleSidebar }) => {
   return (
@@ -8,10 +8,14 @@ const HeaderComponent = ({ toggleSidebar }) => {
       <TouchableOpacity onPress={toggleSidebar}>
         <Icon name="bars" size={28} color="#fff" />
       </TouchableOpacity>
-      <Image source={require('../pictures/logo.png')} style={styles.headerLogo} resizeMode="contain" />
+      <Image
+        source={require("../assets/logo.png")}
+        style={styles.headerLogo}
+        resizeMode="contain"
+      />
       <Text style={styles.headerText}>Indeks</Text>
       <TouchableOpacity>
-        <Image source={require('../pictures/search.png')} style={styles.icon} />
+        <Image source={require("../assets/search.png")} style={styles.icon} />
       </TouchableOpacity>
     </View>
   );
@@ -19,10 +23,10 @@ const HeaderComponent = ({ toggleSidebar }) => {
 
 const styles = StyleSheet.create({
   header: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    backgroundColor: '#013868',
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
+    backgroundColor: "#013868",
     paddingTop: 35,
     paddingVertical: 10,
     paddingHorizontal: 15,
@@ -36,8 +40,8 @@ const styles = StyleSheet.create({
     marginRight: 30,
     marginLeft: -100,
     fontSize: 20,
-    fontWeight: 'bold',
-    color: '#fff',
+    fontWeight: "bold",
+    color: "#fff",
   },
   icon: {
     width: 40,
