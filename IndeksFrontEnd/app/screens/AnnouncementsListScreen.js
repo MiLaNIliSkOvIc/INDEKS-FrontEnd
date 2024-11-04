@@ -11,6 +11,7 @@ import Sidebar from "../components/SidebarComponent";
 import Icon from "react-native-vector-icons/FontAwesome";
 import HeaderComponent from "../components/HeaderComponent";
 import httpService from "../services/HttpService";
+import Announcements from "../model/Announcements"
 
 const AnnouncementsListScreen = () => {
   const [isSidebarVisible, setSidebarVisible] = useState(false);
@@ -28,7 +29,7 @@ const AnnouncementsListScreen = () => {
       const result = await httpService.get(`announcements/year/${year}`);
       const formattedData = result.map(
         (item) =>
-          new AdsModel(
+          new Announcements(
             item.id,
             item.title,
             item.header,
