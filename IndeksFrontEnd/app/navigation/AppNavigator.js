@@ -23,7 +23,7 @@ const AppNavigator = () => {
       <Stack.Navigator initialRouteName="Initial">
         <Stack.Screen
           name="Initial"
-          component={AnnouncementsListScreen}
+          component={InitialScreen}
           options={{ headerShown: false }}
         />
         <Stack.Screen
