@@ -9,12 +9,11 @@ import ChatScreen from "../screens/ChatScreen";
 import MaterialsScreen from "../screens/MaterialsScreen";
 import GodinaScreen from "../screens/GodinaScreen";
 import ScheduleScreen from "../screens/ScheduleScreen";
-import Instruction from "../../Instructor/Instruction";
+import InstructionsListScreen from "../screens/InstructionsListScreen";
 import InstructionDetailsScreen from "../screens/InstructionDetailsScreen";
 import ElementaryGroupChatScreen from "../screens/ElementaryGroupsListScreen";
 import AnnouncementsListScreen from "../screens/AnnouncementsListScreen";
 import HeaderComponent from "../components/HeaderComponent";
-import InstructionsListScreen from "../screens/InstructionsListScreen";
 const Stack = createStackNavigator();
 
 const AppNavigator = () => {
@@ -63,7 +62,7 @@ const AppNavigator = () => {
         />
         <Stack.Screen
           name="Instruction"
-          component={Instruction}
+          component={InstructionsListScreen}
           options={{ headerShown: false }}
         />
         <Stack.Screen
