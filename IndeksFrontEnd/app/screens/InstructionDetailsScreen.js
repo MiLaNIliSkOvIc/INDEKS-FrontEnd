@@ -53,7 +53,7 @@ const reviews = [
   },
 ];
 
-const InstructionInfo = ({ route }) => {
+const InstructionDetailsScreen = ({ route }) => {
   const { courseTitle, instructor, description } = route.params;
   const navigation = useNavigation();
 
@@ -96,10 +96,7 @@ const InstructionInfo = ({ route }) => {
         </TouchableOpacity>
 
         <View style={styles.logoContainer}>
-          <Image
-            source={require("../app/assets/logo.png")}
-            style={styles.logo}
-          />
+          <Image source={require("../assets/logo.png")} style={styles.logo} />
           <Text style={styles.title}>INDEKS</Text>
         </View>
       </View>
@@ -244,4 +241,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default InstructionInfo;
+export default InstructionDetailsScreen;

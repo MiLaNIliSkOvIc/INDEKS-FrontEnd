@@ -7,13 +7,12 @@ import {
   TouchableOpacity,
   ActivityIndicator,
 } from "react-native";
-import Sidebar from "../app/components/SidebarComponent";
+import Sidebar from "../components/SidebarComponent";
 import Icon from "react-native-vector-icons/FontAwesome";
-import HeaderComponent from "../app/components/HeaderComponent";
-import httpService from "../app/services/HttpService";
-import Announcement from "../app/model/Announcements";
+import HeaderComponent from "../components/HeaderComponent";
+import httpService from "../services/HttpService";
 
-const AnnouncementsList = () => {
+const AnnouncementsListScreen = () => {
   const [isSidebarVisible, setSidebarVisible] = useState(false);
   const [expandedCard, setExpandedCard] = useState(null);
   const [adsData, setAdsData] = useState({});
@@ -236,4 +235,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default AnnouncementsList;
+export default AnnouncementsListScreen;

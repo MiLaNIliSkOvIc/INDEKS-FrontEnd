@@ -10,10 +10,11 @@ import MaterialsScreen from "../screens/MaterialsScreen";
 import GodinaScreen from "../screens/GodinaScreen";
 import ScheduleScreen from "../screens/ScheduleScreen";
 import Instruction from "../../Instructor/Instruction";
-import InstructionInfo from "../../Instructor/InstructionInfo";
+import InstructionDetailsScreen from "../screens/InstructionDetailsScreen";
 import ElementaryGroupChatScreen from "../screens/ElementaryGroupsListScreen";
-import AnnouncementsList from "../../Ads/AnnouncementsList";
+import AnnouncementsListScreen from "../screens/AnnouncementsListScreen";
 import HeaderComponent from "../components/HeaderComponent";
+import InstructionsListScreen from "../screens/InstructionsListScreen";
 const Stack = createStackNavigator();
 
 const AppNavigator = () => {
@@ -22,7 +23,7 @@ const AppNavigator = () => {
       <Stack.Navigator initialRouteName="Initial">
         <Stack.Screen
           name="Initial"
-          component={InitialScreen}
+          component={AnnouncementsListScreen}
           options={{ headerShown: false }}
         />
         <Stack.Screen
@@ -67,7 +68,7 @@ const AppNavigator = () => {
         />
         <Stack.Screen
           name="InstructionInfo"
-          component={InstructionInfo}
+          component={InstructionDetailsScreen}
           options={{ headerShown: false }}
         />
         <Stack.Screen
@@ -77,7 +78,7 @@ const AppNavigator = () => {
         />
         <Stack.Screen
           name="Ads"
-          component={AnnouncementsList}
+          component={AnnouncementsListScreen}
           options={{ headerShown: false }}
         />
       </Stack.Navigator>
