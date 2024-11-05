@@ -6,8 +6,15 @@ class HttpService {
       const error = await response.text();
       throw new Error(error || "error");
     }
-    const json = await response.json();
-    return json;
+  
+   
+    const text = await response.text();
+    if (text) {
+      return JSON.parse(text); 
+    }
+  
+
+    return null;
   }
 
   async create(resource, data) {

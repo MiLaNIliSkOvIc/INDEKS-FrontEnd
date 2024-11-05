@@ -13,6 +13,7 @@ import {
 import Icon from "react-native-vector-icons/FontAwesome";
 import Sidebar from "../components/SidebarComponent";
 import "react-native-gesture-handler";
+import HttpService from "../services/HttpService";
 
 const days = ["Pon", "Uto", "Sri", "Čet", "Pet", "Sub", "Ned"];
 const times = [
@@ -32,6 +33,15 @@ const times = [
   "21:15",
   "22:15",
 ];
+const dayMapping = {
+  Pon: 0,
+  Uto: 1,
+  Sri: 2,
+  Čet: 3,
+  Pet: 4,
+  Sub: 5,
+  Ned: 6,
+};
 
 const ScheduleScreen = () => {
   const [isSidebarVisible, setSidebarVisible] = useState(false);
@@ -39,29 +49,55 @@ const ScheduleScreen = () => {
     timeIndex: null,
     dayIndex: null,
   });
-  const [scheduleData, setScheduleData] = useState([]);
+  const [scheduleData, setScheduleData] = useState(
+    Array(times.length).fill(Array(days.length).fill(""))
+  );
   const [dimensions, setDimensions] = useState(Dimensions.get("window"));
 
   useEffect(() => {
     const handleResize = () => {
       setDimensions(Dimensions.get("window"));
     };
-
+    
     Dimensions.addEventListener("change", handleResize);
 
     return () => {
-      // Dimensions.removeEventListener('change', handleResize);
+      //Dimensions.removeEventListener("change", handleResize);
     };
   }, []);
 
+  
   useEffect(() => {
-    if (scheduleData.length !== times.length) {
-      const initialSchedule = Array(times.length)
-        .fill()
-        .map(() => Array(days.length).fill(""));
-      setScheduleData(initialSchedule);
-    }
-  }, [times, scheduleData.length]);
+    const fetchScheduleData = async (scheduleId) => {
+      try {
+        const data = await HttpService.get(`schedule/${scheduleId}/items`);
+        const initialSchedule = Array(times.length)
+          .fill(null)
+          .map(() => Array(days.length).fill(""));
+  
+        
+        data.forEach((item) => {
+          const dayIndex = item.day;
+          const timeIndex = times.indexOf(item.time);
+          if (timeIndex !== -1 && dayIndex >= 0 && dayIndex < days.length) {
+            initialSchedule[timeIndex][dayIndex] = item.content || "";
+          }
+        });
+  
+        setScheduleData(initialSchedule);
+      } catch (error) {
+        console.error("Error fetching schedule data:", error);
+        const fallbackSchedule = Array(times.length)
+          .fill(null)
+          .map(() => Array(days.length).fill(""));
+        setScheduleData(fallbackSchedule);
+      }
+    };
+  
+    const scheduleId = 5; // Ovde moracemo dobaviti userov id vjerovatno cemo kroz token
+    fetchScheduleData(scheduleId);
+  }, []);
+  
 
   const toggleSidebar = () => {
     setSidebarVisible(!isSidebarVisible);
@@ -76,14 +112,28 @@ const ScheduleScreen = () => {
         : row
     );
     setScheduleData(updatedSchedule);
-    sendToBack(timeIndex, dayIndex, text);
   };
 
-  const sendToBack = (timeIndex, dayIndex, text) => {
-    console.log(
-      `saljemo ${times[timeIndex]}, day ${days[dayIndex]}, text ${text}`
-    );
+
+  const handleEndEditing = async (timeIndex, dayIndex) => {
+    const text = scheduleData[timeIndex][dayIndex] || "";
+    const payload = {
+      id: 5,
+      day: dayMapping[days[dayIndex]],
+      time: times[timeIndex],
+      content: text,
+      scheduleId: 5, //Moracemo nekako cuvati idSchedule vezanog za usera
+    };
+  
+    console.log("Saljemoo:", payload); // nesto moje da provjerim sta se salje na backend
+  
+    try {
+      await HttpService.create("scheduleItem", payload);
+    } catch (error) {
+      console.error("Error saving schedule data:", error);
+    }
   };
+  
 
   const handleCellPress = (timeIndex, dayIndex) => {
     setEditingCell({ timeIndex, dayIndex });
@@ -157,6 +207,9 @@ const ScheduleScreen = () => {
                           }
                           onChangeText={(text) =>
                             handleTextChange(timeIndex, dayIndex, text)
+                          }
+                          onEndEditing={() =>
+                            handleEndEditing(timeIndex, dayIndex)
                           }
                           autoFocus={true}
                         />
