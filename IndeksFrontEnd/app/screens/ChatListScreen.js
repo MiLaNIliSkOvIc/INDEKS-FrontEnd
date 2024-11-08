@@ -83,7 +83,7 @@ const ChatListScreen = () => {
         <Icon name="bars" size={30} color="#888" style={styles.headerIcon} />
       </TouchableOpacity>
       <Image
-        source={require("../assets/logo.png")}
+        source={require("../assets/images/logo.png")}
         style={styles.headerLogo}
         resizeMode="contain"
       />
@@ -91,7 +91,7 @@ const ChatListScreen = () => {
 
       <TouchableOpacity>
         <Image
-          source={require("../assets/search.png")}
+          source={require("../assets/images/search.png")}
           style={styles.headerIcon}
         />
       </TouchableOpacity>
@@ -108,7 +108,7 @@ const ChatListScreen = () => {
       />
       <TouchableOpacity style={styles.floatingButton} onPress={handlePlusPress}>
         <Image
-          source={require("../assets/plus.png")}
+          source={require("../assets/images/plus.png")}
           style={styles.floatingButtonImage}
         />
       </TouchableOpacity>

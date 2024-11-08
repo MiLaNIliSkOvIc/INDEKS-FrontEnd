@@ -9,6 +9,7 @@ import {
   Image,
 } from "react-native";
 import { useNavigation } from "@react-navigation/native";
+import fonts from "../config/fonts";
 
 const LoginScreen = () => {
   const navigation = useNavigation();
@@ -23,12 +24,20 @@ const LoginScreen = () => {
   };
   return (
     <ImageBackground
-      source={require("../assets/background.jpg")}
+      source={require("../assets/images/background.jpg")}
       style={styles.background}
     >
+      {/* <View style={styles.logoContainer}>
+        <Image
+          source={require("../assets/images/logo.png")}
+          style={styles.logo}
+          resizeMode="contain"
+        />
+        <Text style={styles.indexText}>INDEKS</Text>
+      </View> */}
       <View style={styles.container}>
         <Image
-          source={require("../assets/logo.png")}
+          source={require("../assets/images/logo.png")}
           style={styles.logo}
           resizeMode="contain"
         />
@@ -67,7 +76,7 @@ const styles = StyleSheet.create({
   background: {
     flex: 1,
     resizeMode: "cover",
-    justifyContent: "center",
+    justifyContent: "flex-start",
     backgroundColor: "#223364",
   },
   container: {
@@ -77,10 +86,13 @@ const styles = StyleSheet.create({
     paddingHorizontal: 20,
   },
   logo: {
-    width: 150,
-    height: 150,
+    width: 76,
+    height: 55,
     marginTop: 50,
     marginBottom: 20,
+  },
+  logoContainer: {
+    borderWidth: 1,
   },
   title: {
     fontSize: 24,
@@ -141,8 +153,9 @@ const styles = StyleSheet.create({
     //textDecorationLine: 'underline',
   },
   indexText: {
-    fontSize: 40,
-    fontFamily: "MarkerFelt-Thin",
+    fontSize: 50,
+    fontFamily: fonts.primary,
+    fontWeight: "400",
     color: "#013868",
     marginBottom: 100,
     marginTop: -30,

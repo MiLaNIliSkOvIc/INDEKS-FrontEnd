@@ -45,7 +45,7 @@ const ChatScreen = () => {
       {!item.isSentByUser && (
         <Image
           //source={{ uri: item.profileImage }}
-          source={require("../assets/images.png")}
+          source={require("../assets/images/images.png")}
           style={styles.profileImage}
         />
       )}

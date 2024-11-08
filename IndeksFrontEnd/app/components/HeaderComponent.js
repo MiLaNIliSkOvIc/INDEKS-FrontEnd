@@ -9,13 +9,16 @@ const HeaderComponent = ({ toggleSidebar }) => {
         <Icon name="bars" size={28} color="#fff" />
       </TouchableOpacity>
       <Image
-        source={require("../assets/logo.png")}
+        source={require("../assets/images/logo.png")}
         style={styles.headerLogo}
         resizeMode="contain"
       />
       <Text style={styles.headerText}>Indeks</Text>
       <TouchableOpacity>
-        <Image source={require("../assets/search.png")} style={styles.icon} />
+        <Image
+          source={require("../assets/images/search.png")}
+          style={styles.icon}
+        />
       </TouchableOpacity>
     </View>
   );

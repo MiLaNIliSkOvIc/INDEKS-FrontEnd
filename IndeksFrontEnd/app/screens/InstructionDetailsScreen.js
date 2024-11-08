@@ -96,7 +96,10 @@ const InstructionDetailsScreen = ({ route }) => {
         </TouchableOpacity>
 
         <View style={styles.logoContainer}>
-          <Image source={require("../assets/logo.png")} style={styles.logo} />
+          <Image
+            source={require("../assets/images/logo.png")}
+            style={styles.logo}
+          />
           <Text style={styles.title}>INDEKS</Text>
         </View>
       </View>

@@ -1,18 +1,16 @@
 class HttpService {
-  baseUrl = "http://192.168.100.31:8080/api/v1";
+  baseUrl = "http://192.168.1.48:8080/api/v1";
 
   async handleResponse(response) {
     if (!response.ok) {
       const error = await response.text();
       throw new Error(error || "error");
     }
-  
-   
+
     const text = await response.text();
     if (text) {
-      return JSON.parse(text); 
+      return JSON.parse(text);
     }
-  
 
     return null;
   }

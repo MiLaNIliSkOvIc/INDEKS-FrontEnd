@@ -40,14 +40,14 @@ const GodinaScreen = ({ route, navigation }) => {
         <Icon name="arrow-left" size={20} color="#fff" />
       </TouchableOpacity>
       <Image
-        source={require("../assets/logo.png")}
+        source={require("../assets/images/logo.png")}
         style={styles.headerLogo}
         resizeMode="contain"
       />
       <Text style={styles.headerText}>Indeks</Text>
       <TouchableOpacity>
         <Image
-          source={require("../assets/search.png")}
+          source={require("../assets/images/search.png")}
           style={styles.headerIcon}
         />
       </TouchableOpacity>

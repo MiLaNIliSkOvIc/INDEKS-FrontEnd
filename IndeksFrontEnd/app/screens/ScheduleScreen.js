@@ -58,7 +58,7 @@ const ScheduleScreen = () => {
     const handleResize = () => {
       setDimensions(Dimensions.get("window"));
     };
-    
+
     Dimensions.addEventListener("change", handleResize);
 
     return () => {
@@ -66,7 +66,6 @@ const ScheduleScreen = () => {
     };
   }, []);
 
-  
   useEffect(() => {
     const fetchScheduleData = async (scheduleId) => {
       try {
@@ -74,8 +73,7 @@ const ScheduleScreen = () => {
         const initialSchedule = Array(times.length)
           .fill(null)
           .map(() => Array(days.length).fill(""));
-  
-        
+
         data.forEach((item) => {
           const dayIndex = item.day;
           const timeIndex = times.indexOf(item.time);
@@ -83,7 +81,7 @@ const ScheduleScreen = () => {
             initialSchedule[timeIndex][dayIndex] = item.content || "";
           }
         });
-  
+
         setScheduleData(initialSchedule);
       } catch (error) {
         console.error("Error fetching schedule data:", error);
@@ -93,11 +91,10 @@ const ScheduleScreen = () => {
         setScheduleData(fallbackSchedule);
       }
     };
-  
+
     const scheduleId = 5; // Ovde moracemo dobaviti userov id vjerovatno cemo kroz token
     fetchScheduleData(scheduleId);
   }, []);
-  
 
   const toggleSidebar = () => {
     setSidebarVisible(!isSidebarVisible);
@@ -114,7 +111,6 @@ const ScheduleScreen = () => {
     setScheduleData(updatedSchedule);
   };
 
-
   const handleEndEditing = async (timeIndex, dayIndex) => {
     const text = scheduleData[timeIndex][dayIndex] || "";
     const payload = {
@@ -124,16 +120,15 @@ const ScheduleScreen = () => {
       content: text,
       scheduleId: 5, //Moracemo nekako cuvati idSchedule vezanog za usera
     };
-  
+
     console.log("Saljemoo:", payload); // nesto moje da provjerim sta se salje na backend
-  
+
     try {
       await HttpService.create("scheduleItem", payload);
     } catch (error) {
       console.error("Error saving schedule data:", error);
     }
   };
-  
 
   const handleCellPress = (timeIndex, dayIndex) => {
     setEditingCell({ timeIndex, dayIndex });
@@ -146,14 +141,14 @@ const ScheduleScreen = () => {
           <Icon name="bars" size={30} color="#888" style={styles.headerIcon} />
         </TouchableOpacity>
         <Image
-          source={require("../assets/logo.png")}
+          source={require("../assets/images/logo.png")}
           style={styles.headerLogo}
           resizeMode="contain"
         />
         <Text style={styles.headerText}>Raspored</Text>
         <TouchableOpacity>
           <Image
-            source={require("../assets/search.png")}
+            source={require("../assets/images/search.png")}
             style={styles.headerEditIcon}
           />
         </TouchableOpacity>

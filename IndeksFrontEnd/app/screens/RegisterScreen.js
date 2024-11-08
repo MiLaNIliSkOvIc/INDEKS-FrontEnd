@@ -18,12 +18,12 @@ const RegisterScreen = () => {
   };
   return (
     <ImageBackground
-      source={require("../assets/background.jpg")}
+      source={require("../assets/images/background.jpg")}
       style={styles.background}
     >
       <View style={styles.container}>
         <Image
-          source={require("../assets/logo.png")}
+          source={require("../assets/images/logo.png")}
           style={styles.logo}
           resizeMode="contain"
         />
