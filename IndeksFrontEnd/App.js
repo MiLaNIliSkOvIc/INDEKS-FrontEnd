@@ -8,6 +8,7 @@ import * as SplashScreen from "expo-splash-screen";
 import AppNavigator from "./app/navigation/AppNavigator";
 import LogoWithTitleComponent from "./app/components/LogoWithTitleComponent";
 import InitialScreen from "./app/screens/InitialScreen";
+import IndeksBackground from "./app/components/IndeksBackground";
 
 const Stack = createStackNavigator();
 SplashScreen.preventAutoHideAsync();
