@@ -7,6 +7,7 @@ import * as SplashScreen from "expo-splash-screen";
 
 import AppNavigator from "./app/navigation/AppNavigator";
 import LogoWithTitleComponent from "./app/components/LogoWithTitleComponent";
+import InitialScreen from "./app/screens/InitialScreen";
 
 const Stack = createStackNavigator();
 SplashScreen.preventAutoHideAsync();
@@ -29,7 +30,7 @@ const App = () => {
     return null;
   }
 
-  return <LogoWithTitleComponent />;
+  return <AppNavigator />;
 };
 
 export default App;
