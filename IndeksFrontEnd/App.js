@@ -2,26 +2,34 @@
 import { React, useState, useEffect } from "react";
 import { createStackNavigator } from "@react-navigation/stack";
 import { View, Text } from "react-native";
-import * as Font from "expo-font";
+import { useFonts } from "expo-font";
+import * as SplashScreen from "expo-splash-screen";
 
 import AppNavigator from "./app/navigation/AppNavigator";
+import LogoWithTitleComponent from "./app/components/LogoWithTitleComponent";
 
 const Stack = createStackNavigator();
+SplashScreen.preventAutoHideAsync();
 
 const App = () => {
-  const [fontsLoaded, setFontsLoaded] = useState(false);
+  const [loaded, error] = useFonts({
+    Kodchasan: require("./app/assets/fonts/KodchasanRegular.ttf"),
+    KodchasanMedium: require("./app/assets/fonts/KodchasanMedium.ttf"),
+    KodchasanSemiBold: require("./app/assets/fonts/KodchasanSemiBold.ttf"),
+    KodchasanBold: require("./app/assets/fonts/KodchasanBold.ttf"),
+  });
 
   useEffect(() => {
-    async function loadFonts() {
-      await Font.loadAsync({
-        Kodchasan: require("./app/assets/fonts/Kodchasan-Regular.ttf"),
-        "Kodchasan-Bold": require("./app/assets/fonts/Kodchasan-Bold.ttf"),
-      });
-      setFontsLoaded(true);
+    if (loaded || error) {
+      SplashScreen.hideAsync();
     }
-    loadFonts();
-  }, []);
-  return <AppNavigator />;
+  }, [loaded, error]);
+
+  if (!loaded && !error) {
+    return null;
+  }
+
+  return <LogoWithTitleComponent />;
 };
 
 export default App;
