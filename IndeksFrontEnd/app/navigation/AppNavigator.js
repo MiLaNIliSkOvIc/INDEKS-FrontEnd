@@ -7,6 +7,7 @@ import InitialScreen from "../screens/InitialScreen";
 import ChatList from "../screens/ChatListScreen";
 import ChatScreen from "../screens/ChatScreen";
 import MaterialsScreen from "../screens/MaterialsScreen";
+import ViewProblemsScreen from "../screens/ViewProblemsScreen";
 import GodinaScreen from "../screens/GodinaScreen";
 import ScheduleScreen from "../screens/ScheduleScreen";
 import InstructionsListScreen from "../screens/InstructionsListScreen";
@@ -14,6 +15,10 @@ import InstructionDetailsScreen from "../screens/InstructionDetailsScreen";
 import ElementaryGroupChatScreen from "../screens/ElementaryGroupsListScreen";
 import AnnouncementsListScreen from "../screens/AnnouncementsListScreen";
 import HeaderComponent from "../components/HeaderComponent";
+
+import ReportedCommentsScreen from "../screens/ReportedCommentsScreen";
+import ReportedMaterialsScreen from "../screens/ReportedMaterialsScreen";
+import ReportedUsersScreen from "../screens/ReportedUsersScreen";
 const Stack = createStackNavigator();
 
 const AppNavigator = () => {
@@ -78,6 +83,27 @@ const AppNavigator = () => {
         <Stack.Screen
           name="Ads"
           component={AnnouncementsListScreen}
+          options={{ headerShown: false }}
+        />
+        <Stack.Screen
+          name="Problems"
+          component={ViewProblemsScreen}
+          options={{ headerShown: false }}
+        />
+
+        <Stack.Screen
+          name="ReportedCommentsScreen"
+          component={ReportedCommentsScreen}
+          options={{ headerShown: false }}
+        />
+        <Stack.Screen
+          name="ReportedMaterialsScreen"
+          component={ReportedMaterialsScreen}
+          options={{ headerShown: false }}
+        />
+        <Stack.Screen
+          name="ReportedUsersScreen"
+          component={ReportedUsersScreen}
           options={{ headerShown: false }}
         />
       </Stack.Navigator>

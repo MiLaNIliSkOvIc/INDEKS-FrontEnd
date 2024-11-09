@@ -9,6 +9,7 @@ import {
   Image,
 } from "react-native";
 import { useNavigation } from "@react-navigation/native";
+import fonts from "../config/fonts";
 
 const RegisterScreen = () => {
   const navigation = useNavigation();
@@ -86,8 +87,9 @@ const styles = StyleSheet.create({
     paddingHorizontal: 20,
   },
   logo: {
-    width: 150,
-    height: 150,
+    width: 76,
+    height: 55,
+    marginTop: 50,
     marginBottom: 20,
   },
   title: {
@@ -170,12 +172,16 @@ const styles = StyleSheet.create({
     //textDecorationLine: 'underline',
   },
   indexText: {
-    fontSize: 40,
-    fontFamily: "MarkerFelt-Thin",
-    color: "#013868",
-    marginBottom: 30,
+    fontSize: 50,
+    fontFamily: fonts.primary,
+    fontWeight: "400",
+    color: "#013868", // Boja glavnog teksta
+    marginBottom: 20,
     marginTop: -30,
     borderRadius: 20,
+    textShadowColor: "#000000", // Boja senke (ivice)
+    textShadowOffset: { width: 2, height: 2 },
+    textShadowRadius: 1,
   },
   loginLinkBold: {
     color: "#013868", // Plava boja

@@ -156,10 +156,13 @@ const styles = StyleSheet.create({
     fontSize: 50,
     fontFamily: fonts.primary,
     fontWeight: "400",
-    color: "#013868",
+    color: "#013868", // Boja glavnog teksta
     marginBottom: 100,
     marginTop: -30,
     borderRadius: 20,
+    textShadowColor: "#000000", // Boja senke (ivice)
+    textShadowOffset: { width: 2, height: 2 },
+    textShadowRadius: 1,
   },
   loginLinkBold: {
     color: "#013868", // Plava boja

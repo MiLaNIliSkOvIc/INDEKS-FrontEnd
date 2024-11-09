@@ -9,7 +9,8 @@ import {
   Image,
 } from "react-native";
 import { useNavigation } from "@react-navigation/native";
-import { useEffect } from "react"; // Dodaj useEffect
+import { useEffect } from "react";
+import fonts from "../config/fonts";
 
 const InitialScreen = () => {
   const navigation = useNavigation();
@@ -60,12 +61,17 @@ const styles = StyleSheet.create({
   },
 
   indexText: {
-    fontSize: 70,
-    fontFamily: "MarkerFelt-Thin",
+    fontSize: 60,
+    lineHeight: 80,
+    fontFamily: fonts.primary,
+    fontWeight: "400",
     color: "#013868",
     marginBottom: 100,
     marginTop: -30,
     borderRadius: 20,
+    textShadowColor: "#000000",
+    textShadowOffset: { width: 2, height: 2 },
+    textShadowRadius: 1,
   },
 });
 

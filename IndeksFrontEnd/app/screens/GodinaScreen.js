@@ -13,7 +13,7 @@ import Icon from "react-native-vector-icons/FontAwesome";
 const data = [
   { id: "1", icon: "calculator", title: "Matematika 1" },
   { id: "2", icon: "flask", title: "Fizika" },
-  { id: "3", icon: "bolt", title: "ElektroTehnika" },
+  { id: "3", icon: "bolt", title: "Elektrotehnika" },
   { id: "4", icon: "desktop", title: "Osnovi racunarske tehnike" },
 ];
 

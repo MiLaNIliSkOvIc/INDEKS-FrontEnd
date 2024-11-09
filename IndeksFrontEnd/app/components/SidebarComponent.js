@@ -9,6 +9,8 @@ import {
   Animated,
 } from "react-native";
 import Icon from "react-native-vector-icons/FontAwesome";
+import FeatherIcon from "react-native-vector-icons/Feather";
+
 import { useNavigation } from "@react-navigation/native";
 
 const SidebarComponent = ({ visible, onClose }) => {
@@ -43,6 +45,11 @@ const SidebarComponent = ({ visible, onClose }) => {
   const handleMaterijaliPress = () => {
     onClose();
     navigation.navigate("Materijali");
+  };
+
+  const handleProblemsPress = () => {
+    onClose();
+    navigation.navigate("Problems");
   };
 
   const handleRasporedPress = () => {
@@ -143,7 +150,18 @@ const SidebarComponent = ({ visible, onClose }) => {
                   Osnovne grupe
                 </Text>
               </TouchableOpacity>
+
+              <TouchableOpacity
+                style={styles.SidebarComponentMenuItem}
+                onPress={handleProblemsPress}
+              >
+                <FeatherIcon name="alert-triangle" size={25} color="#013868" />
+                <Text style={styles.SidebarComponentMenuText}>
+                  Prijavljeni problemi
+                </Text>
+              </TouchableOpacity>
             </ScrollView>
+
             <TouchableOpacity
               style={[
                 styles.SidebarComponentMenuItem,
