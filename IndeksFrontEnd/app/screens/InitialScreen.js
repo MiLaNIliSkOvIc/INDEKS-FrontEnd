@@ -27,9 +27,16 @@ const InitialScreen = () => {
 
   return (
     <IndeksBackground>
-      <LogoWithTitleComponent />
+      <LogoWithTitleComponent style={styles.logoContainer} />
     </IndeksBackground>
   );
 };
+
+const styles = StyleSheet.create({
+  logoContainer: {
+    justifyContent: "center",
+    flex: 1,
+  },
+});
 
 export default InitialScreen;

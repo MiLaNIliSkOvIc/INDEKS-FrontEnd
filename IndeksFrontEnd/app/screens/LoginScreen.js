@@ -30,7 +30,7 @@ const LoginScreen = () => {
   };
   return (
     <IndeksBackground>
-      <LogoWithTitleComponent />
+      <LogoWithTitleComponent style={styles.logoContainer} />
       <View style={styles.container}>
         <Text style={styles.title}>Prijava</Text>
         <View style={styles.inputs}>
@@ -122,6 +122,10 @@ const styles = StyleSheet.create({
     color: colors.white,
     fontFamily: fonts.primaryBold,
     fontSize: 26,
+  },
+  logoContainer: {
+    flex: 1,
+    justifyContent: "center",
   },
   title: {
     paddingLeft: 15,

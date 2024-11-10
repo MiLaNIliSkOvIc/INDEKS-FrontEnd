@@ -1,84 +1,112 @@
-import React from "react";
+import { useState } from "react";
 import {
   View,
   Text,
   TextInput,
   TouchableOpacity,
+  TouchableHighlight,
   StyleSheet,
-  ImageBackground,
-  Image,
+  KeyboardAvoidingView,
 } from "react-native";
 import { useNavigation } from "@react-navigation/native";
 import fonts from "../config/fonts";
+import IndeksBackground from "../components/IndeksBackground";
+import LogoWithTitleComponent from "../components/LogoWithTitleComponent";
+import colors from "../config/colors";
+import IndeksTextInput from "../components/IndeksTextInput";
+import FontAwesome5 from "react-native-vector-icons/FontAwesome5";
 
 const RegisterScreen = () => {
   const navigation = useNavigation();
-
+  const [userAccountSelected, setUserAccountSelected] = useState(true);
   const handleLoginPress = () => {
     navigation.navigate("Login"); // Navigacija na Login ekran
   };
+
+  const handleUserAccountSelect = () => {
+    if (!userAccountSelected) {
+      setUserAccountSelected(true);
+    }
+  };
+  const handleInstructorAccountSelect = () => {
+    if (userAccountSelected) {
+      setUserAccountSelected(false);
+    }
+  };
   return (
-    <ImageBackground
-      source={require("../assets/images/background.jpg")}
-      style={styles.background}
-    >
+    <IndeksBackground>
       <View style={styles.container}>
-        <Image
-          source={require("../assets/images/logo.png")}
-          style={styles.logo}
-          resizeMode="contain"
-        />
-        <Text style={styles.indexText}>INDEKS</Text>
+        <LogoWithTitleComponent style={styles.logoContainer} />
         <Text style={styles.title}>Registracija</Text>
-        <TextInput
-          placeholder="Korisničko ime"
-          style={styles.input}
-          placeholderTextColor="#919191"
-        />
-        <TextInput
+        <IndeksTextInput placeholder="E-Mail" style={styles.input} />
+        <IndeksTextInput
           placeholder="Lozinka"
           style={styles.input}
-          placeholderTextColor="#919191"
           secureTextEntry={true}
         />
-        <TextInput
+        <IndeksTextInput
           placeholder="Ponovi lozinku"
           style={styles.input}
-          placeholderTextColor="#919191"
           secureTextEntry={true}
         />
         <View style={styles.buttonsContainer}>
-          <TouchableOpacity style={styles.iconButton}>
-            <Text>🎓</Text>
-          </TouchableOpacity>
-          <TouchableOpacity style={styles.iconButton}>
-            <Text>👤</Text>
-          </TouchableOpacity>
+          <TouchableHighlight
+            style={[
+              styles.iconButton,
+              styles.iconButtonLeft,
+              {
+                backgroundColor: userAccountSelected
+                  ? colors.white
+                  : colors.primary,
+              },
+            ]}
+            onPress={handleUserAccountSelect}
+          >
+            <FontAwesome5
+              name="user-graduate"
+              size={30}
+              color={userAccountSelected ? colors.primary : colors.white}
+            />
+          </TouchableHighlight>
+          <TouchableHighlight
+            style={[
+              styles.iconButton,
+              styles.iconButtonRight,
+              {
+                backgroundColor: userAccountSelected
+                  ? colors.primary
+                  : colors.white,
+              },
+            ]}
+            onPress={handleInstructorAccountSelect}
+          >
+            <FontAwesome5
+              name="book-reader"
+              size={30}
+              color={userAccountSelected ? colors.white : colors.primary}
+            />
+          </TouchableHighlight>
         </View>
         <TouchableOpacity style={styles.registerButton}>
           <Text style={styles.registerText}>REGISTRUJ SE</Text>
         </TouchableOpacity>
-        <View style={styles.line} />
-        <TouchableOpacity style={styles.loginLink}>
-          <Text style={styles.loginText}>
-            Imate nalog?{" "}
-            <Text style={styles.loginLinkBold} onPress={handleLoginPress}>
-              {" "}
-              Prijavite se
-            </Text>
-          </Text>
-        </TouchableOpacity>
+        <View style={styles.footer}>
+          <Text style={styles.footerText}>Imate nalog?</Text>
+          <TouchableOpacity onPress={handleLoginPress}>
+            <Text style={styles.footerLink}>Prijavite se</Text>
+          </TouchableOpacity>
+        </View>
       </View>
-    </ImageBackground>
+    </IndeksBackground>
   );
 };
 
 const styles = StyleSheet.create({
-  background: {
-    flex: 1,
-    resizeMode: "cover",
+  buttonsContainer: {
+    flexDirection: "row",
     justifyContent: "center",
-    backgroundColor: "#223364",
+    width: "60%",
+    marginTop: 15,
   },
   container: {
     flex: 1,
@@ -86,107 +114,68 @@ const styles = StyleSheet.create({
     alignItems: "center",
     paddingHorizontal: 20,
   },
-  logo: {
-    width: 76,
-    height: 55,
-    marginTop: 50,
-    marginBottom: 20,
-  },
-  title: {
-    fontSize: 24,
-    color: "#ffffff",
-    fontFamily: "",
-    fontWeight: "bold",
-    fontStyle: "italic",
-    marginLeft: -200,
-    marginBottom: 10,
-    textAlign: "left",
-  },
-  input: {
+  footer: {
+    justifyContent: "center",
     width: "100%",
-    height: 50,
-    borderColor: "#ffffff",
-    borderWidth: 1,
-    borderRadius: 25,
-    paddingHorizontal: 15,
-    marginVertical: 10,
-    color: "#000000",
-    backgroundColor: "#ffffff",
-  },
-  buttonsContainer: {
+    borderTopWidth: 3,
+    borderColor: colors.primary,
     flexDirection: "row",
-    justifyContent: "space-around",
-    width: "60%",
-    marginVertical: 20,
-  },
-  line: {
-    width: "100%",
-    height: 6,
-    backgroundColor: "#013868",
-    // borderRadius: 10,
-    marginBottom: -20,
     marginTop: 20,
   },
+  footerLink: {
+    color: colors.primary,
+    fontFamily: fonts.primaryBold,
+    fontSize: 18,
+    paddingLeft: 10,
+  },
+  footerText: {
+    color: colors.black,
+    fontFamily: fonts.primaryMedium,
+    fontSize: 18,
+  },
   iconButton: {
-    width: 100,
+    width: "40%",
     height: 50,
-    backgroundColor: "#2d84d2",
     justifyContent: "center",
     alignItems: "center",
-    borderRadius: 10,
-    //marginLeft : 25
   },
-  /*  iconButton2: {
-    width: 100,
-    height: 50,
-    backgroundColor: '#2d84d2',
-    justifyContent: 'center',
-    alignItems: 'center',
-    borderRadius: 10,
-    marginRight : 25
-  }, */
-  iconText: {
-    fontSize: 24,
-    color: "#ffffff",
+  iconButtonLeft: {
+    borderTopLeftRadius: 10,
+    borderBottomLeftRadius: 10,
+  },
+  iconButtonRight: {
+    borderTopRightRadius: 10,
+    borderBottomRightRadius: 10,
+  },
+  input: {
+    marginVertical: 7,
+  },
+  logoContainer: {
+    justifyContent: "flex-end",
+    height: "35%",
+    paddingBottom: 60,
   },
   registerButton: {
     width: "65%",
     height: 50,
-    backgroundColor: "#013868",
+    backgroundColor: colors.primary,
     justifyContent: "center",
     alignItems: "center",
     borderRadius: 15,
-    marginVertical: 0,
-    marginTop: 40,
-  },
-  registerText: {
-    color: "#ffffff",
-    fontSize: 18,
-  },
-  loginLink: {
     marginTop: 20,
   },
-  loginText: {
-    color: "#ffffff",
-    marginTop: 0,
-    //textDecorationLine: 'underline',
+  registerText: {
+    color: colors.white,
+    fontFamily: fonts.primaryBold,
+    fontSize: 25,
   },
-  indexText: {
-    fontSize: 50,
-    fontFamily: fonts.primary,
-    fontWeight: "400",
-    color: "#013868", // Boja glavnog teksta
-    marginBottom: 20,
-    marginTop: -30,
-    borderRadius: 20,
-    textShadowColor: "#000000", // Boja senke (ivice)
-    textShadowOffset: { width: 2, height: 2 },
-    textShadowRadius: 1,
-  },
-  loginLinkBold: {
-    color: "#013868", // Plava boja
-    fontWeight: "bold",
-    fontSize: 18,
+  title: {
+    fontSize: 32,
+    paddingLeft: 15,
+    color: colors.white,
+    fontFamily: fonts.primaryBold,
+    width: "100%",
+    marginBottom: 10,
   },
 });
 

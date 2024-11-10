@@ -3,9 +3,9 @@ import { View, Image, StyleSheet, Text } from "react-native";
 import fonts from "../config/fonts";
 import colors from "../config/colors";
 
-function LogoWithTitleComponent() {
+function LogoWithTitleComponent({ style }) {
   return (
-    <View style={styles.logoContainer}>
+    <View style={[styles.logoContainer, style]}>
       <Image
         style={styles.logo}
         source={require("../assets/images/logo.png")}
@@ -22,9 +22,7 @@ const styles = StyleSheet.create({
     height: 55,
   },
   logoContainer: {
-    justifyContent: "center",
     alignItems: "center",
-    flex: 1,
   },
   indexText: {
     fontSize: 50,
