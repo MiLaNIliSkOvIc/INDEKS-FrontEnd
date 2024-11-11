@@ -1,5 +1,7 @@
+import { API_URL } from "@env";
+
 class HttpService {
-  baseUrl = "http://192.168.1.48:8080/api/v1";
+  baseUrl = API_URL;
 
   async handleResponse(response) {
     if (!response.ok) {
