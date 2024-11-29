@@ -15,6 +15,7 @@ import LogoWithTitleComponent from "../components/LogoWithTitleComponent";
 import colors from "../config/colors";
 import IndeksTextInput from "../components/IndeksTextInput";
 import FontAwesome5 from "react-native-vector-icons/FontAwesome5";
+import BigBasicButtonComponent from "../components/BigBasicButtonComponent";
 
 const RegisterScreen = () => {
   const navigation = useNavigation();
@@ -87,9 +88,9 @@ const RegisterScreen = () => {
             />
           </TouchableHighlight>
         </View>
-        <TouchableOpacity style={styles.registerButton}>
-          <Text style={styles.registerText}>REGISTRUJ SE</Text>
-        </TouchableOpacity>
+        <BigBasicButtonComponent style={styles.registerButton}>
+          REGISTRUJ SE
+        </BigBasicButtonComponent>
         <View style={styles.footer}>
           <Text style={styles.footerText}>Imate nalog?</Text>
           <TouchableOpacity onPress={handleLoginPress}>
@@ -157,17 +158,7 @@ const styles = StyleSheet.create({
   },
   registerButton: {
     width: "65%",
-    height: 50,
-    backgroundColor: colors.primary,
-    justifyContent: "center",
-    alignItems: "center",
-    borderRadius: 15,
     marginTop: 20,
-  },
-  registerText: {
-    color: colors.white,
-    fontFamily: fonts.primaryBold,
-    fontSize: 25,
   },
   title: {
     fontSize: 32,
