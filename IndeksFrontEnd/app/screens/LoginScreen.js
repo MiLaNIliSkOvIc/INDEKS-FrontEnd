@@ -1,12 +1,9 @@
-import React from "react";
+import React, { useState } from "react";
 import {
   View,
   Text,
-  TextInput,
   TouchableOpacity,
   StyleSheet,
-  ImageBackground,
-  Image,
 } from "react-native";
 import { useNavigation } from "@react-navigation/native";
 import fonts from "../config/fonts";
@@ -14,28 +11,54 @@ import IndeksBackground from "../components/IndeksBackground";
 import LogoWithTitleComponent from "../components/LogoWithTitleComponent";
 import colors from "../config/colors";
 import IndeksTextInput from "../components/IndeksTextInput";
+import TokenService from "../services/TokenService";
+import HttpService from "../services/HttpService";
 
 const LoginScreen = () => {
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
   const navigation = useNavigation();
+
+  const handleLoginPress = async () => {
+    try {
+      const response = await HttpService.create("/login", { email, password });
+      const token = response.data.token;
+      
+      await TokenService.saveToken(token);
+      navigation.navigate("ChatList");
+    } catch (error) {
+      console.error("Login failed", error);
+  
+    }
+  };
 
   const handleRegisterPress = () => {
     navigation.navigate("Register");
   };
-  const handleLoginPress = () => {
-    navigation.navigate("ChatList");
-  };
+
   const handleForgotPasswordPress = () => {
-    //TODO: Implementirati ekran za ovo
+      //TODO: Implementirati ekran za ovo
     console.log("Nije implementirano");
   };
+
   return (
     <IndeksBackground>
       <LogoWithTitleComponent style={styles.logoContainer} />
       <View style={styles.container}>
         <Text style={styles.title}>Prijava</Text>
         <View style={styles.inputs}>
-          <IndeksTextInput placeholder="E-Mail" style={styles.usernameInput} />
-          <IndeksTextInput placeholder="Lozinka" secureTextEntry={true} />
+          <IndeksTextInput 
+            placeholder="E-Mail" 
+            value={email}
+            onChangeText={setEmail}
+            style={styles.usernameInput} 
+          />
+          <IndeksTextInput 
+            placeholder="Lozinka" 
+            secureTextEntry={true}
+            value={password}
+            onChangeText={setPassword}
+          />
         </View>
         <TouchableOpacity
           style={styles.forgotPasswordButton}
