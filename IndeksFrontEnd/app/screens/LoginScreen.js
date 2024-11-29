@@ -21,10 +21,10 @@ const LoginScreen = () => {
 
   const handleLoginPress = async () => {
     try {
-      const response = await HttpService.create("/login", { email, password });
-      const token = response.data.token;
+     // const response = await HttpService.create("/login", { email, password });
+      //const token = response.data.token;
       
-      await TokenService.saveToken(token);
+      //await TokenService.saveToken(token);
       navigation.navigate("ChatList");
     } catch (error) {
       console.error("Login failed", error);
