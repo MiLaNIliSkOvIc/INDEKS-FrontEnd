@@ -11,6 +11,7 @@ const SidebarComponent = ({ visible, onClose }) => {
     { label: "Instrukcije", icon: "book", route: "Instruction", iconType: "FontAwesome" },
     { label: "Osnovne grupe", icon: "users", route: "ElementaryGroupChat", iconType: "FontAwesome" },
     { label: "Prijavljeni problemi", icon: "alert-triangle", route: "Problems", iconType: "Feather" },
+    { label: "Moja ponuda", icon: "alert-triangle", route: "InstructorProfileScreen", iconType: "Feather" },
   ];
 
   return (
