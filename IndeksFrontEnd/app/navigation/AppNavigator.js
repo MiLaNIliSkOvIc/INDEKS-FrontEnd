@@ -15,6 +15,7 @@ import InstructionDetailsScreen from "../screens/InstructionDetailsScreen";
 import ElementaryGroupChatScreen from "../screens/ElementaryGroupsListScreen";
 import AnnouncementsListScreen from "../screens/AnnouncementsListScreen";
 import HeaderComponent from "../components/HeaderComponent";
+import InstructorProfileScreen from "../screens/InstructorProfileScreen";
 
 import ReportedCommentsScreen from "../screens/ReportedCommentsScreen";
 import ReportedMaterialsScreen from "../screens/ReportedMaterialsScreen";
@@ -104,6 +105,11 @@ const AppNavigator = () => {
         <Stack.Screen
           name="ReportedUsersScreen"
           component={ReportedUsersScreen}
+          options={{ headerShown: false }}
+        />
+          <Stack.Screen
+          name="InstructorProfileScreen"
+          component={InstructorProfileScreen}
           options={{ headerShown: false }}
         />
       </Stack.Navigator>
