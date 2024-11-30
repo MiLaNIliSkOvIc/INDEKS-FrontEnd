@@ -78,6 +78,7 @@ const data = [
   },
 ];
 
+
 const InstructionsListScreen = () => {
   const [isSidebarVisible, setSidebarVisible] = useState(false);
 
