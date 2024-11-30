@@ -1,16 +1,12 @@
 import React, { useState } from "react";
-import {
-  View,
-  Text,
-  TouchableOpacity,
-  StyleSheet,
-} from "react-native";
+import { View, Text, TouchableOpacity, StyleSheet } from "react-native";
 import { useNavigation } from "@react-navigation/native";
 import fonts from "../config/fonts";
 import IndeksBackground from "../components/IndeksBackground";
 import LogoWithTitleComponent from "../components/LogoWithTitleComponent";
 import colors from "../config/colors";
 import IndeksTextInput from "../components/IndeksTextInput";
+import BigBasicButtonComponent from "../components/BigBasicButtonComponent";
 import TokenService from "../services/TokenService";
 import HttpService from "../services/HttpService";
 
@@ -21,14 +17,13 @@ const LoginScreen = () => {
 
   const handleLoginPress = async () => {
     try {
-     // const response = await HttpService.create("/login", { email, password });
+      // const response = await HttpService.create("/login", { email, password });
       //const token = response.data.token;
-      
+
       //await TokenService.saveToken(token);
       navigation.navigate("ChatList");
     } catch (error) {
       console.error("Login failed", error);
-  
     }
   };
 
@@ -37,8 +32,7 @@ const LoginScreen = () => {
   };
 
   const handleForgotPasswordPress = () => {
-      //TODO: Implementirati ekran za ovo
-    console.log("Nije implementirano");
+    navigation.navigate("ResetPassword");
   };
 
   return (
@@ -47,14 +41,14 @@ const LoginScreen = () => {
       <View style={styles.container}>
         <Text style={styles.title}>Prijava</Text>
         <View style={styles.inputs}>
-          <IndeksTextInput 
-            placeholder="E-Mail" 
+          <IndeksTextInput
+            placeholder="E-Mail"
             value={email}
             onChangeText={setEmail}
-            style={styles.usernameInput} 
+            style={styles.usernameInput}
           />
-          <IndeksTextInput 
-            placeholder="Lozinka" 
+          <IndeksTextInput
+            placeholder="Lozinka"
             secureTextEntry={true}
             value={password}
             onChangeText={setPassword}
@@ -66,9 +60,12 @@ const LoginScreen = () => {
         >
           <Text style={styles.forgotPassword}>Zaboravljena šifra?</Text>
         </TouchableOpacity>
-        <TouchableOpacity style={styles.loginButton} onPress={handleLoginPress}>
-          <Text style={styles.loginText}>PRIJAVI SE</Text>
-        </TouchableOpacity>
+        <BigBasicButtonComponent
+          style={styles.loginButton}
+          onPress={handleLoginPress}
+        >
+          PRIJAVI SE
+        </BigBasicButtonComponent>
 
         <View style={styles.loginLink}>
           <Text style={styles.accountText}>Nemate nalog?</Text>
@@ -126,11 +123,6 @@ const styles = StyleSheet.create({
   },
   loginButton: {
     width: "65%",
-    height: 50,
-    backgroundColor: colors.primary,
-    justifyContent: "center",
-    alignItems: "center",
-    borderRadius: 15,
     marginVertical: 20,
     marginTop: 40,
   },
@@ -140,11 +132,6 @@ const styles = StyleSheet.create({
     borderTopWidth: 3,
     borderColor: colors.primary,
     flexDirection: "row",
-  },
-  loginText: {
-    color: colors.white,
-    fontFamily: fonts.primaryBold,
-    fontSize: 26,
   },
   logoContainer: {
     flex: 1,

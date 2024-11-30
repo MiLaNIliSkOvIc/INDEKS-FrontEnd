@@ -20,6 +20,8 @@ import InstructorProfileScreen from "../screens/InstructorProfileScreen";
 import ReportedCommentsScreen from "../screens/ReportedCommentsScreen";
 import ReportedMaterialsScreen from "../screens/ReportedMaterialsScreen";
 import ReportedUsersScreen from "../screens/ReportedUsersScreen";
+import ResetPasswordScreen from "../screens/ResetPasswordScreen";
+import NewPasswordScreen from "../screens/NewPasswordScreen";
 const Stack = createStackNavigator();
 
 const AppNavigator = () => {
@@ -105,6 +107,16 @@ const AppNavigator = () => {
         <Stack.Screen
           name="ReportedUsersScreen"
           component={ReportedUsersScreen}
+          options={{ headerShown: false }}
+        />
+        <Stack.Screen
+          name="ResetPassword"
+          component={ResetPasswordScreen}
+          options={{ headerShown: false }}
+        />
+        <Stack.Screen
+          name="NewPassword"
+          component={NewPasswordScreen}
           options={{ headerShown: false }}
         />
           <Stack.Screen
