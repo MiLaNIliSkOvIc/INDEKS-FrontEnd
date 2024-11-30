@@ -54,11 +54,13 @@ const reviews = [
 ];
 
 const InstructionDetailsScreen = ({ route }) => {
-  const { courseTitle, instructor, description } = route.params;
+  const { navigate,courseTitle, instructor, description } = route.params;
   const navigation = useNavigation();
 
   const back = () => {
-    navigation.navigate("Instruction");
+    console.log("132")
+    console.log(navigate)
+    navigation.navigate(navigate);
   };
 
   const renderStars = (rating) => {

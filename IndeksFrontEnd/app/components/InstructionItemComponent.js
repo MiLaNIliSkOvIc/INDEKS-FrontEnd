@@ -3,7 +3,7 @@ import { View, Text, TouchableOpacity, StyleSheet } from "react-native";
 import Icon from "react-native-vector-icons/FontAwesome";
 import { useNavigation } from "@react-navigation/native";
 
-const InstructionItemComponent = ({ course, teacher, rating, icon }) => {
+const InstructionItemComponent = ({ navigate,course, teacher, rating, icon }) => {
   const navigation = useNavigation();
 
   const renderStars = () => {
@@ -22,7 +22,7 @@ const InstructionItemComponent = ({ course, teacher, rating, icon }) => {
   };
 
   const CourseInfo = (course) => {
-    console.log(course);
+    console.log(navigate);
     //ovde cemo zvati http service
     const courseData = {
       courseTitle: course,
@@ -30,7 +30,7 @@ const InstructionItemComponent = ({ course, teacher, rating, icon }) => {
       description: "Zovem se Milan i drzacu vam instrukcije iz matematike 1.",
       
     };
-    navigation.navigate("InstructionInfo", { ...courseData });
+    navigation.navigate("InstructionInfo", { navigate,...courseData });
   };
 
   return (

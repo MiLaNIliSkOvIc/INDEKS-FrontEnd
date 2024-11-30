@@ -52,6 +52,7 @@ const InstructorProfileScreen = () => {
         data={data}
         renderItem={({ item }) => (
           <InstructionItemComponent
+          navigate={"InstructorProfileScreen"}
             course={item.course}
             rating={item.rating}
             teacher={"444 recenzije"} //todo dodati recenzije tj prebrojavanje
