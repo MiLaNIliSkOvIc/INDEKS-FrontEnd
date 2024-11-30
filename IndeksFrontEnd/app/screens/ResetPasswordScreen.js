@@ -1,4 +1,5 @@
 import BigBasicButtonComponent from "../components/BigBasicButtonComponent";
+import BigBasicButtonComponent from "../components/BigBasicButtonComponent";
 import IndeksBackground from "../components/IndeksBackground";
 import IndeksTextInput from "../components/IndeksTextInput";
 import LogoWithTitleComponent from "../components/LogoWithTitleComponent";
