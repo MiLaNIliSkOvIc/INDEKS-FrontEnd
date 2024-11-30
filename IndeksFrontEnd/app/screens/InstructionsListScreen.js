@@ -100,6 +100,7 @@ const InstructionsListScreen = () => {
         data={data}
         renderItem={({ item }) => (
           <InstructionItemComponent
+          navigate={"Instruction"}
             course={item.course}
             teacher={item.teacher}
             rating={item.rating}
