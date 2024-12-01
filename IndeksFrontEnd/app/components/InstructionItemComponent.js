@@ -28,7 +28,6 @@ const InstructionItemComponent = ({ navigate,course, teacher, rating, icon }) =>
       courseTitle: course,
       instructor: "Milan Iliskovic",
       description: "Zovem se Milan i drzacu vam instrukcije iz matematike 1.",
-      
     };
     navigation.navigate("InstructionInfo", { navigate,...courseData });
   };
