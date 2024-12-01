@@ -4,13 +4,23 @@ import { StyleSheet } from "react-native";
 import fonts from "../config/fonts";
 import colors from "../config/colors";
 
-function IndeksTextInput({ placeholder, secureTextEntry, style }) {
+function IndeksTextInput({
+  placeholder,
+  secureTextEntry,
+  style,
+  onChangeText,
+  value,
+  enabled,
+}) {
   return (
     <TextInput
       style={[styles.input, style]}
       placeholder={placeholder}
       placeholderTextColor="#919191"
       secureTextEntry={secureTextEntry}
+      onChangeText={onChangeText}
+      value={value}
+      enabled={enabled}
     />
   );
 }

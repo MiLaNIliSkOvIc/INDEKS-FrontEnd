@@ -13,14 +13,23 @@ import { useNavigation } from "@react-navigation/native";
 import colors from "../config/colors";
 import fonts from "../config/fonts";
 import { useState, useEffect } from "react";
+import HttpService from "../services/HttpService";
 
 export default function ResetPasswordScreen() {
   const navigation = useNavigation();
+
+  const [email, setEmail] = useState("");
+  const [code, setCode] = useState("");
+  const [emailInputEnabled, setEmailInputEnabled] = useState(true);
   const handleConfirmPress = () => {
     navigation.navigate("NewPassword");
   };
   const handleBackToLoginPress = () => {
     navigation.navigate("Login");
+  };
+  const handleSendCodePress = () => {
+    setEmailInputEnabled(false);
+    HttpService.create(`userAccount/password-recovery?email=${email}`);
   };
   const [keyboardVisible, setKeyboardVisible] = useState(false);
   useEffect(() => {
@@ -42,25 +51,37 @@ export default function ResetPasswordScreen() {
       <LogoWithTitleComponent style={styles.logoContainer} />
       <View style={styles.container}>
         <Text style={styles.title}>Oporavak lozinke</Text>
-        <IndeksTextInput placeholder="E-Mail" />
-        <BigBasicButtonComponent style={styles.button}>
+        <IndeksTextInput
+          enabled={emailInputEnabled}
+          placeholder="E-Mail"
+          onChangeText={setEmail}
+          value={email}
+        />
+        <BigBasicButtonComponent
+          style={styles.button}
+          onPress={handleSendCodePress}
+        >
           POŠALJI KOD
         </BigBasicButtonComponent>
-        <IndeksTextInput placeholder="Kod" />
+        <IndeksTextInput
+          placeholder="Kod"
+          onChangeText={setCode}
+          value={code}
+        />
         <BigBasicButtonComponent
           style={styles.button}
           onPress={handleConfirmPress}
         >
           POTVRDI
         </BigBasicButtonComponent>
-        {keyboardVisible ? null : (
-          <View style={styles.footer}>
-            <TouchableOpacity onPress={handleBackToLoginPress}>
-              <Text style={styles.footerText}>Vrati se na prijavu</Text>
-            </TouchableOpacity>
-          </View>
-        )}
       </View>
+      {keyboardVisible ? null : (
+        <View style={styles.footer}>
+          <TouchableOpacity onPress={handleBackToLoginPress}>
+            <Text style={styles.footerText}>Vrati se na prijavu</Text>
+          </TouchableOpacity>
+        </View>
+      )}
     </IndeksBackground>
   );
 }
@@ -90,10 +111,9 @@ const styles = StyleSheet.create({
     marginBottom: 10,
   },
   footer: {
-    position: "absolute",
-    bottom: 10,
     alignItems: "center",
-    width: "100%",
+    marginHorizontal: 20,
+    marginBottom: 15,
     borderTopWidth: 2,
     borderColor: colors.primary,
   },
