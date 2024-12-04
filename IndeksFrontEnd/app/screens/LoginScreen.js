@@ -1,5 +1,11 @@
-import React, { useState } from "react";
-import { View, Text, TouchableOpacity, StyleSheet } from "react-native";
+import React, { useState, useEffect } from "react";
+import {
+  View,
+  Text,
+  TouchableOpacity,
+  StyleSheet,
+  Keyboard,
+} from "react-native";
 import { useNavigation } from "@react-navigation/native";
 import fonts from "../config/fonts";
 import IndeksBackground from "../components/IndeksBackground";
@@ -14,6 +20,21 @@ const LoginScreen = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const navigation = useNavigation();
+
+  const [keyboardVisible, setKeyboardVisible] = useState(false);
+  useEffect(() => {
+    const showKeyboard = Keyboard.addListener("keyboardDidShow", () => {
+      setKeyboardVisible(true);
+    });
+    const hideKeyboard = Keyboard.addListener("keyboardDidHide", () => {
+      setKeyboardVisible(false);
+    });
+
+    return () => {
+      showKeyboard.remove();
+      hideKeyboard.remove();
+    };
+  }, []);
 
   const handleLoginPress = async () => {
     try {
@@ -66,14 +87,15 @@ const LoginScreen = () => {
         >
           PRIJAVI SE
         </BigBasicButtonComponent>
-
+      </View>
+      {keyboardVisible ? null : (
         <View style={styles.loginLink}>
           <Text style={styles.accountText}>Nemate nalog?</Text>
           <TouchableOpacity onPress={handleRegisterPress}>
             <Text style={styles.createAccount}>Kreirajte nalog</Text>
           </TouchableOpacity>
         </View>
-      </View>
+      )}
     </IndeksBackground>
   );
 };
@@ -128,7 +150,8 @@ const styles = StyleSheet.create({
   },
   loginLink: {
     justifyContent: "center",
-    width: "100%",
+    marginHorizontal: 20,
+    marginBottom: 15,
     borderTopWidth: 3,
     borderColor: colors.primary,
     flexDirection: "row",
@@ -138,6 +161,7 @@ const styles = StyleSheet.create({
     justifyContent: "center",
   },
   title: {
+    paddingBottom: 5,
     paddingLeft: 15,
     width: "100%",
     fontSize: 32,

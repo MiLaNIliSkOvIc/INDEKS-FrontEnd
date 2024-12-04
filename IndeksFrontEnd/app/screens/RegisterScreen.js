@@ -1,17 +1,15 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import {
   View,
   Text,
-  TextInput,
   TouchableOpacity,
   TouchableHighlight,
   StyleSheet,
-  KeyboardAvoidingView,
+  Keyboard,
 } from "react-native";
 import { useNavigation } from "@react-navigation/native";
 import fonts from "../config/fonts";
 import IndeksBackground from "../components/IndeksBackground";
-import LogoWithTitleComponent from "../components/LogoWithTitleComponent";
 import colors from "../config/colors";
 import IndeksTextInput from "../components/IndeksTextInput";
 import FontAwesome5 from "react-native-vector-icons/FontAwesome5";
@@ -20,6 +18,21 @@ import BigBasicButtonComponent from "../components/BigBasicButtonComponent";
 const RegisterScreen = () => {
   const navigation = useNavigation();
   const [userAccountSelected, setUserAccountSelected] = useState(true);
+
+  const [keyboardVisible, setKeyboardVisible] = useState(false);
+  useEffect(() => {
+    const showKeyboard = Keyboard.addListener("keyboardDidShow", () => {
+      setKeyboardVisible(true);
+    });
+    const hideKeyboard = Keyboard.addListener("keyboardDidHide", () => {
+      setKeyboardVisible(false);
+    });
+
+    return () => {
+      showKeyboard.remove();
+      hideKeyboard.remove();
+    };
+  }, []);
   const handleLoginPress = () => {
     navigation.navigate("Login"); // Navigacija na Login ekran
   };
@@ -37,8 +50,9 @@ const RegisterScreen = () => {
   return (
     <IndeksBackground>
       <View style={styles.container}>
-        <LogoWithTitleComponent style={styles.logoContainer} />
         <Text style={styles.title}>Registracija</Text>
+        <IndeksTextInput placeholder="Ime" style={styles.input} />
+        <IndeksTextInput placeholder="Prezime" style={styles.input} />
         <IndeksTextInput placeholder="E-Mail" style={styles.input} />
         <IndeksTextInput
           placeholder="Lozinka"
@@ -63,11 +77,23 @@ const RegisterScreen = () => {
             ]}
             onPress={handleUserAccountSelect}
           >
-            <FontAwesome5
-              name="user-graduate"
-              size={30}
-              color={userAccountSelected ? colors.primary : colors.white}
-            />
+            <View style={styles.iconButtonContent}>
+              <FontAwesome5
+                name="user-graduate"
+                size={30}
+                color={userAccountSelected ? colors.primary : colors.white}
+              />
+              <Text
+                style={[
+                  styles.iconButtonText,
+                  {
+                    color: userAccountSelected ? colors.primary : colors.white,
+                  },
+                ]}
+              >
+                Student
+              </Text>
+            </View>
           </TouchableHighlight>
           <TouchableHighlight
             style={[
@@ -81,23 +107,37 @@ const RegisterScreen = () => {
             ]}
             onPress={handleInstructorAccountSelect}
           >
-            <FontAwesome5
-              name="book-reader"
-              size={30}
-              color={userAccountSelected ? colors.white : colors.primary}
-            />
+            <View style={styles.iconButtonContent}>
+              <FontAwesome5
+                name="book-reader"
+                size={30}
+                color={userAccountSelected ? colors.white : colors.primary}
+              />
+              <Text
+                style={[
+                  styles.iconButtonText,
+                  {
+                    color: userAccountSelected ? colors.white : colors.primary,
+                  },
+                ]}
+              >
+                Instruktor
+              </Text>
+            </View>
           </TouchableHighlight>
         </View>
         <BigBasicButtonComponent style={styles.registerButton}>
           REGISTRUJ SE
         </BigBasicButtonComponent>
+      </View>
+      {keyboardVisible ? null : (
         <View style={styles.footer}>
           <Text style={styles.footerText}>Imate nalog?</Text>
           <TouchableOpacity onPress={handleLoginPress}>
             <Text style={styles.footerLink}>Prijavite se</Text>
           </TouchableOpacity>
         </View>
-      </View>
+      )}
     </IndeksBackground>
   );
 };
@@ -109,6 +149,7 @@ const styles = StyleSheet.create({
     width: "60%",
     marginTop: 15,
   },
+
   container: {
     flex: 1,
     justifyContent: "center",
@@ -117,11 +158,11 @@ const styles = StyleSheet.create({
   },
   footer: {
     justifyContent: "center",
-    width: "100%",
+    marginHorizontal: 20,
+    marginBottom: 15,
     borderTopWidth: 3,
     borderColor: colors.primary,
     flexDirection: "row",
-    marginTop: 20,
   },
   footerLink: {
     color: colors.primary,
@@ -138,6 +179,8 @@ const styles = StyleSheet.create({
     width: "40%",
     height: 50,
     justifyContent: "center",
+  },
+  iconButtonContent: {
     alignItems: "center",
   },
   iconButtonLeft: {
@@ -148,13 +191,18 @@ const styles = StyleSheet.create({
     borderTopRightRadius: 10,
     borderBottomRightRadius: 10,
   },
+  iconButtonText: {
+    fontFamily: fonts.primaryBold,
+    fontSize: 10,
+  },
   input: {
     marginVertical: 7,
   },
   logoContainer: {
-    justifyContent: "flex-end",
-    height: "35%",
+    height: "25%",
     paddingBottom: 60,
+    alignItems: "center",
+    padding: 30,
   },
   registerButton: {
     width: "65%",
