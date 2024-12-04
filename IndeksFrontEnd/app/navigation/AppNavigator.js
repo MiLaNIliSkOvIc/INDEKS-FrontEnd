@@ -112,11 +112,6 @@ const AppNavigator = () => {
           component={ReportedUsersScreen}
           options={{ headerShown: false }}
         />
-          <Stack.Screen
-          name="InstructorProfileScreen"
-          component={InstructorProfileScreen}
-          options={{ headerShown: false }}
-        />
         <Stack.Screen
           name="ResetPassword"
           component={ResetPasswordScreen}
@@ -135,6 +130,11 @@ const AppNavigator = () => {
         <Stack.Screen
           name="NewPrivateGroupScreen"
           component={NewPrivateGroupScreen}
+          options={{ headerShown: false }}
+        />
+        <Stack.Screen
+          name="InstructorProfileScreen"
+          component={InstructorProfileScreen}
           options={{ headerShown: false }}
         />
       </Stack.Navigator>
