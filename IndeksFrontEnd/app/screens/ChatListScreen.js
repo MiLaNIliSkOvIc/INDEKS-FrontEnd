@@ -48,6 +48,7 @@ const chats = [
 ];
 const ChatListScreen = () => {
   const navigation = useNavigation();
+
   const handleChatPress = (chat) => {
     navigation.navigate("Chat");
   };
@@ -59,7 +60,7 @@ const ChatListScreen = () => {
   };
 
   const handlePlusPress = () => {
-    console.log("Plus");
+    navigation.navigate("NewPrivateGroupScreen");
   };
 
   const renderItem = ({ item }) => (
@@ -89,7 +90,7 @@ const ChatListScreen = () => {
       />
       <Text style={styles.headerText}>Indeks</Text>
 
-      <TouchableOpacity>
+      <TouchableOpacity onPress={() => navigation.navigate("SearchScreen")}>
         <Image
           source={require("../assets/images/search.png")}
           style={styles.headerIcon}
