@@ -2,6 +2,7 @@ import React from "react";
 import {
   View,
   Text,
+  TextInput,
   Image,
   FlatList,
   StyleSheet,
@@ -9,12 +10,13 @@ import {
 } from "react-native";
 import Icon from "react-native-vector-icons/MaterialIcons";
 import { useNavigation } from "@react-navigation/native";
+import { useState } from "react";
 
-const courseData = {
-  courseTitle: "Matematika 1",
-  instructor: "Ime Prezime Instruktora",
-  description: "Lorem ipsum dolor sit amet, consectetur adipiscing elit.",
-};
+// const courseData = {
+//   courseTitle: "Matematika 1",
+//   instructor: "Ime Prezime Instruktora",
+//   description: "Lorem ipsum dolor sit amet, consectetur adipiscing elit.",
+// };
 const reviews = [
   { id: "1", user: "Marko Petrović", comment: "Sve preporuke", rating: 5 },
   {
@@ -54,11 +56,12 @@ const reviews = [
 ];
 
 const InstructionDetailsScreen = ({ route }) => {
-  const { courseTitle, instructor, description } = route.params;
+  const { navigate,courseTitle, instructor, description } = route.params;
   const navigation = useNavigation();
 
   const back = () => {
-    navigation.navigate("Instruction");
+    console.log(navigate)
+    navigation.navigate(navigate);
   };
 
   const renderStars = (rating) => {
@@ -76,6 +79,8 @@ const InstructionDetailsScreen = ({ route }) => {
     }
     return stars;
   };
+  const [isEditing, setIsEditing] = useState(false);
+  const [editableDescription, setEditableDescription] = useState(description);
 
   const renderReview = ({ item }) => (
     <View style={styles.reviewContainer}>
@@ -118,9 +123,18 @@ const InstructionDetailsScreen = ({ route }) => {
               <Text style={styles.instructor}>{instructor}</Text>
             </View>
           </View>
-
-          <Text style={styles.sectionTitle}>Opis</Text>
-          <Text style={styles.description}>{description}</Text>
+          
+          <Text style={styles.sectionTitle}>Opis</Text>{
+          isEditing? (
+            <TextInput style={styles.descriptionInput} 
+            value={editableDescription} 
+            onChangeText={setEditableDescription}
+            onBlur={()=>setIsEditing(false)} autoFocus={true}/>
+          ):(
+          <TouchableOpacity onLongPress={() => setIsEditing(true)}>
+            <Text style={styles.description}>{editableDescription}</Text>
+          </TouchableOpacity>
+            )}
         </View>
 
         <Text style={styles.sectionTitle}>Recenzije</Text>
@@ -138,6 +152,12 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: "#c7c7c7",
+  },
+  descriptionInput: {
+    fontSize: 16,
+    borderBottomWidth: 1,
+    borderColor: "#ccc",
+    marginTop: 5,
   },
   header: {
     flexDirection: "row",
@@ -198,7 +218,7 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
   },
   instructor: {
-    color: "#888",
+    color: "#555",
     marginTop: 4,
   },
   sectionTitle: {

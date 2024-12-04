@@ -15,6 +15,7 @@ import InstructionDetailsScreen from "../screens/InstructionDetailsScreen";
 import ElementaryGroupChatScreen from "../screens/ElementaryGroupsListScreen";
 import AnnouncementsListScreen from "../screens/AnnouncementsListScreen";
 import HeaderComponent from "../components/HeaderComponent";
+import InstructorProfileScreen from "../screens/InstructorProfileScreen";
 
 import ReportedCommentsScreen from "../screens/ReportedCommentsScreen";
 import ReportedMaterialsScreen from "../screens/ReportedMaterialsScreen";
@@ -29,7 +30,7 @@ const Stack = createStackNavigator();
 const AppNavigator = () => {
   return (
     <NavigationContainer>
-      <Stack.Navigator initialRouteName="Initial">
+      <Stack.Navigator initialRouteName="Login">
         <Stack.Screen
           name="Initial"
           component={InitialScreen}
@@ -129,6 +130,11 @@ const AppNavigator = () => {
         <Stack.Screen
           name="NewPrivateGroupScreen"
           component={NewPrivateGroupScreen}
+          options={{ headerShown: false }}
+        />
+        <Stack.Screen
+          name="InstructorProfileScreen"
+          component={InstructorProfileScreen}
           options={{ headerShown: false }}
         />
       </Stack.Navigator>
