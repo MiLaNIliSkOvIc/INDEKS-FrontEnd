@@ -1,12 +1,20 @@
-import React from "react";
-import { View, Text, TouchableOpacity, StyleSheet } from "react-native";
+import React, { useState } from "react";
+import {
+  View,
+  Text,
+  TouchableOpacity,
+  StyleSheet,
+  TouchableWithoutFeedback,
+} from "react-native";
 import Icon from "react-native-vector-icons/FontAwesome";
 import { useNavigation } from "@react-navigation/native";
 
-const InstructionItemComponent = ({ navigate,course, teacher, rating, icon }) => {
+const InstructionItemComponent = ({ navigate, course, teacher, rating, icon }) => {
   const navigation = useNavigation();
+  const [showActions, setShowActions] = useState(false);
 
   const renderStars = () => {
+    if (showActions) return null; // Sakrij zvezdice ako su dugmad za akcije vidljiva
     const stars = [];
     for (let i = 1; i <= 5; i++) {
       stars.push(
@@ -22,73 +30,75 @@ const InstructionItemComponent = ({ navigate,course, teacher, rating, icon }) =>
   };
 
   const CourseInfo = (course) => {
-    console.log(navigate);
-    //ovde cemo zvati http service
+    // Podaci za novu rutu
     const courseData = {
       courseTitle: course,
-      instructor: "Milan Iliskovic",
-      description: "Zovem se Milan i drzacu vam instrukcije iz matematike 1.",
+      instructor: teacher,
+      description: "Zovem se Milan i držaću vam instrukcije iz matematike 1.",
     };
-    navigation.navigate("InstructionInfo", { navigate,...courseData });
+
+    // Navigacija sa nazivom rute
+    navigation.navigate("InstructionInfo", { navigate, ...courseData });
+  };
+
+  const handlePressOutside = () => {
+    setShowActions(false); // Sakrij dugmad za akcije i prikaži zvezdice
   };
 
   return (
-    <TouchableOpacity
-      style={styles.itemContainer}
-      onPress={() => CourseInfo(course)}
+    <TouchableWithoutFeedback
+      onPress={handlePressOutside}
+      accessible={false}
+      style={{ flex: 1 }}
+      keyboardShouldPersistTaps="handled"
     >
-      <View style={styles.courseIconContainer}>
-        <Icon name={icon} size={28} color="#013868" />
+      <View>
+        <TouchableOpacity
+          style={[
+            styles.itemContainer,
+            showActions && styles.blurredContainer,
+          ]}
+          onPress={() => CourseInfo(course)} // Omogući klik na karticu
+          onLongPress={() => setShowActions(true)}
+        >
+          {/* Ikona kursa */}
+          <View style={styles.courseIconContainer}>
+            <Icon name={icon} size={28} color="#013868" />
+          </View>
+
+          {/* Informacije o kursu */}
+          <View style={styles.courseInfo}>
+            <Text style={styles.courseTitle}>{course}</Text>
+            <Text style={styles.teacherName}>{teacher}</Text>
+          </View>
+
+          {/* Zvezdice za ocenu */}
+          <View style={styles.ratingContainer}>{renderStars()}</View>
+
+          {/* Dugmad za akcije */}
+          {showActions && (
+            <View style={styles.actionButtons}>
+              <TouchableOpacity
+                style={styles.actionButton}
+                onPress={() => setShowActions(false)}
+              >
+                <Icon name="close" size={20} color="#fff" />
+              </TouchableOpacity>
+              <TouchableOpacity
+                style={styles.actionButton}
+                onPress={() => console.log("Alert triggered!")}
+              >
+                <Icon name="exclamation" size={20} color="#fff" />
+              </TouchableOpacity>
+            </View>
+          )}
+        </TouchableOpacity>
       </View>
-      <View style={styles.courseInfo}>
-        <Text style={styles.courseTitle}>{course}</Text>
-        <Text style={styles.teacherName}>{teacher}</Text>
-      </View>
-      <View style={styles.ratingContainer}>{renderStars()}</View>
-    </TouchableOpacity>
+    </TouchableWithoutFeedback>
   );
 };
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: "#c7c7c7",
-  },
-  header: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "center",
-    backgroundColor: "#013868",
-    paddingHorizontal: 20,
-    paddingVertical: 8,
-  },
-  iconButton: {
-    marginTop: 30,
-  },
-  logoContainer: {
-    flexDirection: "row",
-    alignItems: "center",
-    marginTop: 30,
-    marginRight: 20,
-  },
-  logo: {
-    width: 40,
-    height: 40,
-    resizeMode: "contain",
-  },
-  logoText: {
-    marginLeft: 8,
-    fontSize: 20,
-    fontWeight: "bold",
-    color: "#fff",
-  },
-  title: {
-    textAlign: "center",
-    fontSize: 18,
-    fontWeight: "bold",
-    marginVertical: 10,
-    color: "#013868",
-  },
   itemContainer: {
     flexDirection: "row",
     alignItems: "center",
@@ -100,6 +110,10 @@ const styles = StyleSheet.create({
     marginHorizontal: 10,
     marginVertical: 5,
     borderRadius: 8,
+    justifyContent: "space-between",
+  },
+  blurredContainer: {
+    backgroundColor: "#EDEDED",
   },
   courseIconContainer: {
     width: 48,
@@ -124,6 +138,21 @@ const styles = StyleSheet.create({
   },
   ratingContainer: {
     flexDirection: "row",
+  },
+  actionButtons: {
+    flexDirection: "row",
+    position: "absolute",
+    right: 10,
+    top: 10,
+  },
+  actionButton: {
+    width: 40,
+    height: 40,
+    borderRadius: 20,
+    backgroundColor: "#013868",
+    justifyContent: "center",
+    alignItems: "center",
+    marginLeft: 10,
   },
 });
 

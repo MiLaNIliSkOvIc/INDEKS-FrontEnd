@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import {
   View,
   Text,
@@ -6,60 +6,56 @@ import {
   StyleSheet,
   Image,
   TouchableOpacity,
+  ActivityIndicator,
 } from "react-native";
 import { useNavigation } from "@react-navigation/native";
-import { useState } from "react";
 import Icon from "react-native-vector-icons/FontAwesome";
 import Sidebar from "../components/SidebarComponent";
+import HttpService from "../services/HttpService";
 
-const chats = [
-  {
-    id: "1",
-    name: "Marko Marković",
-    lastMessage: "Trebalo bi da je u utorak u 13:00h",
-  },
-  { id: "2", name: "Ivan Ivanović", lastMessage: "Poruka 2" },
-  { id: "3", name: "Milan Milanović", lastMessage: "Poruka 3" },
-  { id: "4", name: "Stefan Stefanović", lastMessage: "Poruka 4" },
-  { id: "5", name: "Registrovani Korisnik", lastMessage: "Poruka 5" },
-  { id: "6", name: "Registrovani Korisnik", lastMessage: "Poruka 6" },
-  { id: "7", name: "ISZ", lastMessage: "You: Kad je sastanak?" },
-  {
-    id: "8",
-    name: "Treća godina - Računarstvo i informatika",
-    lastMessage: "Marko: Koja je šifra za projektovanje softvera?",
-  },
-  {
-    id: "9",
-    name: "Registrovani Korisnik",
-    lastMessage: "You: Trebalo bi da je u srijedu u 13:00h",
-  },
-  { id: "10", name: "ISZ", lastMessage: "You: Kad je sastanak?" },
-  {
-    id: "11",
-    name: "Treća godina - Računarstvo i informatika",
-    lastMessage: "Marko: Koja je šifra za projektovanje softvera?",
-  },
-  {
-    id: "12",
-    name: "Registrovani Korisnik",
-    lastMessage: "You: Trebalo bi da je u srijedu u 13:00h",
-  },
-];
 const ChatListScreen = () => {
   const navigation = useNavigation();
-  const handleChatPress = (chat) => {
-    navigation.navigate("Chat");
-  };
-
+  const [chats, setChats] = useState([]);
+  const [isLoading, setIsLoading] = useState(true);
   const [isSidebarVisible, setSidebarVisible] = useState(false);
+
+
+  useEffect(() => {
+    const fetchChats = async () => {
+      try {
+        //TODO uzeti userid iz tokena
+        const response = await HttpService.get("singleChat/user/14/summary");
+        
+        
+        const mappedChats = response.map((chat) => ({
+          id: chat.id.toString(), 
+          name: chat.name,
+          sender: chat.sender,
+          lastMessage: chat.lastMessage,
+        }));
+
+        setChats(mappedChats); 
+      } catch (error) {
+        console.error("Error fetching chats:", error.message);
+      } finally {
+        setIsLoading(false); 
+      }
+    };
+
+    fetchChats();
+  }, []);
 
   const toggleSidebar = () => {
     setSidebarVisible(!isSidebarVisible);
   };
 
+  const handleChatPress = (chat) => {
+    console.log(chat)
+    navigation.navigate("Chat", { chatId: chat.id,userId:14,name: chat.name });
+  };
+
   const handlePlusPress = () => {
-    console.log("Plus");
+    console.log("Plus button pressed!");
   };
 
   const renderItem = ({ item }) => (
@@ -88,7 +84,6 @@ const ChatListScreen = () => {
         resizeMode="contain"
       />
       <Text style={styles.headerText}>Indeks</Text>
-
       <TouchableOpacity>
         <Image
           source={require("../assets/images/search.png")}
@@ -101,11 +96,15 @@ const ChatListScreen = () => {
   return (
     <View style={styles.container}>
       <Header />
-      <FlatList
-        data={chats}
-        renderItem={renderItem}
-        keyExtractor={(item) => item.id}
-      />
+      {isLoading ? (
+        <ActivityIndicator size="large" color="#013868" />
+      ) : (
+        <FlatList
+          data={chats}
+          renderItem={renderItem}
+          keyExtractor={(item) => item.id}
+        />
+      )}
       <TouchableOpacity style={styles.floatingButton} onPress={handlePlusPress}>
         <Image
           source={require("../assets/images/plus.png")}
