@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import {
   View,
   Text,
@@ -7,52 +7,113 @@ import {
   TextInput,
   TouchableOpacity,
   Image,
+  ActivityIndicator,
+  KeyboardAvoidingView,
+  Platform,
+  Keyboard,
 } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
-import { useNavigation } from "@react-navigation/native";
+import { useNavigation, useRoute } from "@react-navigation/native";
+import HttpService from "../services/HttpService";
 
 const ChatScreen = () => {
   const navigation = useNavigation();
-  const handleChatPress = () => {
-    console.log("Milan");
-    navigation.navigate("ChatList");
+  const route = useRoute();
+  const { chatId, userId,name } = route.params;
+  var br=0
+  const [messages, setMessages] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [messageText, setMessageText] = useState("");
+
+  useEffect(() => {
+    const fetchMessages = async () => {
+      try {
+        const response = await HttpService.get(
+          `singleChat/${chatId}/messages?userId=${userId}`
+        );
+
+        
+        const sortedMessages = response.sort((a, b) => new Date(b.time) - new Date(a.time));
+
+        setMessages(sortedMessages);
+      } catch (error) {
+        console.error("Error fetching messages:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchMessages();
+  }, [chatId, userId]);
+
+  const addMessage = (newMessage) => {
+    const updatedMessages = [newMessage,...messages];  
+    setMessages(updatedMessages);
   };
-  const messages = [
-    {
-      id: "1",
-      text: "Trebalo bi da je u utorak u 13:00h",
-      time: "12:37",
-      isSentByUser: true,
-    },
-    {
-      id: "2",
-      text: "Zna li se kad je termin odbrane SRS-a?",
-      time: "12:07",
-      isSentByUser: false,
-      profileImage: "images.png",
-    },
-  ];
+  const generateUniqueId = () => {
+    let newId;
+    let exists = true;
+    
+   
+    while (exists) {
+      newId = Math.random().toString(36).substr(2, 9); 
+      exists = messages.some(message => message.id === newId); 
+    }
+  
+    return newId;
+  };
+
+  const sendMessage = async () => {
+    if (messageText.trim() === "") return;
+    setMessageText(""); 
+    const newMessage = {
+      text: messageText,
+      time: new Date().toISOString(),
+      singleChatId: chatId,
+      groupChatId: 0, 
+      status: "SENT",
+      userAccountId: userId,
+    };
+   
+    const mess={
+      id: generateUniqueId(),
+      text: messageText,
+      time: newMessage.time,
+      sentByUser: true
+    }
+      addMessage(mess)
+    try {
+      await HttpService.create("message", newMessage);
+
+      
+      const response = await HttpService.get(
+        `singleChat/${chatId}/messages?userId=${userId}`
+      );
+
+     
+      const sortedMessages = response.sort((a, b) => new Date(b.time) - new Date(a.time));
+
+      setMessages(sortedMessages);
+      
+    } catch (error) {
+      console.error("Error sending message:", error);
+    }
+  };
 
   const renderItem = ({ item }) => (
     <View
       style={[
         styles.messageWrapper,
-        item.isSentByUser
-          ? styles.userMessageWrapper
-          : styles.otherMessageWrapper,
+        item.sentByUser ? styles.userMessageWrapper : styles.otherMessageWrapper,
       ]}
     >
-      {!item.isSentByUser && (
-        <Image
-          //source={{ uri: item.profileImage }}
-          source={require("../assets/images/images.png")}
-          style={styles.profileImage}
-        />
+      {!item.sentByUser && item.profileImage && (
+        <Image source={{ uri: item.profileImage }} style={styles.profileImage} />
       )}
       <View
         style={[
           styles.messageContainer,
-          item.isSentByUser
+          item.sentByUser
             ? styles.userMessageContainer
             : styles.otherMessageContainer,
         ]}
@@ -60,7 +121,7 @@ const ChatScreen = () => {
         <Text style={styles.messageText}>{item.text}</Text>
         <View style={styles.timeContainer}>
           <Text style={styles.messageTime}>{item.time}</Text>
-          {item.isSentByUser && (
+          {item.sentByUser && (
             <Ionicons name="checkmark-done-outline" size={14} color="#999" />
           )}
         </View>
@@ -69,30 +130,42 @@ const ChatScreen = () => {
   );
 
   return (
-    <View style={styles.container}>
+    <KeyboardAvoidingView
+      behavior={Platform.OS === "ios" ? "padding" : "height"}
+      style={styles.container}
+    >
       <View style={styles.header}>
-        <TouchableOpacity onPress={handleChatPress}>
+        <TouchableOpacity onPress={() => navigation.navigate("ChatList")}>
           <Ionicons name="arrow-back-outline" size={24} color="black" />
         </TouchableOpacity>
-        <Text style={styles.headerTitle}>Registrovani Korisnik</Text>
+        <Text style={styles.headerTitle}>{name}</Text>
         <TouchableOpacity>
           <Ionicons name="ellipsis-vertical-outline" size={24} color="black" />
         </TouchableOpacity>
       </View>
-      <FlatList
-        data={messages}
-        renderItem={renderItem}
-        keyExtractor={(item) => item.id}
-        inverted
-        contentContainerStyle={styles.chatContainer}
-      />
+      {loading ? (
+        <ActivityIndicator size="large" color="#007aff" style={styles.loader} />
+      ) : (
+        <FlatList
+          data={messages}
+          renderItem={renderItem}
+          keyExtractor={(item) => item.id.toString()}
+          inverted 
+          contentContainerStyle={styles.chatContainer}
+        />
+      )}
       <View style={styles.inputContainer}>
-        <TextInput style={styles.input} placeholder="Poruka..." />
-        <TouchableOpacity style={styles.sendButton}>
+        <TextInput
+          style={styles.input}
+          placeholder="Poruka..."
+          value={messageText}
+          onChangeText={setMessageText}
+        />
+        <TouchableOpacity style={styles.sendButton} onPress={sendMessage}>
           <Ionicons name="send-outline" size={24} color="#007aff" />
         </TouchableOpacity>
       </View>
-    </View>
+    </KeyboardAvoidingView>
   );
 };
 
@@ -114,6 +187,11 @@ const styles = StyleSheet.create({
   headerTitle: {
     fontSize: 18,
     fontWeight: "bold",
+  },
+  loader: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
   },
   chatContainer: {
     paddingHorizontal: 10,
