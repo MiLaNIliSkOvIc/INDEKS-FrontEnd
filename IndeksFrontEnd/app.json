@@ -8,8 +8,8 @@
     "newArchEnabled": true,
     "userInterfaceStyle": "light",
     "splash": {
-      "image": "./app/assets/images/splash.png",
-      "resizeMode": "contain",
+      "image": "./app/assets/images/wallpaper.jpg",
+      "resizeMode": "cover",
       "backgroundColor": "#ffffff"
     },
     "ios": {
@@ -24,6 +24,6 @@
     "web": {
       "favicon": "./app/assets/images/favicon.png"
     },
-    "plugins": ["expo-font"]
+    "plugins": ["expo-font", "expo-secure-store"]
   }
 }

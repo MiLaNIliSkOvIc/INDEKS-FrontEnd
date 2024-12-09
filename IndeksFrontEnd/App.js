@@ -1,14 +1,15 @@
 // App.js
-import { React, useState, useEffect } from "react";
+import { React, useEffect, useState } from "react";
 import { createStackNavigator } from "@react-navigation/stack";
-import { View, Text } from "react-native";
 import { useFonts } from "expo-font";
 import * as SplashScreen from "expo-splash-screen";
+import { NavigationContainer } from "@react-navigation/native";
+import { jwtDecode } from "jwt-decode";
 
-import AppNavigator from "./app/navigation/AppNavigator";
-import LogoWithTitleComponent from "./app/components/LogoWithTitleComponent";
-import InitialScreen from "./app/screens/InitialScreen";
-import IndeksBackground from "./app/components/IndeksBackground";
+import AuthNavigator from "./app/navigation/AuthNavigator";
+import AuthContext from "./app/auth/context";
+import StudentAppNavigator from "./app/navigation/StudentAppNavigator";
+import authStorage from "./app/auth/storage";
 
 const Stack = createStackNavigator();
 SplashScreen.preventAutoHideAsync();
@@ -21,6 +22,18 @@ const App = () => {
     KodchasanBold: require("./app/assets/fonts/KodchasanBold.ttf"),
   });
 
+  const [user, setUser] = useState();
+
+  const restoreToken = async () => {
+    const token = await authStorage.getToken();
+    if (!token) return;
+    setUser(jwtDecode(token));
+  };
+
+  useEffect(() => {
+    restoreToken();
+  }, []);
+
   useEffect(() => {
     if (loaded || error) {
       SplashScreen.hideAsync();
@@ -31,7 +44,13 @@ const App = () => {
     return null;
   }
 
-  return <AppNavigator />;
+  return (
+    <AuthContext.Provider value={{ user, setUser }}>
+      <NavigationContainer>
+        {user ? <StudentAppNavigator /> : <AuthNavigator />}
+      </NavigationContainer>
+    </AuthContext.Provider>
+  );
 };
 
 export default App;

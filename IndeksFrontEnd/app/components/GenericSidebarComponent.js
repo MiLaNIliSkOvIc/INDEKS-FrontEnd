@@ -1,5 +1,5 @@
 import colors from "../config/colors";
-import React, { useRef, useEffect } from "react";
+import React, { useRef, useEffect, useContext } from "react";
 import {
   Modal,
   View,
@@ -12,11 +12,14 @@ import {
 import Icon from "react-native-vector-icons/FontAwesome";
 import FeatherIcon from "react-native-vector-icons/Feather";
 import { useNavigation } from "@react-navigation/native";
+import AuthContext from "../auth/context";
+import authStorage from "../auth/storage";
 
 const GenericSidebarComponent = ({ visible, onClose, menuItems }) => {
   const navigation = useNavigation();
   const translateX = useRef(new Animated.Value(-350)).current;
 
+  const { setUser } = useContext(AuthContext);
   useEffect(() => {
     if (visible) {
       Animated.timing(translateX, {
@@ -39,8 +42,8 @@ const GenericSidebarComponent = ({ visible, onClose, menuItems }) => {
   };
 
   const handleSignOut = () => {
-    onClose();
-    navigation.navigate("Login");
+    setUser(null);
+    authStorage.removeToken();
   };
 
   return (
@@ -53,7 +56,10 @@ const GenericSidebarComponent = ({ visible, onClose, menuItems }) => {
           ]}
         >
           <View style={styles.SidebarComponentProfileSection}>
-            <TouchableOpacity onPress={onClose} style={styles.SidebarComponentCloseButton}>
+            <TouchableOpacity
+              onPress={onClose}
+              style={styles.SidebarComponentCloseButton}
+            >
               <Icon name="bars" size={30} color={colors.white} />
             </TouchableOpacity>
             <View style={styles.SidebarComponentProfilePicture}>
@@ -74,21 +80,32 @@ const GenericSidebarComponent = ({ visible, onClose, menuItems }) => {
                   style={styles.SidebarComponentMenuItem}
                   onPress={() => handleMenuPress(item.route)}
                 >
-                  {item.iconType === 'FontAwesome' ? (
+                  {item.iconType === "FontAwesome" ? (
                     <Icon name={item.icon} size={25} color={colors.primary} />
                   ) : (
-                    <FeatherIcon name={item.icon} size={25} color={colors.primary} />
+                    <FeatherIcon
+                      name={item.icon}
+                      size={25}
+                      color={colors.primary}
+                    />
                   )}
-                  <Text style={styles.SidebarComponentMenuText}>{item.label}</Text>
+                  <Text style={styles.SidebarComponentMenuText}>
+                    {item.label}
+                  </Text>
                 </TouchableOpacity>
               ))}
             </ScrollView>
             <TouchableOpacity
-              style={[styles.SidebarComponentMenuItem, styles.SidebarComponentLogout]}
+              style={[
+                styles.SidebarComponentMenuItem,
+                styles.SidebarComponentLogout,
+              ]}
               onPress={handleSignOut}
             >
               <Icon name="sign-out" size={25} color={colors.red} />
-              <Text style={[styles.SidebarComponentMenuText, { color: colors.red }]}>
+              <Text
+                style={[styles.SidebarComponentMenuText, { color: colors.red }]}
+              >
                 Sign Out
               </Text>
             </TouchableOpacity>

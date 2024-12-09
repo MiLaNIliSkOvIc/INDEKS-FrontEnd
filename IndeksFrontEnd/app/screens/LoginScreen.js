@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useContext } from "react";
 import {
   View,
   Text,
@@ -7,16 +7,21 @@ import {
   Keyboard,
 } from "react-native";
 import { useNavigation } from "@react-navigation/native";
+import { jwtDecode } from "jwt-decode";
+
 import fonts from "../config/fonts";
 import IndeksBackground from "../components/IndeksBackground";
 import LogoWithTitleComponent from "../components/LogoWithTitleComponent";
 import colors from "../config/colors";
 import IndeksTextInput from "../components/IndeksTextInput";
 import BigBasicButtonComponent from "../components/BigBasicButtonComponent";
-import TokenService from "../services/TokenService";
-import HttpService from "../services/HttpService";
+import authApi from "../api/auth";
+import AuthContext from "../auth/context";
+import authStorage from "../auth/storage";
 
 const LoginScreen = () => {
+  const authContext = useContext(AuthContext);
+
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const navigation = useNavigation();
@@ -38,11 +43,20 @@ const LoginScreen = () => {
 
   const handleLoginPress = async () => {
     try {
-      // const response = await HttpService.create("/login", { email, password });
-      //const token = response.data.token;
+      console.log(email + " " + password);
+      const response = await authApi.login(email, password);
+      const token = response.token;
 
-      //await TokenService.saveToken(token);
-      navigation.navigate("ChatList");
+      if (token) {
+        authStorage.storeToken(token);
+        console.log("Token saved successfully");
+
+        const user = jwtDecode(token);
+        console.log(user);
+        authContext.setUser(user);
+      } else {
+        console.error("Login response does not contain a token");
+      }
     } catch (error) {
       console.error("Login failed", error);
     }

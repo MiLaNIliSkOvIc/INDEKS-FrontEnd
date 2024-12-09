@@ -18,6 +18,7 @@ class HttpService {
   }
 
   async create(resource, data) {
+    console.log(`${this.baseUrl}/${resource}`);
     const response = await fetch(`${this.baseUrl}/${resource}`, {
       method: "POST",
       headers: {
@@ -25,6 +26,7 @@ class HttpService {
       },
       body: JSON.stringify(data),
     });
+    console.log("Status Code:", response.status);
     return this.handleResponse(response);
   }
 
