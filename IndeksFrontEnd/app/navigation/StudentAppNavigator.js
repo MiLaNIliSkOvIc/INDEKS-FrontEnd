@@ -61,6 +61,7 @@ export default function StudentAppNavigator() {
         name="InstructorProfileScreen"
         component={InstructorProfileScreen}
       />
+   
     </Stack.Navigator>
   );
 }

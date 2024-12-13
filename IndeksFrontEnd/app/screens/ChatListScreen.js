@@ -56,8 +56,12 @@ const ChatListScreen = () => {
 
   const handlePlusPress = () => {
     console.log("Plus button pressed!");
+    navigation.navigate("NewPrivateGroupScreen")
   };
-
+  const handleSearchPress = () => {
+    console.log("Plus button pressed!");
+    navigation.navigate("SearchScreen")
+  };
   const renderItem = ({ item }) => (
     <TouchableOpacity
       style={styles.chatItem}
@@ -84,7 +88,7 @@ const ChatListScreen = () => {
         resizeMode="contain"
       />
       <Text style={styles.headerText}>Indeks</Text>
-      <TouchableOpacity>
+      <TouchableOpacity onPress={handleSearchPress}>
         <Image
           source={require("../assets/images/search.png")}
           style={styles.headerIcon}
