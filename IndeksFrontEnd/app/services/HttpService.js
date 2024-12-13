@@ -1,84 +1,60 @@
+import { create } from 'apisauce';
 import { API_URL } from "@env";
 import authStorage from "../auth/storage";
 
+const api = create({
+  baseURL: API_URL,
+  headers: { "Content-Type": "application/json" }
+});
+
+// Oavj api bi se mogao koristiti direkt u kodu ali posto sam dosta toga spojio sa ovim servisom
+// napravio sam da ovaj httpService koristi apisauce pa dodje na isto pobojsano je 
+
 class HttpService {
-  baseUrl = API_URL;
 
   async getHeaders() {
     const token = await authStorage.getToken();
-    const headers = {
-      "Content-Type": "application/json",
-    };
-
     if (token) {
-      headers["Authorization"] = `Bearer ${token}`;
+      api.setHeader('Authorization', `Bearer ${token}`);
     }
-
-    return headers;
   }
 
-  async handleResponse(response) {
+
+  handleResponse(response) {
     if (!response.ok) {
-      const error = await response.text();
-      throw new Error(error || "error");
+      throw new Error(response.data || "error");
     }
-
-    const text = await response.text();
-    if (text) {
-      return JSON.parse(text);
-    }
-
-    return null;
+    return response.data;
   }
+
 
   async create(resource, data) {
-    console.log(`${this.baseUrl}/${resource}`);
-    const headers = await this.getHeaders();
-    const response = await fetch(`${this.baseUrl}/${resource}`, {
-      method: "POST",
-      headers,
-      body: JSON.stringify(data),
-    });
-    console.log("Status Code:", response.status);
+    await this.getHeaders();
+    const response = await api.post(`/${resource}`, data);
     return this.handleResponse(response);
   }
 
   async get(resource) {
-    console.log(`${this.baseUrl}/${resource}`);
-    const headers = await this.getHeaders();
-    const response = await fetch(`${this.baseUrl}/${resource}`, {
-      method: "GET",
-      headers,
-    });
+    await this.getHeaders();
+    const response = await api.get(`/${resource}`);
     return this.handleResponse(response);
   }
 
-  async getById(resource, id = "") {
-    console.log(`${this.baseUrl}/${resource}`);
-    const headers = await this.getHeaders();
-    const response = await fetch(`${this.baseUrl}/${resource}/${id}`, {
-      method: "GET",
-      headers,
-    });
+  async getById(resource, id) {
+    await this.getHeaders();
+    const response = await api.get(`/${resource}/${id}`);
     return this.handleResponse(response);
   }
 
   async update(resource, id, data) {
-    const headers = await this.getHeaders();
-    const response = await fetch(`${this.baseUrl}/${resource}/${id}`, {
-      method: "PUT",
-      headers,
-      body: JSON.stringify(data),
-    });
+    await this.getHeaders();
+    const response = await api.put(`/${resource}/${id}`, data);
     return this.handleResponse(response);
   }
 
   async delete(resource, id) {
-    const headers = await this.getHeaders();
-    const response = await fetch(`${this.baseUrl}/${resource}/${id}`, {
-      method: "DELETE",
-      headers,
-    });
+    await this.getHeaders();
+    const response = await api.delete(`/${resource}/${id}`);
     return this.handleResponse(response);
   }
 }
