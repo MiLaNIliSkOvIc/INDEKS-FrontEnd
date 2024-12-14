@@ -17,6 +17,7 @@ import ReportedMaterialsScreen from "../screens/ReportedMaterialsScreen";
 import ReportedUsersScreen from "../screens/ReportedUsersScreen";
 import SearchScreen from "../screens/SearchScreen";
 import NewPrivateGroupScreen from "../screens/NewPrivateGroupScreen";
+import SettingsScreen from "../screens/SettingsScreen";
 
 const Stack = createStackNavigator();
 
@@ -61,7 +62,7 @@ export default function StudentAppNavigator() {
         name="InstructorProfileScreen"
         component={InstructorProfileScreen}
       />
-   
+      <Stack.Screen name="SettingsScreen" component={SettingsScreen} />
     </Stack.Navigator>
   );
 }
