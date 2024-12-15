@@ -17,27 +17,13 @@ import { useNavigation } from "@react-navigation/native";
 const data = [
   {
     id: "1",
-    icon: "user",
-    title: "Lični podaci",
-    family: "FontAwesome",
-    screen: "SettingsPersonalDataScreen",
-  },
-  {
-    id: "2",
-    icon: "list-alt",
-    title: "Oglasi",
-    family: "FontAwesome",
-    //screen: "AnnouncementsSelectionScreen",
-  },
-  {
-    id: "3",
-    icon: "user-times",
-    title: "Blokirani korisnici",
-    family: "FontAwesome",
-    //screen: "AnnouncementsSelectionScreen",
+    icon: "key",
+    title: "Promjena lozinke",
+    family: "FontAwesome5",
+    screen: "ChangePasswordScreen",
   },
 ];
-const SettingsScreen = () => {
+const SettingsPersonalDataScreen = () => {
   const [isSidebarVisible, setSidebarVisible] = useState(false);
   const toggleSidebar = () => {
     setSidebarVisible(!isSidebarVisible);
@@ -47,6 +33,11 @@ const SettingsScreen = () => {
 
   const handleItemPress = (screen) => {
     navigation.navigate(screen);
+  };
+
+  const back = () => {
+    console.log(navigate);
+    navigation.navigate(navigate);
   };
 
   const renderIcon = (family, iconName) => {
@@ -78,7 +69,7 @@ const SettingsScreen = () => {
   return (
     <View style={styles.container}>
       <HeaderComponent toggleSidebar={toggleSidebar} />
-      <Text style={styles.headerTitle}>Podešavanja</Text>
+      <Text style={styles.headerTitle}>Lični podaci</Text>
       <FlatList
         data={data}
         renderItem={renderItem}
@@ -139,4 +130,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default SettingsScreen;
+export default SettingsPersonalDataScreen;
