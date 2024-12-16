@@ -1,52 +1,32 @@
 import React, { useState } from "react";
-import {
-  View,
-  Text,
-  FlatList,
-  StyleSheet,
-  TouchableOpacity,
-} from "react-native";
+import { View, Text, FlatList, StyleSheet, Switch } from "react-native";
 import Sidebar from "../components/SidebarComponent";
 import Icon from "react-native-vector-icons/FontAwesome";
 import Icon5 from "react-native-vector-icons/FontAwesome5";
 import Icon6 from "react-native-vector-icons/FontAwesome6";
-import IconFeather from "react-native-vector-icons/Feather";
 import HeaderComponent from "../components/HeaderComponent";
-import { useNavigation } from "@react-navigation/native";
 
 const data = [
-  {
-    id: "1",
-    icon: "user",
-    title: "Lični podaci",
-    family: "FontAwesome",
-    screen: "SettingsPersonalDataScreen",
-  },
-  {
-    id: "2",
-    icon: "list-alt",
-    title: "Oglasi",
-    family: "FontAwesome",
-    screen: "AnnouncementsSelectionScreen",
-  },
-  {
-    id: "3",
-    icon: "user-times",
-    title: "Blokirani korisnici",
-    family: "FontAwesome",
-    //screen: "ProbaScreen",
-  },
+  { id: "1", icon: "list-alt", title: "Prva godina", family: "FontAwesome" },
+  { id: "2", icon: "list-alt", title: "Druga godina", family: "FontAwesome" },
+  { id: "3", icon: "list-alt", title: "Treća godina", family: "FontAwesome" },
+  { id: "4", icon: "list-alt", title: "Četvrta godina", family: "FontAwesome" },
+  { id: "5", icon: "list-alt", title: "Drugi ciklus", family: "FontAwesome" },
 ];
-const SettingsScreen = () => {
+
+const AnnouncementsSelectionScreen = () => {
   const [isSidebarVisible, setSidebarVisible] = useState(false);
+
+  // Stanje za praćenje stanja Switch komponenata
+  const [selectedItems, setSelectedItems] = useState({});
+
   const toggleSidebar = () => {
     setSidebarVisible(!isSidebarVisible);
   };
 
-  const navigation = useNavigation();
-
-  const handleItemPress = (screen) => {
-    navigation.navigate(screen);
+  // Funkcija za promenu stanja Switch-a
+  const toggleSwitch = (id) => {
+    setSelectedItems((prev) => ({ ...prev, [id]: !prev[id] }));
   };
 
   const renderIcon = (family, iconName) => {
@@ -58,31 +38,37 @@ const SettingsScreen = () => {
       case "Feather":
         return <Icon6 name={iconName} size={24} color="#013868" />;
       default:
-        return <Icon name="question-circle" size={24} color="red" />; // Fallback ikona
+        return <Icon name="question-circle" size={24} color="red" />;
     }
   };
 
   const renderItem = ({ item }) => (
-    <TouchableOpacity
-      style={styles.itemContainer}
-      onPress={() => handleItemPress(item.screen)}
-    >
+    <View style={styles.itemContainer}>
       <View style={styles.iconContainer}>
         {renderIcon(item.family, item.icon)}
       </View>
       <View style={styles.detailsContainer}>
         <Text style={styles.itemTitle}>{item.title}</Text>
       </View>
-    </TouchableOpacity>
+      {/* Dodajemo Switch komponentu sa stanjem */}
+      <Switch
+        value={selectedItems[item.id] || false}
+        onValueChange={() => toggleSwitch(item.id)}
+        trackColor={{ false: "#767577", true: "#68b7fd" }}
+        thumbColor={selectedItems[item.id] ? "#013868" : "#f4f3f4"}
+      />
+    </View>
   );
+
   return (
     <View style={styles.container}>
       <HeaderComponent toggleSidebar={toggleSidebar} />
-      <Text style={styles.headerTitle}>Podešavanja</Text>
+      <Text style={styles.headerTitle}>Odabir oglasa</Text>
       <FlatList
         data={data}
         renderItem={renderItem}
         keyExtractor={(item) => item.id}
+        extraData={selectedItems} // Osvježava listu pri promeni Switch stanja
       />
       <Sidebar visible={isSidebarVisible} onClose={toggleSidebar} />
     </View>
@@ -104,7 +90,7 @@ const styles = StyleSheet.create({
   itemContainer: {
     flexDirection: "row",
     alignItems: "center",
-    paddingVertical: 15,
+    paddingVertical: 7,
     paddingHorizontal: 20,
     backgroundColor: "#fff",
     marginVertical: 5,
@@ -124,19 +110,9 @@ const styles = StyleSheet.create({
   },
   itemTitle: {
     fontSize: 16,
-    color: "#013868",
-  },
-  countContainer: {
-    backgroundColor: "#013868",
-    borderRadius: 15,
-    paddingHorizontal: 8,
-    paddingVertical: 4,
-  },
-  countText: {
-    color: "#fff",
     fontWeight: "bold",
-    fontSize: 14,
+    color: "#013868",
   },
 });
 
-export default SettingsScreen;
+export default AnnouncementsSelectionScreen;
