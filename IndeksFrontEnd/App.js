@@ -27,8 +27,19 @@ const App = () => {
   const restoreToken = async () => {
     const token = await authStorage.getToken();
     if (!token) return;
-    console.log(jwtDecode(token));
-    setUser(jwtDecode(token));
+
+    const tokenDecoded = jwtDecode(token);
+
+    const currentTimestamp = Math.floor(Date.now() / 1000);
+    console.log(currentTimestamp);
+    if (tokenDecoded.exp && tokenDecoded.exp < currentTimestamp) {
+      // ako je token istekao
+      console.log("Token is expired");
+      return;
+    }
+
+    console.log(tokenDecoded);
+    setUser(tokenDecoded);
   };
 
   useEffect(() => {
