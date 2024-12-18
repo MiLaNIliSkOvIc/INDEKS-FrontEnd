@@ -12,19 +12,21 @@ import { useNavigation } from "@react-navigation/native";
 import Icon from "react-native-vector-icons/FontAwesome";
 import Sidebar from "../components/SidebarComponent";
 import HttpService from "../services/HttpService";
+import { useUser } from "../hooks/useUser"
 
 const ChatListScreen = () => {
   const navigation = useNavigation();
   const [chats, setChats] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const [isSidebarVisible, setSidebarVisible] = useState(false);
-
+  const user = useUser();
 
   useEffect(() => {
     const fetchChats = async () => {
       try {
         //TODO uzeti userid iz tokena
-        const response = await HttpService.get("singleChat/user/14/summary");
+       
+        const response = await HttpService.get(`singleChat/user/${user.accountId}/summary`);
         
         
         const mappedChats = response.map((chat) => ({
@@ -51,7 +53,7 @@ const ChatListScreen = () => {
 
   const handleChatPress = (chat) => {
     console.log(chat)
-    navigation.navigate("Chat", { chatId: chat.id,userId:14,name: chat.name });
+    navigation.navigate("Chat", { chatId: chat.id,userId:user.accountId,name: chat.name });
   };
 
   const handlePlusPress = () => {
