@@ -48,14 +48,6 @@ const InstructorProfileScreen = () => {
   const handlePlusPress = () => {
     console.log("Plus");
   };
- 
-  const handleClose = () => {
-    setBlurredItem(null); 
-  };
-  const handleLongPress = (item) => {
-    console.log("Long press");
-    setBlurredItem(item.id);
-  };
 
   const loadData = () => {
     return (
@@ -67,17 +59,17 @@ const InstructorProfileScreen = () => {
     );
   };
 
-  const renderAddButton=()=>(
+  const renderAddButton = () => (
     <TouchableOpacity style={styles.floatingButton} onPress={handlePlusPress}>
-        <Image
-          source={require("../assets/images/plus.png")}
-          style={styles.floatingButtonImage}
-        />
-      </TouchableOpacity>
+      <Image
+        source={require("../assets/images/plus.png")}
+        style={styles.floatingButtonImage}
+      />
+    </TouchableOpacity>
   );
 
   const renderInstructionItem = ({ item }) => (
-    <TouchableOpacity onLongPress={handleLongPress(item)}>
+    <TouchableOpacity>
       <InstructionItemComponent
         navigate={"InstructorProfileScreen"}
         course={item.course}

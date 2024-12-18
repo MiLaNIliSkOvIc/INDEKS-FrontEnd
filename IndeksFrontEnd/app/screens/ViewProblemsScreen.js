@@ -4,31 +4,31 @@ import {
   Text,
   FlatList,
   StyleSheet,
-  TouchableOpacity,
 } from "react-native";
 import Sidebar from "../components/SidebarComponent";
-import Icon from "react-native-vector-icons/FontAwesome";
 import HeaderComponent from "../components/HeaderComponent";
 import { useNavigation } from "@react-navigation/native";
+import ReportedProblemGenericComponent from "../components/ReportedProblemGenericComponent";
+import Icon from "react-native-vector-icons/FontAwesome";
 
 const data = [
   {
     id: "1",
-    icon: "comments",
+    iconName: "comments",
     title: "Prijavljeni komentari",
     count: 3,
     screen: "ReportedCommentsScreen",
   },
   {
     id: "2",
-    icon: "folder",
+    iconName: "folder",
     title: "Prijavljeni materijali",
     count: 1,
     screen: "ReportedMaterialsScreen",
   },
   {
     id: "3",
-    icon: "user",
+    iconName: "user",
     title: "Prijavljeni nalozi",
     count: 1,
     screen: "ReportedUsersScreen",
@@ -48,20 +48,9 @@ const ProblemsScreen = () => {
   };
 
   const renderItem = ({ item }) => (
-    <TouchableOpacity
-      style={styles.itemContainer}
-      onPress={() => handleItemPress(item.screen)}
-    >
-      <View style={styles.iconContainer}>
-        <Icon name={item.icon} size={24} color="#013868" />
-      </View>
-      <View style={styles.detailsContainer}>
-        <Text style={styles.itemTitle}>{item.title}</Text>
-      </View>
-      <View style={styles.countContainer}>
-        <Text style={styles.countText}>{item.count}</Text>
-      </View>
-    </TouchableOpacity>
+    <ReportedProblemGenericComponent
+      title={item.title} iconName={item.iconName} onPress={()=>handleItemPress(item.screen)} count={item.count} >
+    </ReportedProblemGenericComponent>
   );
 
   return (
@@ -126,6 +115,10 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
     fontSize: 14,
   },
+  icon:{
+    color:'#013868',
+    fontSize:24
+  }
 });
 
 export default ProblemsScreen;

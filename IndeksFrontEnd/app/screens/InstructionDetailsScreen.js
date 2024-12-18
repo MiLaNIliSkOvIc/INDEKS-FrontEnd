@@ -11,6 +11,7 @@ import {
 import Icon from "react-native-vector-icons/MaterialIcons";
 import { useNavigation } from "@react-navigation/native";
 import { useState } from "react";
+import CourseMaterialsComponent from "../components/CourseMaterialsComponent";
 
 // const courseData = {
 //   courseTitle: "Matematika 1",
@@ -136,7 +137,9 @@ const InstructionDetailsScreen = ({ route }) => {
           </TouchableOpacity>
             )}
         </View>
-
+        <CourseMaterialsComponent>
+          
+        </CourseMaterialsComponent>
         <Text style={styles.sectionTitle}>Recenzije</Text>
         <FlatList
           data={reviews}
@@ -144,6 +147,7 @@ const InstructionDetailsScreen = ({ route }) => {
           keyExtractor={(item) => item.id}
         />
       </View>
+
     </View>
   );
 };
