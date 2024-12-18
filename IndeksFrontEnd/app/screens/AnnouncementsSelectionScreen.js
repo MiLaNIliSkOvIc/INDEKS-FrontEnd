@@ -11,7 +11,6 @@ const data = [
   { id: "2", icon: "list-alt", title: "Druga godina", family: "FontAwesome" },
   { id: "3", icon: "list-alt", title: "Treća godina", family: "FontAwesome" },
   { id: "4", icon: "list-alt", title: "Četvrta godina", family: "FontAwesome" },
-  { id: "5", icon: "list-alt", title: "Drugi ciklus", family: "FontAwesome" },
 ];
 
 const AnnouncementsSelectionScreen = () => {
@@ -50,12 +49,12 @@ const AnnouncementsSelectionScreen = () => {
       <View style={styles.detailsContainer}>
         <Text style={styles.itemTitle}>{item.title}</Text>
       </View>
-      {/* Dodajemo Switch komponentu sa stanjem */}
+
       <Switch
         value={selectedItems[item.id] || false}
         onValueChange={() => toggleSwitch(item.id)}
-        trackColor={{ false: "#767577", true: "#68b7fd" }}
-        thumbColor={selectedItems[item.id] ? "#013868" : "#f4f3f4"}
+        trackColor={{ false: "#767577", true: "#013868" }}
+        thumbColor={selectedItems[item.id] ? "#68b7fd" : "#f4f3f4"}
       />
     </View>
   );

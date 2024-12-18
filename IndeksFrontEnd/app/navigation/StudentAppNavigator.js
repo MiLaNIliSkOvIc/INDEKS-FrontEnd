@@ -21,6 +21,7 @@ import SettingsScreen from "../screens/SettingsScreen";
 import SettingsPersonalDataScreen from "../screens/SettingsPersonalDataScreen";
 import ChangePasswordScreen from "../screens/ChangePasswordScreen";
 import AnnouncementsSelectionScreen from "../screens/AnnouncementsSelectionScreen";
+import RegisteredUsersScreen from "../screens/RegisteredUsersScreen";
 
 const Stack = createStackNavigator();
 
@@ -78,6 +79,10 @@ export default function StudentAppNavigator() {
       <Stack.Screen
         name="AnnouncementsSelectionScreen"
         component={AnnouncementsSelectionScreen}
+      />
+      <Stack.Screen
+        name="RegisteredUsersScreen"
+        component={RegisteredUsersScreen}
       />
     </Stack.Navigator>
   );

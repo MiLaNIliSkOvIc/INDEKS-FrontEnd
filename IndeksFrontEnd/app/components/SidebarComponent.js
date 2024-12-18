@@ -58,6 +58,12 @@ const SidebarComponent = ({ visible, onClose }) => {
       route: "SettingsScreen",
       iconType: "Feather",
     },
+    {
+      label: "Registrovani korisnici",
+      icon: "settings",
+      route: "RegisteredUsersScreen",
+      iconType: "Feather",
+    },
   ];
 
   return (

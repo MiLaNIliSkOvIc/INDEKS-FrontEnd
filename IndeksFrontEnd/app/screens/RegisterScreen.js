@@ -14,10 +14,17 @@ import colors from "../config/colors";
 import IndeksTextInput from "../components/IndeksTextInput";
 import FontAwesome5 from "react-native-vector-icons/FontAwesome5";
 import BigBasicButtonComponent from "../components/BigBasicButtonComponent";
+import authApi from "../api/auth";
 
 const RegisterScreen = () => {
   const navigation = useNavigation();
+
   const [userAccountSelected, setUserAccountSelected] = useState(true);
+  const [firstName, setFirstName] = useState("");
+  const [lastName, setLastName] = useState("");
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [repeatPassword, setRepeatPassword] = useState("");
 
   const [keyboardVisible, setKeyboardVisible] = useState(false);
   useEffect(() => {
@@ -37,6 +44,27 @@ const RegisterScreen = () => {
     navigation.navigate("Login"); // Navigacija na Login ekran
   };
 
+  const handleRegisterPress = async () => {
+    try {
+      if (password !== repeatPassword) {
+        return; //TODO: obraditi ovu gresku
+      }
+      const accountType = userAccountSelected ? "STUDENT" : "TUTOR";
+      console.log(firstName + lastName + email + password + accountType);
+      const response = await authApi.register(
+        firstName,
+        lastName,
+        email,
+        password,
+        accountType
+      );
+      console.log(response.message);
+      navigation.navigate("Login");
+    } catch (error) {
+      console.error("Registration failed", error);
+    }
+  };
+
   const handleUserAccountSelect = () => {
     if (!userAccountSelected) {
       setUserAccountSelected(true);
@@ -51,18 +79,37 @@ const RegisterScreen = () => {
     <IndeksBackground>
       <View style={styles.container}>
         <Text style={styles.title}>Registracija</Text>
-        <IndeksTextInput placeholder="Ime" style={styles.input} />
-        <IndeksTextInput placeholder="Prezime" style={styles.input} />
-        <IndeksTextInput placeholder="E-Mail" style={styles.input} />
+        <IndeksTextInput
+          placeholder="Ime"
+          style={styles.input}
+          value={firstName}
+          onChangeText={setFirstName}
+        />
+        <IndeksTextInput
+          placeholder="Prezime"
+          style={styles.input}
+          value={lastName}
+          onChangeText={setLastName}
+        />
+        <IndeksTextInput
+          placeholder="E-Mail"
+          style={styles.input}
+          value={email}
+          onChangeText={setEmail}
+        />
         <IndeksTextInput
           placeholder="Lozinka"
           style={styles.input}
           secureTextEntry={true}
+          value={password}
+          onChangeText={setPassword}
         />
         <IndeksTextInput
           placeholder="Ponovi lozinku"
           style={styles.input}
           secureTextEntry={true}
+          value={repeatPassword}
+          onChangeText={setRepeatPassword}
         />
         <View style={styles.buttonsContainer}>
           <TouchableHighlight
@@ -126,7 +173,10 @@ const RegisterScreen = () => {
             </View>
           </TouchableHighlight>
         </View>
-        <BigBasicButtonComponent style={styles.registerButton}>
+        <BigBasicButtonComponent
+          style={styles.registerButton}
+          onPress={handleRegisterPress}
+        >
           REGISTRUJ SE
         </BigBasicButtonComponent>
       </View>

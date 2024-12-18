@@ -4,13 +4,13 @@
     "slug": "IndeksFrontEnd",
     "version": "1.0.0",
     "orientation": "portrait",
-    "icon": "./app/assets/images/wallpaper.jpg",
+    "icon": "./app/assets/images/logo.png",
     "newArchEnabled": true,
     "userInterfaceStyle": "light",
     "splash": {
-      "image": "./app/assets/images/wallpaper.jpg",
-      "resizeMode": "cover",
-      "backgroundColor": "#ffffff"
+      "image": "./app/assets/images/logo.png",
+      "resizeMode": "contain",
+      "backgroundColor": "#538FB1"
     },
     "ios": {
       "supportsTablet": true

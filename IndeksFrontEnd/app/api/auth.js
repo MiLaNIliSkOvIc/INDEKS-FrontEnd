@@ -6,6 +6,15 @@ const login = (email, password) =>
     password,
   });
 
+const register = (firstName, lastName, email, password, type) =>
+  HttpService.create("auth/register", {
+    firstName,
+    lastName,
+    email,
+    password,
+    type,
+  });
 export default {
   login,
+  register,
 };
