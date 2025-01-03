@@ -128,9 +128,11 @@ const styles = StyleSheet.create({
   },
   container: {
     flex: 1,
-    justifyContent: "center",
+    flexBasis: "25%",
+    justifyContent: "flex-start",
     alignItems: "center",
     paddingHorizontal: 20,
+    paddingTop: 40,
   },
   createAccount: {
     color: colors.primary,
@@ -159,8 +161,7 @@ const styles = StyleSheet.create({
   },
   loginButton: {
     width: "65%",
-    marginVertical: 20,
-    marginTop: 40,
+    marginVertical: 10,
   },
   loginLink: {
     justifyContent: "center",
@@ -173,6 +174,8 @@ const styles = StyleSheet.create({
   logoContainer: {
     flex: 1,
     justifyContent: "center",
+    alignItems: "center",
+    paddingTop: 20,
   },
   title: {
     paddingBottom: 5,

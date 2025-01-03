@@ -111,7 +111,7 @@ const RegisterScreen = () => {
           value={repeatPassword}
           onChangeText={setRepeatPassword}
         />
-        <View style={styles.buttonsContainer}>
+        {/* <View style={styles.buttonsContainer}>
           <TouchableHighlight
             style={[
               styles.iconButton,
@@ -172,7 +172,7 @@ const RegisterScreen = () => {
               </Text>
             </View>
           </TouchableHighlight>
-        </View>
+        </View> */}
         <BigBasicButtonComponent
           style={styles.registerButton}
           onPress={handleRegisterPress}
