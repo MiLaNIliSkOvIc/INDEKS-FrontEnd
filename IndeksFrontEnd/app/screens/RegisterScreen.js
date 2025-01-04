@@ -100,6 +100,7 @@ const RegisterScreen = () => {
           value={email}
           onChangeText={setEmail}
           keyboardType="email-address"
+          autoCapitalize="none"
         />
         <IndeksTextInput
           placeholder="Lozinka"
@@ -107,6 +108,7 @@ const RegisterScreen = () => {
           secureTextEntry={true}
           value={password}
           onChangeText={setPassword}
+          autoCapitalize="none"
         />
         <IndeksTextInput
           placeholder="Ponovi lozinku"
@@ -114,6 +116,7 @@ const RegisterScreen = () => {
           secureTextEntry={true}
           value={repeatPassword}
           onChangeText={setRepeatPassword}
+          autoCapitalize="none"
         />
         {/* <View style={styles.buttonsContainer}>
           <TouchableHighlight

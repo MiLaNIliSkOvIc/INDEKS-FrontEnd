@@ -12,6 +12,8 @@ function IndeksTextInput({
   value,
   enabled,
   keyboardType,
+  autoCapitalize,
+  autoComplete,
 }) {
   return (
     <TextInput
@@ -23,6 +25,8 @@ function IndeksTextInput({
       value={value}
       enabled={enabled}
       keyboardType={keyboardType}
+      autoCapitalize={autoCapitalize}
+      autoComplete={autoComplete}
     />
   );
 }

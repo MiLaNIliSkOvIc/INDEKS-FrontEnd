@@ -82,12 +82,15 @@ const LoginScreen = () => {
             onChangeText={setEmail}
             style={styles.usernameInput}
             keyboardType="email-address"
+            autoCapitalize="none"
+            autoComplete="email"
           />
           <IndeksTextInput
             placeholder="Lozinka"
             secureTextEntry={true}
             value={password}
             onChangeText={setPassword}
+            autoCapitalize="none"
           />
         </View>
         <TouchableOpacity
