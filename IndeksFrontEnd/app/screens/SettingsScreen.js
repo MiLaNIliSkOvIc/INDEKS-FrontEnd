@@ -34,7 +34,7 @@ const data = [
     icon: "user-times",
     title: "Blokirani korisnici",
     family: "FontAwesome",
-    //screen: "ProbaScreen",
+    screen: "BlockedUsersScreen",
   },
 ];
 const SettingsScreen = () => {

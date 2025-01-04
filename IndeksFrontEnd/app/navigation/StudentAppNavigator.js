@@ -11,6 +11,7 @@ import InstructionDetailsScreen from "../screens/InstructionDetailsScreen";
 import ElementaryGroupChatScreen from "../screens/ElementaryGroupsListScreen";
 import AnnouncementsListScreen from "../screens/AnnouncementsListScreen";
 import InstructorProfileScreen from "../screens/InstructorProfileScreen";
+import BlockedUsersScreen from "../screens/BlockedUsersScreen";
 
 import ReportedCommentsScreen from "../screens/ReportedCommentsScreen";
 import ReportedMaterialsScreen from "../screens/ReportedMaterialsScreen";
@@ -83,6 +84,10 @@ export default function StudentAppNavigator() {
       <Stack.Screen
         name="RegisteredUsersScreen"
         component={RegisteredUsersScreen}
+      />
+      <Stack.Screen
+        name="BlockedUsersScreen"
+        component={BlockedUsersScreen}
       />
     </Stack.Navigator>
   );
