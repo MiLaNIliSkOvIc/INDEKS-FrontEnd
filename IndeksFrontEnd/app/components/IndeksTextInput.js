@@ -11,6 +11,7 @@ function IndeksTextInput({
   onChangeText,
   value,
   enabled,
+  keyboardType,
 }) {
   return (
     <TextInput
@@ -21,6 +22,7 @@ function IndeksTextInput({
       onChangeText={onChangeText}
       value={value}
       enabled={enabled}
+      keyboardType={keyboardType}
     />
   );
 }

@@ -81,6 +81,7 @@ const LoginScreen = () => {
             value={email}
             onChangeText={setEmail}
             style={styles.usernameInput}
+            keyboardType="email-address"
           />
           <IndeksTextInput
             placeholder="Lozinka"

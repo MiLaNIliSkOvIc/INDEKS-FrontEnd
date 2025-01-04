@@ -25,6 +25,7 @@ const RegisterScreen = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [repeatPassword, setRepeatPassword] = useState("");
+  const [passwordError, setPasswordError] = useState("");
 
   const [keyboardVisible, setKeyboardVisible] = useState(false);
   useEffect(() => {
@@ -47,8 +48,10 @@ const RegisterScreen = () => {
   const handleRegisterPress = async () => {
     try {
       if (password !== repeatPassword) {
-        return; //TODO: obraditi ovu gresku
+        setPasswordError("Lozinke se ne poklapaju.");
+        return;
       }
+      setPasswordError("");
       const accountType = userAccountSelected ? "STUDENT" : "TUTOR";
       console.log(firstName + lastName + email + password + accountType);
       const response = await authApi.register(
@@ -96,6 +99,7 @@ const RegisterScreen = () => {
           style={styles.input}
           value={email}
           onChangeText={setEmail}
+          keyboardType="email-address"
         />
         <IndeksTextInput
           placeholder="Lozinka"
@@ -173,6 +177,9 @@ const RegisterScreen = () => {
             </View>
           </TouchableHighlight>
         </View> */}
+        {passwordError ? (
+          <Text style={styles.errorText}>{passwordError}</Text>
+        ) : null}
         <BigBasicButtonComponent
           style={styles.registerButton}
           onPress={handleRegisterPress}
@@ -205,6 +212,14 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     alignItems: "center",
     paddingHorizontal: 20,
+  },
+  errorText: {
+    color: "red",
+    marginTop: 5,
+    marginRight: 10,
+    alignSelf: "flex-end",
+    fontFamily: fonts.primaryBold,
+    fontSize: 14,
   },
   footer: {
     justifyContent: "center",
