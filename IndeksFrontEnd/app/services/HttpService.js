@@ -22,7 +22,7 @@ class HttpService {
 
   handleResponse(response) {
     if (!response.ok) {
-      throw new Error(response.data || "error");
+      throw new Error(response || "error");
     }
     return response.data;
   }
@@ -31,31 +31,31 @@ class HttpService {
   async create(resource, data) {
     await this.getHeaders();
     const response = await api.post(`/${resource}`, data);
-    return response;
+    return this.handleResponse(response);
   }
 
   async get(resource) {
     await this.getHeaders();
     const response = await api.get(`/${resource}`);
-    return response;
+    return this.handleResponse(response);
   }
 
   async getById(resource, id) {
     await this.getHeaders();
     const response = await api.get(`/${resource}/${id}`);
-    return response;
+    return this.handleResponse(response);
   }
 
   async update(resource, id, data) {
     await this.getHeaders();
     const response = await api.put(`/${resource}/${id}`, data);
-    return response;
+    return this.handleResponse(response);
   }
 
   async delete(resource, id) {
     await this.getHeaders();
     const response = await api.delete(`/${resource}/${id}`);
-    return response;
+    return this.handleResponse(response);
   }
 }
 
