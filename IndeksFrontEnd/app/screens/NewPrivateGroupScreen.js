@@ -15,8 +15,8 @@ import Icon from "react-native-vector-icons/FontAwesome";
 import HttpService from "../services/HttpService"; 
 const NewPrivateGroupScreen = ({ navigation }) => {
   const [searchText, setSearchText] = useState("");
-  const [addedUsers, setAddedUsers] = useState([]); // Ovde čuvamo objekte
-  const [allUsers, setAllUsers] = useState([]); // Ovde čuvamo objekte
+  const [addedUsers, setAddedUsers] = useState([]); 
+  const [allUsers, setAllUsers] = useState([]); 
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
