@@ -15,34 +15,52 @@ import {
 import { Ionicons } from "@expo/vector-icons";
 import { useNavigation, useRoute } from "@react-navigation/native";
 import HttpService from "../services/HttpService";
+import { useUser } from "../hooks/useUser";
 
 const ChatScreen = () => {
   const navigation = useNavigation();
   const route = useRoute();
-  const { chatId, userId,name } = route.params;
+  const user = useUser();
+  var IdChat;
+  var { chatId, userId,name } = route.params;
   var br=0
   const [messages, setMessages] = useState([]);
   const [loading, setLoading] = useState(true);
   const [messageText, setMessageText] = useState("");
 
   useEffect(() => {
+     
+    
+    userId=user.accountId
     const fetchMessages = async () => {
       try {
+        IdChat=chatId;
+       
         const response = await HttpService.get(
           `singleChat/${chatId}/messages?userId=${userId}`
         );
-  
-        if (response.error || response.length === 0) {
+        
+        if (response.error) {
           console.log("Chat ne postoji. Kreiram novi chat...");
   
           
           const otherUserId = route.params.otherUserId; 
           console.log(otherUserId)
-          await HttpService.create("singleChat", {
-             userId,
-             otherUserId,
+          console.log(userId)
+          var resp = await HttpService.create("singleChat", {
+            firstParticipantId: userId,
+            secondParticipantId: otherUserId,
           });
-  
+          
+          
+          console.log(resp)
+          chatId=resp.id;
+          
+          navigation.navigate("Chat", {
+            chatId: chatId ,
+            otherUserId: otherUserId,
+            name: resp.secondParticipant.firstName
+          });
           setMessages([]);
           console.log("Novi chat kreiran uspešno.");
         } else {
@@ -77,7 +95,8 @@ const ChatScreen = () => {
     return newId;
   };
 
-  const sendMessage = async () => {
+  const sendMessage = async (chatId) => {
+    
     if (messageText.trim() === "") return;
     setMessageText(""); 
     const newMessage = {
@@ -86,7 +105,7 @@ const ChatScreen = () => {
       singleChatId: chatId,
       groupChatId: 0, 
       status: "SENT",
-      userAccountId: userId,
+      userAccountId: user.accountId,
     };
    
     const mess={
@@ -100,11 +119,13 @@ const ChatScreen = () => {
       await HttpService.create("message", newMessage);
 
       
+      console.log(user.accountId)
+      console.log(chatId)
       const response = await HttpService.get(
-        `singleChat/${chatId}/messages?userId=${userId}`
+        `singleChat/${chatId}/messages?userId=${user.accountId}`
       );
 
-     
+     console.log(response)
       const sortedMessages = response.sort((a, b) => new Date(b.time) - new Date(a.time));
 
       setMessages(sortedMessages);
@@ -175,7 +196,7 @@ const ChatScreen = () => {
           value={messageText}
           onChangeText={setMessageText}
         />
-        <TouchableOpacity style={styles.sendButton} onPress={sendMessage}>
+        <TouchableOpacity style={styles.sendButton}  onPress={() => sendMessage(chatId)} >
           <Ionicons name="send-outline" size={24} color="#007aff" />
         </TouchableOpacity>
       </View>

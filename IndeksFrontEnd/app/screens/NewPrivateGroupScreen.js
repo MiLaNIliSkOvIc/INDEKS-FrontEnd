@@ -34,6 +34,7 @@ const NewPrivateGroupScreen = ({ navigation }) => {
 
     fetchUsers();
   }, []);
+  
 
   const filteredUsers = allUsers.filter(
     (user) =>

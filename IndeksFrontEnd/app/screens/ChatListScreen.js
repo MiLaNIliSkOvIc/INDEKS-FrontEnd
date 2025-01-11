@@ -22,30 +22,36 @@ const ChatListScreen = () => {
   const user = useUser();
 
   useEffect(() => {
-    const fetchChats = async () => {
-      try {
-        //TODO uzeti userid iz tokena
-       
-        const response = await HttpService.get(`singleChat/user/${user.accountId}/summary`);
-        
-        
-        const mappedChats = response.map((chat) => ({
-          id: chat.id.toString(), 
-          name: chat.name,
-          sender: chat.sender,
-          lastMessage: chat.lastMessage,
-        }));
-
-        setChats(mappedChats); 
-      } catch (error) {
-        console.error("Error fetching chats:", error.message);
-      } finally {
-        setIsLoading(false); 
-      }
-    };
-
-    fetchChats();
-  }, []);
+    const unsubscribe = navigation.addListener('focus', () => {
+      const fetchChats = async () => {
+        try {
+          setIsLoading(true); // Postavljanje loading stanja
+          const response = await HttpService.get(`singleChat/user/${user.accountId}/summary`);
+  
+          console.log("ChatList", response);
+  
+          const mappedChats = response.map((chat) => ({
+            id: chat.id.toString(),
+            name: chat.name,
+            sender: chat.sender,
+            lastMessage: chat.lastMessage,
+          }));
+  
+          setChats(mappedChats);
+        } catch (error) {
+          console.error("Error fetching chats:", error.message);
+        } finally {
+          setIsLoading(false);
+        }
+      };
+  
+      fetchChats();
+    });
+  
+    return unsubscribe;
+  }, [navigation, user.accountId]);
+  
+  
 
   const toggleSidebar = () => {
     setSidebarVisible(!isSidebarVisible);
@@ -53,7 +59,7 @@ const ChatListScreen = () => {
 
   const handleChatPress = (chat) => {
     console.log(chat)
-    navigation.navigate("Chat", { chatId: chat.id,userId:user.accountIdx,name: chat.name });
+    navigation.navigate("Chat", { chatId: chat.id,userId:user.accountId,name: chat.name });
   };
 
   const handlePlusPress = () => {
