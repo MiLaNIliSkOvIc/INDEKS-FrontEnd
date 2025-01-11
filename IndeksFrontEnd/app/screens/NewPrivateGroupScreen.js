@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
   View,
   Text,
@@ -9,46 +9,52 @@ import {
   FlatList,
   KeyboardAvoidingView,
   Platform,
+  ActivityIndicator,
 } from "react-native";
 import Icon from "react-native-vector-icons/FontAwesome";
-
+import HttpService from "../services/HttpService"; 
 const NewPrivateGroupScreen = ({ navigation }) => {
-  console.log("Testiram komponentu");
   const [searchText, setSearchText] = useState("");
-  const [addedUsers, setAddedUsers] = useState([]);
+  const [addedUsers, setAddedUsers] = useState([]); // Ovde čuvamo objekte
+  const [allUsers, setAllUsers] = useState([]); // Ovde čuvamo objekte
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
 
-  
-  const allUsers = [
-    "milan.iliskovic@student.etf.unibl.org",
-    "dejan.janjic@student.etf.unibl.org",
-    "ana.markovic@student.etf.unibl.org",
-    "ivana.petrovic@student.etf.unibl.org",
-    "borislav.tutoric@student.etf.unibl.org",
-  ];
+  useEffect(() => {
+    const fetchUsers = async () => {
+      try {
+        const users = await HttpService.get("userAccount");
+        setAllUsers(users.map((user) => ({ id: user.account.id, email: user.account.email })));
+        setLoading(false);
+      } catch (err) {
+        setError("Greška prilikom učitavanja korisnika.");
+        setLoading(false);
+      }
+    };
 
-  
+    fetchUsers();
+  }, []);
+
   const filteredUsers = allUsers.filter(
     (user) =>
-      user.toLowerCase().includes(searchText.toLowerCase()) &&
-      !addedUsers.includes(user) 
+      user.email.toLowerCase().includes(searchText.toLowerCase()) &&
+      !addedUsers.some((added) => added.id === user.id)
   );
 
-  
   const addUser = (user) => {
     setAddedUsers([...addedUsers, user]);
-    setSearchText(""); 
+    setSearchText("");
   };
 
-  
   const removeUser = (user) => {
-    setAddedUsers(addedUsers.filter((u) => u !== user));
+    setAddedUsers(addedUsers.filter((u) => u.id !== user.id));
   };
 
-  
   const createGroup = () => {
-    console.log("Grupa kreirana sa korisnicima:", addedUsers);
-    
-    navigation.goBack();
+    if (addedUsers.length > 0) {
+      console.log("Grupa kreirana sa korisnicima:", addedUsers);
+      navigation.navigate("Chat", { otherUserId: addedUsers[0].id });
+    }
   };
 
   return (
@@ -57,7 +63,6 @@ const NewPrivateGroupScreen = ({ navigation }) => {
         behavior={Platform.OS === "ios" ? "padding" : undefined}
         style={styles.keyboardAvoidingView}
       >
-        
         <View style={styles.header}>
           <TouchableOpacity onPress={() => navigation.goBack()}>
             <Icon name="arrow-left" size={24} color="#013868" />
@@ -65,7 +70,6 @@ const NewPrivateGroupScreen = ({ navigation }) => {
           <Text style={styles.title}>Nova grupa</Text>
         </View>
 
-        
         <View style={styles.searchContainer}>
           <Icon name="search" size={20} color="#aaa" />
           <TextInput
@@ -76,28 +80,32 @@ const NewPrivateGroupScreen = ({ navigation }) => {
           />
         </View>
 
-        
-        {filteredUsers.length > 0 && (
+        {loading ? (
+          <ActivityIndicator size="large" color="#007AFF" />
+        ) : error ? (
+          <Text style={styles.errorText}>{error}</Text>
+        ) : filteredUsers.length > 0 ? (
           <FlatList
             data={filteredUsers}
-            keyExtractor={(item) => item}
+            keyExtractor={(item) => item.id.toString()} 
             renderItem={({ item }) => (
               <TouchableOpacity
                 style={styles.userItem}
                 onPress={() => addUser(item)}
               >
-                <Text style={styles.userText}>{item}</Text>
+                <Text style={styles.userText}>{item.email}</Text> 
               </TouchableOpacity>
             )}
             style={styles.userList}
           />
+        ) : (
+          <Text style={styles.noResultsText}>Nema rezultata za pretragu.</Text>
         )}
 
-        
         <View style={styles.addedUsersContainer}>
           {addedUsers.map((user) => (
-            <View style={styles.addedUserItem} key={user}>
-              <Text style={styles.addedUserText}>{user}</Text>
+            <View style={styles.addedUserItem} key={user.id}>
+              <Text style={styles.addedUserText}>{user.email}</Text>
               <TouchableOpacity onPress={() => removeUser(user)}>
                 <Icon name="times" size={20} color="#f00" />
               </TouchableOpacity>
@@ -105,7 +113,6 @@ const NewPrivateGroupScreen = ({ navigation }) => {
           ))}
         </View>
 
-        
         {addedUsers.length > 0 && (
           <TouchableOpacity style={styles.createButton} onPress={createGroup}>
             <Icon name="check" size={24} color="#fff" />
@@ -116,6 +123,7 @@ const NewPrivateGroupScreen = ({ navigation }) => {
   );
 };
 
+
 const styles = StyleSheet.create({
   container: {
     flex: 1,
@@ -125,9 +133,9 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   header: {
-    flexDirection: "row", 
-    alignItems: "center", 
-    justifyContent: "flex-start", 
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "flex-start",
     backgroundColor: "#C7C7C7",
     paddingTop: 40,
     paddingVertical: 10,
@@ -138,7 +146,7 @@ const styles = StyleSheet.create({
   title: {
     fontSize: 18,
     fontWeight: "bold",
-    marginLeft: 10, 
+    marginLeft: 10,
   },
   searchContainer: {
     flexDirection: "row",
@@ -156,7 +164,7 @@ const styles = StyleSheet.create({
     marginLeft: 10,
   },
   userList: {
-    maxHeight: 150, 
+    maxHeight: 150,
     marginHorizontal: 10,
   },
   userItem: {
@@ -194,6 +202,16 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "center",
     elevation: 5,
+  },
+  errorText: {
+    color: "red",
+    textAlign: "center",
+    marginVertical: 10,
+  },
+  noResultsText: {
+    textAlign: "center",
+    marginVertical: 10,
+    color: "#555",
   },
 });
 

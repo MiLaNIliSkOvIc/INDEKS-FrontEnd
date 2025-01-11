@@ -53,7 +53,7 @@ const ChatListScreen = () => {
 
   const handleChatPress = (chat) => {
     console.log(chat)
-    navigation.navigate("Chat", { chatId: chat.id,userId:user.accountId,name: chat.name });
+    navigation.navigate("Chat", { chatId: chat.id,userId:user.accountIdx,name: chat.name });
   };
 
   const handlePlusPress = () => {

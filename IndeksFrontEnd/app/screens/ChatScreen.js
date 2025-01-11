@@ -31,20 +31,34 @@ const ChatScreen = () => {
         const response = await HttpService.get(
           `singleChat/${chatId}/messages?userId=${userId}`
         );
-
-        
-        const sortedMessages = response.sort((a, b) => new Date(b.time) - new Date(a.time));
-
-        setMessages(sortedMessages);
+  
+        if (response.error || response.length === 0) {
+          console.log("Chat ne postoji. Kreiram novi chat...");
+  
+          
+          const otherUserId = route.params.otherUserId; 
+          console.log(otherUserId)
+          await HttpService.create("singleChat", {
+             userId,
+             otherUserId,
+          });
+  
+          setMessages([]);
+          console.log("Novi chat kreiran uspešno.");
+        } else {
+          const sortedMessages = response.sort((a, b) => new Date(b.time) - new Date(a.time));
+          setMessages(sortedMessages);
+        }
       } catch (error) {
-        console.error("Error fetching messages:", error);
+        console.error("Greška pri dohvatanju ili kreiranju chata:", error);
       } finally {
         setLoading(false);
       }
     };
-
+  
     fetchMessages();
   }, [chatId, userId]);
+  
 
   const addMessage = (newMessage) => {
     const updatedMessages = [newMessage,...messages];  

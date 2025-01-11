@@ -31,31 +31,31 @@ class HttpService {
   async create(resource, data) {
     await this.getHeaders();
     const response = await api.post(`/${resource}`, data);
-    return this.handleResponse(response);
+    return response;
   }
 
   async get(resource) {
     await this.getHeaders();
     const response = await api.get(`/${resource}`);
-    return this.handleResponse(response);
+    return response;
   }
 
   async getById(resource, id) {
     await this.getHeaders();
     const response = await api.get(`/${resource}/${id}`);
-    return this.handleResponse(response);
+    return response;
   }
 
   async update(resource, id, data) {
     await this.getHeaders();
     const response = await api.put(`/${resource}/${id}`, data);
-    return this.handleResponse(response);
+    return response;
   }
 
   async delete(resource, id) {
     await this.getHeaders();
     const response = await api.delete(`/${resource}/${id}`);
-    return this.handleResponse(response);
+    return response;
   }
 }
 
