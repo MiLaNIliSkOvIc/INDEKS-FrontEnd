@@ -22,7 +22,11 @@ class HttpService {
 
   handleResponse(response) {
     if (!response.ok) {
-      throw new Error(response || "error");
+      if (!response.ok) {
+        const error = new Error("Error");
+        error.response = response;
+        throw error;
+      }
     }
     return response.data;
   }
