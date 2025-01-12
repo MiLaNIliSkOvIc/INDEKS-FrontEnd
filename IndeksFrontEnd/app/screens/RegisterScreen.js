@@ -9,12 +9,38 @@ import {
 } from "react-native";
 import { useNavigation } from "@react-navigation/native";
 import fonts from "../config/fonts";
+import { Formik } from "formik";
+import * as Yup from "yup";
+
 import IndeksBackground from "../components/IndeksBackground";
 import colors from "../config/colors";
 import IndeksTextInput from "../components/IndeksTextInput";
 import FontAwesome5 from "react-native-vector-icons/FontAwesome5";
 import BigBasicButtonComponent from "../components/BigBasicButtonComponent";
 import authApi from "../api/auth";
+
+Yup.setLocale({
+  mixed: {
+    required: 'Polje "${label}" je obavezno.',
+  },
+  string: {
+    email: "Unesite ispravnu e-mail adresu.",
+    min: 'Polje "${label}" mora sadržavati najmanje ${min} karaktera.',
+    oneOf: 'Polje "${label}" mora se poklapati sa lozinkom.',
+  },
+});
+
+const validationSchema = Yup.object().shape({
+  firstName: Yup.string().required().label("Ime"),
+  lastName: Yup.string().required().label("Prezime"),
+  //TODO: Dodati da mora biti student.etf.unibl.org
+  email: Yup.string().required().email().label("E-Mail"),
+  password: Yup.string().required().min(8).label("Lozinka"),
+  repeatPassword: Yup.string()
+    .oneOf([Yup.ref("password"), null])
+    .required()
+    .label("Ponovljena lozinka"),
+});
 
 const RegisterScreen = () => {
   const navigation = useNavigation();
@@ -42,7 +68,7 @@ const RegisterScreen = () => {
     };
   }, []);
   const handleLoginPress = () => {
-    navigation.navigate("Login"); // Navigacija na Login ekran
+    navigation.navigate("Login");
   };
 
   const handleRegisterPress = async () => {
@@ -82,43 +108,62 @@ const RegisterScreen = () => {
     <IndeksBackground>
       <View style={styles.container}>
         <Text style={styles.title}>Registracija</Text>
-        <IndeksTextInput
-          placeholder="Ime"
-          style={styles.input}
-          value={firstName}
-          onChangeText={setFirstName}
-        />
-        <IndeksTextInput
-          placeholder="Prezime"
-          style={styles.input}
-          value={lastName}
-          onChangeText={setLastName}
-        />
-        <IndeksTextInput
-          placeholder="E-Mail"
-          style={styles.input}
-          value={email}
-          onChangeText={setEmail}
-          keyboardType="email-address"
-          autoCapitalize="none"
-        />
-        <IndeksTextInput
-          placeholder="Lozinka"
-          style={styles.input}
-          secureTextEntry={true}
-          value={password}
-          onChangeText={setPassword}
-          autoCapitalize="none"
-        />
-        <IndeksTextInput
-          placeholder="Ponovi lozinku"
-          style={styles.input}
-          secureTextEntry={true}
-          value={repeatPassword}
-          onChangeText={setRepeatPassword}
-          autoCapitalize="none"
-        />
-        {/* <View style={styles.buttonsContainer}>
+        <Formik
+          initialValues={{
+            firstName: "",
+            lastName: "",
+            email: "",
+            password: "",
+            repeatPassword: "",
+          }}
+          onSubmit={handleRegisterPress}
+          validationSchema={validationSchema}
+        >
+          {({
+            handleChange,
+            handleSubmit,
+            errors,
+            touched,
+            setFieldTouched,
+          }) => {
+            <>
+              <IndeksTextInput
+                placeholder="Ime"
+                style={styles.input}
+                onChangeText={handleChange("firstName")}
+                onBlur={() => setFieldTouched("firstName")}
+              />
+              <IndeksTextInput
+                placeholder="Prezime"
+                style={styles.input}
+                onChangeText={handleChange("lastName")}
+                onBlur={() => setFieldTouched("lastName")}
+              />
+              <IndeksTextInput
+                placeholder="E-Mail"
+                style={styles.input}
+                onChangeText={handleChange("email")}
+                onBlur={() => setFieldTouched("email")}
+                keyboardType="email-address"
+                autoCapitalize="none"
+              />
+              <IndeksTextInput
+                placeholder="Lozinka"
+                style={styles.input}
+                secureTextEntry={true}
+                onChangeText={handleChange("password")}
+                onBlur={() => setFieldTouched("password")}
+                autoCapitalize="none"
+              />
+              <IndeksTextInput
+                placeholder="Ponovljena lozinka"
+                style={styles.input}
+                secureTextEntry={true}
+                onChangeText={handleChange("repeatPassword")}
+                onBlur={() => setFieldTouched("repeatPassword")}
+                autoCapitalize="none"
+              />
+              {/* <View style={styles.buttonsContainer}>
           <TouchableHighlight
             style={[
               styles.iconButton,
@@ -180,15 +225,18 @@ const RegisterScreen = () => {
             </View>
           </TouchableHighlight>
         </View> */}
-        {passwordError ? (
-          <Text style={styles.errorText}>{passwordError}</Text>
-        ) : null}
-        <BigBasicButtonComponent
-          style={styles.registerButton}
-          onPress={handleRegisterPress}
-        >
-          REGISTRUJ SE
-        </BigBasicButtonComponent>
+              {passwordError ? (
+                <Text style={styles.errorText}>{passwordError}</Text>
+              ) : null}
+              <BigBasicButtonComponent
+                style={styles.registerButton}
+                onPress={handleRegisterPress}
+              >
+                REGISTRUJ SE
+              </BigBasicButtonComponent>
+            </>;
+          }}
+        </Formik>
       </View>
       {keyboardVisible ? null : (
         <View style={styles.footer}>

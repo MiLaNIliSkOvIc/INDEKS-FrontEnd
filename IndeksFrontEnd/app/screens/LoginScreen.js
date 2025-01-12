@@ -19,14 +19,15 @@ import BigBasicButtonComponent from "../components/BigBasicButtonComponent";
 import authApi from "../api/auth";
 import AuthContext from "../auth/context";
 import authStorage from "../auth/storage";
+import { jwtDecode } from "jwt-decode";
 
 Yup.setLocale({
   mixed: {
-    required: "Polje ${label} je obavezno.",
+    required: 'Polje "${label}" je obavezno.',
   },
   string: {
     email: "Unesite ispravnu e-mail adresu.",
-    min: "Polje ${label} mora sadržavati najmanje ${min} karaktera.",
+    min: 'Polje "${label}" mora sadržavati najmanje ${min} karaktera.',
   },
 });
 
