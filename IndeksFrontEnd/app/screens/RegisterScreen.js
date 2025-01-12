@@ -26,7 +26,6 @@ Yup.setLocale({
   string: {
     email: "Unesite ispravnu e-mail adresu.",
     min: 'Polje "${label}" mora sadržavati najmanje ${min} karaktera.',
-    oneOf: 'Polje "${label}" mora se poklapati sa lozinkom.',
   },
 });
 
@@ -37,7 +36,7 @@ const validationSchema = Yup.object().shape({
   email: Yup.string().required().email().label("E-Mail"),
   password: Yup.string().required().min(8).label("Lozinka"),
   repeatPassword: Yup.string()
-    .oneOf([Yup.ref("password"), null])
+    .oneOf([Yup.ref("password"), null], "Lozinke se ne poklapaju.")
     .required()
     .label("Ponovljena lozinka"),
 });
@@ -45,13 +44,7 @@ const validationSchema = Yup.object().shape({
 const RegisterScreen = () => {
   const navigation = useNavigation();
 
-  const [userAccountSelected, setUserAccountSelected] = useState(true);
-  const [firstName, setFirstName] = useState("");
-  const [lastName, setLastName] = useState("");
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const [repeatPassword, setRepeatPassword] = useState("");
-  const [passwordError, setPasswordError] = useState("");
+  //const [userAccountSelected, setUserAccountSelected] = useState(true);
 
   const [keyboardVisible, setKeyboardVisible] = useState(false);
   useEffect(() => {
@@ -73,13 +66,8 @@ const RegisterScreen = () => {
 
   const handleRegisterPress = async () => {
     try {
-      if (password !== repeatPassword) {
-        setPasswordError("Lozinke se ne poklapaju.");
-        return;
-      }
-      setPasswordError("");
       const accountType = userAccountSelected ? "STUDENT" : "TUTOR";
-      console.log(firstName + lastName + email + password + accountType);
+      console.log(firstName + lastName + email + password);
       const response = await authApi.register(
         firstName,
         lastName,
@@ -94,16 +82,16 @@ const RegisterScreen = () => {
     }
   };
 
-  const handleUserAccountSelect = () => {
-    if (!userAccountSelected) {
-      setUserAccountSelected(true);
-    }
-  };
-  const handleInstructorAccountSelect = () => {
-    if (userAccountSelected) {
-      setUserAccountSelected(false);
-    }
-  };
+  // const handleUserAccountSelect = () => {
+  //   if (!userAccountSelected) {
+  //     setUserAccountSelected(true);
+  //   }
+  // };
+  // const handleInstructorAccountSelect = () => {
+  //   if (userAccountSelected) {
+  //     setUserAccountSelected(false);
+  //   }
+  // };
   return (
     <IndeksBackground>
       <View style={styles.container}>
@@ -125,7 +113,7 @@ const RegisterScreen = () => {
             errors,
             touched,
             setFieldTouched,
-          }) => {
+          }) => (
             <>
               <IndeksTextInput
                 placeholder="Ime"
@@ -225,17 +213,29 @@ const RegisterScreen = () => {
             </View>
           </TouchableHighlight>
         </View> */}
-              {passwordError ? (
-                <Text style={styles.errorText}>{passwordError}</Text>
-              ) : null}
+
+              {(touched.firstName ||
+                touched.lastName ||
+                touched.email ||
+                touched.password ||
+                touched.password ||
+                touched.repeatPassword) && (
+                <Text style={styles.errorText}>
+                  {errors.firstName ||
+                    errors.lastName ||
+                    errors.email ||
+                    errors.password ||
+                    errors.repeatPassword}
+                </Text>
+              )}
               <BigBasicButtonComponent
                 style={styles.registerButton}
-                onPress={handleRegisterPress}
+                onPress={handleSubmit}
               >
                 REGISTRUJ SE
               </BigBasicButtonComponent>
-            </>;
-          }}
+            </>
+          )}
         </Formik>
       </View>
       {keyboardVisible ? null : (
@@ -265,12 +265,11 @@ const styles = StyleSheet.create({
     paddingHorizontal: 20,
   },
   errorText: {
-    color: "red",
-    marginTop: 5,
-    marginRight: 10,
     alignSelf: "flex-end",
+    color: "red",
     fontFamily: fonts.primaryBold,
-    fontSize: 14,
+    paddingRight: 10,
+    fontSize: 10,
   },
   footer: {
     justifyContent: "center",
