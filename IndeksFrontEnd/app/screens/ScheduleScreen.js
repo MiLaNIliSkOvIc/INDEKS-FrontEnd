@@ -3,17 +3,17 @@ import {
   View,
   Text,
   StyleSheet,
-  TouchableOpacity,
-  Image,
-  TextInput,
   ScrollView,
-  TouchableWithoutFeedback,
+  TextInput,
   Dimensions,
+  TouchableWithoutFeedback,
+  TouchableOpacity,
 } from "react-native";
-import Icon from "react-native-vector-icons/FontAwesome";
+import { Picker } from "@react-native-picker/picker";
 import Sidebar from "../components/SidebarComponent";
-import "react-native-gesture-handler";
+import HeaderComponent from "../components/HeaderComponent";
 import HttpService from "../services/HttpService";
+import Icon from "react-native-vector-icons/MaterialIcons";
 
 const days = ["Pon", "Uto", "Sri", "Čet", "Pet", "Sub", "Ned"];
 const times = [
@@ -42,6 +42,25 @@ const dayMapping = {
   Sub: 5,
   Ned: 6,
 };
+const options = [
+  { label: "Prva godina", value: "1" },
+  { label: "Druga godina - Računarsko inženjerstvo", value: "2" },
+  { label: "Druga godina - Softversko inženjerstvo", value: "3" },
+  { label: "Treća godina - Računarsko inženjerstvo", value: "4" },
+  { label: "Treća godina - Softversko inženjerstvo", value: "5" },
+  { label: "Četvrta godina - Računarsko inženjerstvo", value: "6" },
+  { label: "Četvrta godina - Softversko inženjerstvo", value: "7" },
+  { label: "Druga godina - Elektronika i telekomunikacije", value: "8" },
+  { label: "Treća godina - Elektronika", value: "9" },
+  { label: "Treća godina - Telekomunikacije", value: "10" },
+  { label: "Četvrta godina - Elektronika", value: "11" },
+  { label: "Četvrta godina - Telekomunikacije", value: "12" },
+  { label: "Druga godina - Elektroenergetika i automatika", value: "13" },
+  { label: "Treća godina - Automatika", value: "14" },
+  { label: "Treća godina - Elektroenergetika", value: "15" },
+  { label: "Četvrta godina - Automatika", value: "16" },
+  { label: "Četvrta godina - Elektroenergetika", value: "17" },
+];
 
 const ScheduleScreen = () => {
   const [isSidebarVisible, setSidebarVisible] = useState(false);
@@ -53,6 +72,8 @@ const ScheduleScreen = () => {
     Array(times.length).fill(Array(days.length).fill(""))
   );
   const [dimensions, setDimensions] = useState(Dimensions.get("window"));
+  const [selectedOption, setSelectedOption] = useState("Option 1");
+  const [isEditable, setIsEditable] = useState(false); // Dodato stanje za omogućavanje/onemogućavanje editovanja
 
   useEffect(() => {
     const handleResize = () => {
@@ -62,14 +83,17 @@ const ScheduleScreen = () => {
     Dimensions.addEventListener("change", handleResize);
 
     return () => {
-      //Dimensions.removeEventListener("change", handleResize);
+      // Dimensions.removeEventListener("change", handleResize);
     };
   }, []);
 
   useEffect(() => {
-    const fetchScheduleData = async (scheduleId) => {
+    const fetchScheduleData = async (scheduleId, selectedOption) => {
       try {
-        const data = await HttpService.get(`schedule/${scheduleId}/items`);
+        const data = await HttpService.get(
+          `schedule/${scheduleId}/items?option=${selectedOption}`
+        );
+
         const initialSchedule = Array(times.length)
           .fill(null)
           .map(() => Array(days.length).fill(""));
@@ -92,9 +116,9 @@ const ScheduleScreen = () => {
       }
     };
 
-    const scheduleId = 5; // Ovde moracemo dobaviti userov id vjerovatno cemo kroz token
-    fetchScheduleData(scheduleId);
-  }, []);
+    const scheduleId = 5; // Pretpostavljeni ID rasporeda
+    fetchScheduleData(scheduleId, selectedOption);
+  }, [selectedOption]);
 
   const toggleSidebar = () => {
     setSidebarVisible(!isSidebarVisible);
@@ -118,10 +142,11 @@ const ScheduleScreen = () => {
       day: dayMapping[days[dayIndex]],
       time: times[timeIndex],
       content: text,
-      scheduleId: 5, //Moracemo nekako cuvati idSchedule vezanog za usera
+      scheduleId: 5, // ID rasporeda vezan za korisnika
+      option: selectedOption,
     };
 
-    console.log("Saljemoo:", payload); // nesto moje da provjerim sta se salje na backend
+    console.log("Saljemo na backend:", payload);
 
     try {
       await HttpService.create("scheduleItem", payload);
@@ -131,26 +156,47 @@ const ScheduleScreen = () => {
   };
 
   const handleCellPress = (timeIndex, dayIndex) => {
-    setEditingCell({ timeIndex, dayIndex });
+    if (isEditable) {
+      setEditingCell({ timeIndex, dayIndex });
+    }
+  };
+
+  const toggleEditMode = () => {
+    setIsEditable((prevState) => !prevState);
   };
 
   return (
     <View style={styles.container}>
-      <View style={styles.header}>
-        <TouchableOpacity onPress={toggleSidebar}>
-          <Icon name="bars" size={30} color="#888" style={styles.headerIcon} />
-        </TouchableOpacity>
-        <Image
-          source={require("../assets/images/logo.png")}
-          style={styles.headerLogo}
-          resizeMode="contain"
-        />
-        <Text style={styles.headerText}>Raspored</Text>
-        <TouchableOpacity>
-          <Image
-            source={require("../assets/images/search.png")}
-            style={styles.headerEditIcon}
-          />
+      <HeaderComponent toggleSidebar={toggleSidebar} />
+      <Text style={styles.headerTitle}>Raspored</Text>
+
+      <View style={styles.dropdownContainer}>
+        <View style={styles.pickerWrapper}>
+          <Picker
+            selectedValue={selectedOption}
+            onValueChange={(itemValue) => setSelectedOption(itemValue)}
+            style={[styles.picker, !isEditable && styles.disabledPicker]}
+            enabled={isEditable}
+            dropdownIconColor={isEditable ? "#013868" : "#aaa"}
+          >
+            {options.map((option, index) => (
+              <Picker.Item
+                key={index}
+                label={option.label}
+                value={option.value}
+              />
+            ))}
+          </Picker>
+        </View>
+
+        <TouchableOpacity
+          style={[
+            styles.editButton,
+            { backgroundColor: isEditable ? "#D9534F" : "#013868" },
+          ]}
+          onPress={toggleEditMode}
+        >
+          <Icon name="edit" size={24} color="#fff" />
         </TouchableOpacity>
       </View>
 
@@ -188,7 +234,8 @@ const ScheduleScreen = () => {
                   >
                     <View style={styles.scheduleCell}>
                       {editingCell.timeIndex === timeIndex &&
-                      editingCell.dayIndex === dayIndex ? (
+                      editingCell.dayIndex === dayIndex &&
+                      isEditable ? (
                         <TextInput
                           style={[
                             styles.input,
@@ -234,34 +281,51 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: "#C7C7C7",
   },
-  header: {
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "space-between",
-    backgroundColor: "#C7C7C7",
-    paddingTop: 40,
-    paddingVertical: 10,
-    paddingHorizontal: 15,
-    borderBottomWidth: 1,
-    borderBottomColor: "#ddd",
-  },
-  headerIcon: {
-    width: 30,
-    height: 30,
-  },
-  headerLogo: {
-    width: 50,
-    height: 40,
-    marginRight: -70,
-  },
-  headerText: {
-    fontSize: 18,
+  headerTitle: {
+    fontSize: 22,
     fontWeight: "bold",
     color: "#013868",
+    textAlign: "center",
+    marginVertical: 15,
   },
-  headerEditIcon: {
-    width: 40,
-    height: 40,
+  dropdownContainer: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+    paddingHorizontal: 15,
+    marginBottom: 10,
+  },
+  pickerWrapper: {
+    flex: 1,
+    backgroundColor: "#fff",
+    borderRadius: 10,
+    borderWidth: 0,
+    borderColor: "#ddd",
+    overflow: "hidden",
+    marginRight: 10,
+  },
+  picker: {
+    height: 54,
+    color: "#013868",
+    fontSize: 10,
+  },
+  disabledPicker: {
+    backgroundColor: "#e0e0e0",
+    color: "#aaa",
+    opacity: 0.7,
+  },
+  editButton: {
+    width: 50,
+    height: 50,
+    backgroundColor: "#013868",
+    borderRadius: 25,
+    justifyContent: "center",
+    alignItems: "center",
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.2,
+    shadowRadius: 3,
+    elevation: 5,
   },
   daysRow: {
     flexDirection: "row",
@@ -327,3 +391,5 @@ const styles = StyleSheet.create({
 });
 
 export default ScheduleScreen;
+
+// idemoooo
