@@ -4,6 +4,7 @@ import {
   Text,
   FlatList,
   StyleSheet,
+  TouchableOpacity,
 } from "react-native";
 import IconFeather from "react-native-vector-icons/Feather";
 import HeaderComponent from "../components/HeaderComponent";
@@ -13,7 +14,7 @@ const data = [
   { id: "1", name: "Dejan Janjić", blockedSince: "8. 10. 2021." },
   { id: "2", name: "Marko Grabas", blockedSince: "27. 11. 2021." },
   { id: "3", name: "Milan Ilišković", blockedSince: "11. 10. 2021." },
-  { id: "4", name: "Igor Piljagić", blockedSince: "16. 10. 2021." }
+  { id: "4", name: "Igor Piljagić", blockedSince: "16. 10. 2021." },
 ];
 
 const BlockedUsersScreen = () => {
@@ -22,7 +23,9 @@ const BlockedUsersScreen = () => {
   const toggleSidebar = () => {
     setSidebarVisible(!isSidebarVisible);
   };
-
+  const handleUnblock = (userName) => {
+    console.log(`Odblokiraj: ${userName}`);
+  };
   const renderItem = ({ item }) => (
     <View style={styles.itemContainer}>
       <View style={styles.iconContainer}>
@@ -32,6 +35,12 @@ const BlockedUsersScreen = () => {
         <Text style={styles.nameText}>{item.name}</Text>
         <Text style={styles.dateText}>Blokiran {item.blockedSince}</Text>
       </View>
+      <TouchableOpacity
+        style={styles.unblockButton}
+        onPress={() => handleUnblock(item.name)}
+      >
+        <Text style={styles.unblockButtonText}>Odblokiraj</Text>
+      </TouchableOpacity>
     </View>
   );
 
@@ -84,7 +93,18 @@ const styles = StyleSheet.create({
   nameText: {
     fontSize: 16,
     fontWeight: "bold",
-    color:"#013868"
+    color: "#013868",
+  },
+  unblockButton: {
+    backgroundColor: "#013868",
+    paddingVertical: 6,
+    paddingHorizontal: 10,
+    borderRadius: 5,
+  },
+  unblockButtonText: {
+    color: "#fff",
+    fontWeight: "bold",
+    fontSize: 14,
   },
 });
 
