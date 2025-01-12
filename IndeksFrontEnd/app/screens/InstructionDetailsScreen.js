@@ -57,11 +57,11 @@ const reviews = [
 ];
 
 const InstructionDetailsScreen = ({ route }) => {
-  const { navigate,courseTitle, instructor, description } = route.params;
+  const { navigate, courseTitle, instructor, description } = route.params;
   const navigation = useNavigation();
 
   const back = () => {
-    console.log(navigate)
+    console.log(navigate);
     navigation.navigate(navigate);
   };
 
@@ -124,22 +124,23 @@ const InstructionDetailsScreen = ({ route }) => {
               <Text style={styles.instructor}>{instructor}</Text>
             </View>
           </View>
-          
-          <Text style={styles.sectionTitle}>Opis</Text>{
-          isEditing? (
-            <TextInput style={styles.descriptionInput} 
-            value={editableDescription} 
-            onChangeText={setEditableDescription}
-            onBlur={()=>setIsEditing(false)} autoFocus={true}/>
-          ):(
-          <TouchableOpacity onLongPress={() => setIsEditing(true)}>
-            <Text style={styles.description}>{editableDescription}</Text>
-          </TouchableOpacity>
-            )}
+
+          <Text style={styles.sectionTitle}>Opis</Text>
+          {isEditing ? (
+            <TextInput
+              style={styles.descriptionInput}
+              value={editableDescription}
+              onChangeText={setEditableDescription}
+              onBlur={() => setIsEditing(false)}
+              autoFocus={true}
+            />
+          ) : (
+            <TouchableOpacity onLongPress={() => setIsEditing(true)}>
+              <Text style={styles.description}>{editableDescription}</Text>
+            </TouchableOpacity>
+          )}
         </View>
-        <CourseMaterialsComponent>
-          
-        </CourseMaterialsComponent>
+        <CourseMaterialsComponent></CourseMaterialsComponent>
         <Text style={styles.sectionTitle}>Recenzije</Text>
         <FlatList
           data={reviews}
@@ -147,7 +148,6 @@ const InstructionDetailsScreen = ({ route }) => {
           keyExtractor={(item) => item.id}
         />
       </View>
-
     </View>
   );
 };

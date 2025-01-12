@@ -8,6 +8,7 @@ import {
   Text,
   TouchableOpacity,
   Keyboard,
+  Alert,
 } from "react-native";
 import { useNavigation } from "@react-navigation/native";
 import colors from "../config/colors";
@@ -24,12 +25,18 @@ export default function ResetPasswordScreen() {
   const handleConfirmPress = () => {
     navigation.navigate("NewPassword");
   };
+
   const handleBackToLoginPress = () => {
     navigation.navigate("Login");
   };
   const handleSendCodePress = () => {
     setEmailInputEnabled(false);
     HttpService.create(`userAccount/password-recovery?email=${email}`);
+    Alert.alert(
+      "Kod za oporavak lozinke je poslan na uneseni imejl.",
+      "Pratite dalja uputstva za oporavak lozinke.",
+      [{ text: "OK", onPress: () => console.log("OK Pressed") }]
+    );
   };
   const [keyboardVisible, setKeyboardVisible] = useState(false);
   useEffect(() => {
@@ -52,27 +59,18 @@ export default function ResetPasswordScreen() {
       <View style={styles.container}>
         <Text style={styles.title}>Oporavak lozinke</Text>
         <IndeksTextInput
-          enabled={emailInputEnabled}
           placeholder="E-Mail"
-          onChangeText={setEmail}
           value={email}
+          onChangeText={setEmail}
+          keyboardType="email-address"
+          autoCapitalize="none"
+          autoComplete="email"
         />
         <BigBasicButtonComponent
           style={styles.button}
           onPress={handleSendCodePress}
         >
           POŠALJI KOD
-        </BigBasicButtonComponent>
-        <IndeksTextInput
-          placeholder="Kod"
-          onChangeText={setCode}
-          value={code}
-        />
-        <BigBasicButtonComponent
-          style={styles.button}
-          onPress={handleConfirmPress}
-        >
-          POTVRDI
         </BigBasicButtonComponent>
       </View>
       {keyboardVisible ? null : (
@@ -88,7 +86,7 @@ export default function ResetPasswordScreen() {
 
 const styles = StyleSheet.create({
   button: {
-    width: "65%",
+    width: "85%",
     marginVertical: 15,
   },
   container: {
