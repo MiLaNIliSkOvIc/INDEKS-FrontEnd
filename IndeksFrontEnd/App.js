@@ -1,4 +1,3 @@
-// App.js
 import { React, useEffect, useState } from "react";
 import { useFonts } from "expo-font";
 import * as SplashScreen from "expo-splash-screen";

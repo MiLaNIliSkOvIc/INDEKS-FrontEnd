@@ -15,12 +15,26 @@ import colors from "../config/colors";
 import fonts from "../config/fonts";
 import { useState, useEffect } from "react";
 import HttpService from "../services/HttpService";
+import { Formik } from "formik";
+import * as Yup from "yup";
+
+Yup.setLocale({
+  mixed: {
+    required: "Polje ${label} je obavezno.",
+  },
+  string: {
+    email: "Unesite ispravnu e-mail adresu.",
+  },
+});
+
+const validationSchema = Yup.object().shape({
+  email: Yup.string().required().email().label("E-Mail"),
+});
 
 export default function ResetPasswordScreen() {
   const navigation = useNavigation();
 
-  const [email, setEmail] = useState("");
-  const [code, setCode] = useState("");
+  const [resetPasswordError, setResetPasswordError] = useState("");
   const [emailInputEnabled, setEmailInputEnabled] = useState(true);
   const handleConfirmPress = () => {
     navigation.navigate("NewPassword");
@@ -29,7 +43,7 @@ export default function ResetPasswordScreen() {
   const handleBackToLoginPress = () => {
     navigation.navigate("Login");
   };
-  const handleSendCodePress = () => {
+  const handleSendCodePress = async ({ email }) => {
     setEmailInputEnabled(false);
     HttpService.create(`userAccount/password-recovery?email=${email}`);
     Alert.alert(
@@ -58,20 +72,44 @@ export default function ResetPasswordScreen() {
       <LogoWithTitleComponent style={styles.logoContainer} />
       <View style={styles.container}>
         <Text style={styles.title}>Oporavak lozinke</Text>
-        <IndeksTextInput
-          placeholder="E-Mail"
-          value={email}
-          onChangeText={setEmail}
-          keyboardType="email-address"
-          autoCapitalize="none"
-          autoComplete="email"
-        />
-        <BigBasicButtonComponent
-          style={styles.button}
-          onPress={handleSendCodePress}
+        <Formik
+          initialValues={{ email: "" }}
+          onSubmit={(values) => handleSendCodePress(values)}
+          validationSchema={validationSchema}
         >
-          POŠALJI KOD
-        </BigBasicButtonComponent>
+          {({
+            handleChange,
+            handleBlur,
+            handleSubmit,
+            values,
+            errors,
+            touched,
+          }) => (
+            <>
+              <IndeksTextInput
+                placeholder="E-Mail"
+                value={values.email}
+                onChangeText={handleChange("email")}
+                onBlur={handleBlur("email")}
+                keyboardType="email-address"
+                autoCapitalize="none"
+                autoComplete="email"
+                editable={emailInputEnabled}
+              />
+              {touched.email && errors.email && (
+                <Text style={{ color: "red", marginBottom: 10 }}>
+                  {errors.email}
+                </Text>
+              )}
+              <BigBasicButtonComponent
+                style={styles.button}
+                onPress={handleSubmit}
+              >
+                POŠALJI KOD
+              </BigBasicButtonComponent>
+            </>
+          )}
+        </Formik>
       </View>
       {keyboardVisible ? null : (
         <View style={styles.footer}>
