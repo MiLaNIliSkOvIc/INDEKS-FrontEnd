@@ -7,7 +7,8 @@ import {
   Keyboard,
 } from "react-native";
 import { useNavigation } from "@react-navigation/native";
-import { jwtDecode } from "jwt-decode";
+import { Formik } from "formik";
+import * as Yup from "yup";
 
 import fonts from "../config/fonts";
 import IndeksBackground from "../components/IndeksBackground";
@@ -19,14 +20,28 @@ import authApi from "../api/auth";
 import AuthContext from "../auth/context";
 import authStorage from "../auth/storage";
 
+Yup.setLocale({
+  mixed: {
+    required: "Polje ${label} je obavezno.",
+  },
+  string: {
+    email: "Unesite ispravnu e-mail adresu.",
+    min: "Polje ${label} mora sadržavati najmanje ${min} karaktera.",
+  },
+});
+
+const validationSchema = Yup.object().shape({
+  email: Yup.string().required().email().label("E-Mail"),
+  password: Yup.string().required().min(8).label("Lozinka"),
+});
+
 const LoginScreen = () => {
   const authContext = useContext(AuthContext);
-
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
   const navigation = useNavigation();
 
   const [keyboardVisible, setKeyboardVisible] = useState(false);
+  const [loginError, setLoginError] = useState("");
+
   useEffect(() => {
     const showKeyboard = Keyboard.addListener("keyboardDidShow", () => {
       setKeyboardVisible(true);
@@ -41,24 +56,20 @@ const LoginScreen = () => {
     };
   }, []);
 
-  const handleLoginPress = async () => {
+  const handleLoginPress = async ({ email, password }) => {
     try {
-      console.log(email + " " + password);
+      setLoginError(""); // Reset error state
       const response = await authApi.login(email, password);
-      const token = response.token;
 
-      if (token) {
-        authStorage.storeToken(token);
-        console.log("Token saved successfully");
-
-        const user = jwtDecode(token);
-        console.log(user);
+      if (response.token) {
+        authStorage.storeToken(response.token);
+        const user = jwtDecode(response.token);
         authContext.setUser(user);
       } else {
-        console.error("Login response does not contain a token");
+        setLoginError("Neispravni kredencijali.");
       }
     } catch (error) {
-      console.error("Login failed", error);
+      setLoginError("Greška u prijavi. Molimo proverite vaše podatke.");
     }
   };
 
@@ -75,36 +86,56 @@ const LoginScreen = () => {
       <LogoWithTitleComponent style={styles.logoContainer} />
       <View style={styles.container}>
         <Text style={styles.title}>Prijava</Text>
-        <View style={styles.inputs}>
-          <IndeksTextInput
-            placeholder="E-Mail"
-            value={email}
-            onChangeText={setEmail}
-            style={styles.usernameInput}
-            keyboardType="email-address"
-            autoCapitalize="none"
-            autoComplete="email"
-          />
-          <IndeksTextInput
-            placeholder="Lozinka"
-            secureTextEntry={true}
-            value={password}
-            onChangeText={setPassword}
-            autoCapitalize="none"
-          />
-        </View>
-        <TouchableOpacity
-          style={styles.forgotPasswordButton}
-          onPress={handleForgotPasswordPress}
+        <Formik
+          initialValues={{ email: "", password: "" }}
+          onSubmit={handleLoginPress}
+          validationSchema={validationSchema}
         >
-          <Text style={styles.forgotPassword}>Zaboravljena šifra?</Text>
-        </TouchableOpacity>
-        <BigBasicButtonComponent
-          style={styles.loginButton}
-          onPress={handleLoginPress}
-        >
-          PRIJAVI SE
-        </BigBasicButtonComponent>
+          {({
+            handleChange,
+            handleSubmit,
+            errors,
+            touched,
+            setFieldTouched,
+          }) => (
+            <>
+              <View style={styles.inputs}>
+                <IndeksTextInput
+                  placeholder="E-Mail"
+                  onChangeText={handleChange("email")}
+                  onBlur={() => setFieldTouched("email")}
+                  style={styles.usernameInput}
+                  keyboardType="email-address"
+                  autoCapitalize="none"
+                  autoComplete="email"
+                />
+                <IndeksTextInput
+                  placeholder="Lozinka"
+                  secureTextEntry={true}
+                  onChangeText={handleChange("password")}
+                  autoCapitalize="none"
+                />
+                {(touched.email || touched.password) && (
+                  <Text style={styles.errorText}>
+                    {errors.email || errors.password || loginError}
+                  </Text>
+                )}
+              </View>
+              <TouchableOpacity
+                style={styles.forgotPasswordButton}
+                onPress={handleForgotPasswordPress}
+              >
+                <Text style={styles.forgotPassword}>Zaboravljena šifra?</Text>
+              </TouchableOpacity>
+              <BigBasicButtonComponent
+                style={styles.loginButton}
+                onPress={handleSubmit}
+              >
+                PRIJAVI SE
+              </BigBasicButtonComponent>
+            </>
+          )}
+        </Formik>
       </View>
       {keyboardVisible ? null : (
         <View style={styles.loginLink}>
@@ -124,12 +155,6 @@ const styles = StyleSheet.create({
     fontFamily: fonts.primaryMedium,
     fontSize: 18,
   },
-  buttonsContainer: {
-    flexDirection: "row",
-    justifyContent: "space-around",
-    width: "60%",
-    marginVertical: 20,
-  },
   container: {
     flex: 1,
     flexBasis: "25%",
@@ -144,6 +169,13 @@ const styles = StyleSheet.create({
     fontSize: 18,
     paddingLeft: 10,
   },
+  errorText: {
+    alignSelf: "flex-end",
+    color: "red",
+    fontFamily: fonts.primaryBold,
+    paddingRight: 10,
+    fontSize: 10,
+  },
   forgotPassword: {
     color: colors.primary,
     fontFamily: fonts.primaryBold,
@@ -156,16 +188,9 @@ const styles = StyleSheet.create({
   inputs: {
     width: "100%",
   },
-  line: {
-    width: "100%",
-    height: 3,
-    backgroundColor: colors.primary,
-    marginBottom: -20,
-    marginTop: 0,
-  },
   loginButton: {
     width: "65%",
-    marginVertical: 10,
+    marginVertical: 5,
   },
   loginLink: {
     justifyContent: "center",
@@ -189,7 +214,9 @@ const styles = StyleSheet.create({
     color: colors.white,
     fontFamily: fonts.primaryBold,
   },
-  usernameInput: { marginBottom: 25 },
+  usernameInput: {
+    marginBottom: 25,
+  },
 });
 
 export default LoginScreen;
