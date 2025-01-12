@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
   View,
   TextInput,
@@ -7,12 +7,58 @@ import {
   SafeAreaView,
   KeyboardAvoidingView,
   Platform,
-} from "react-native";
+  FlatList,
+  Text,
+  ActivityIndicator,
+} from "react-native";  
+
 import Icon from "react-native-vector-icons/FontAwesome";
+import HttpService from "../services/HttpService";
 
 const SearchScreen = ({ navigation }) => {
   const [searchText, setSearchText] = useState("");
+  const [users, setUsers] = useState([]);
+  const [filteredUsers, setFilteredUsers] = useState([]);
+  const [loading, setLoading] = useState(true); 
 
+  useEffect(() => {
+    const fetchUsers = async () => {
+      try {
+        const response = await HttpService.get("userAccount"); 
+        setUsers(response);
+        setFilteredUsers(response); 
+        console.log(response);
+      } catch (error) {
+        console.error("Error fetching users:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchUsers();
+  }, []);
+
+  const handleSearch = (text) => {
+    setSearchText(text);
+    const filtered = users.filter((user) =>
+      user.account.username.toLowerCase().includes(text.toLowerCase())
+    );
+    setFilteredUsers(filtered);
+  };
+
+  const handleUserSelect = (user) => {
+    navigation.navigate("Chat", {
+      chatId: null, 
+      otherUserId: user.id,
+      name: user.name,
+    });
+  };
+  const renderUserItem = ({ item }) => (
+    <TouchableOpacity style={styles.userItem} onPress={() => handleUserSelect(item)}>
+      <Text style={styles.userName}>{item.account.username || "Nepoznati korisnik"}</Text>
+    </TouchableOpacity>
+  );
+  
   return (
     <SafeAreaView style={styles.container}>
       <KeyboardAvoidingView
@@ -27,10 +73,20 @@ const SearchScreen = ({ navigation }) => {
             style={styles.input}
             placeholder="Potražite"
             value={searchText}
-            onChangeText={setSearchText}
-            autoFocus={true} // Automatski prikazuje tastaturu
+            onChangeText={handleSearch}
+            autoFocus={true}
           />
         </View>
+        {loading ? ( 
+          <ActivityIndicator size="large" color="#013868" style={styles.loader} />
+        ) : (
+          <FlatList
+            data={filteredUsers}
+            renderItem={renderUserItem}
+            keyExtractor={(item) => item.id.toString()}
+            style={styles.userList}
+          />
+        )}
       </KeyboardAvoidingView>
     </SafeAreaView>
   );
@@ -47,7 +103,6 @@ const styles = StyleSheet.create({
   header: {
     flexDirection: "row",
     alignItems: "center",
-    justifyContent: "space-between",
     backgroundColor: "#C7C7C7",
     paddingTop: 40,
     paddingVertical: 10,
@@ -63,6 +118,23 @@ const styles = StyleSheet.create({
     borderBottomWidth: 1,
     borderColor: "#ccc",
     paddingHorizontal: 5,
+  },
+  userList: {
+    paddingHorizontal: 15,
+    marginTop: 10,
+  },
+  userItem: {
+    paddingVertical: 15,
+    borderBottomWidth: 1,
+    borderBottomColor: "#ddd",
+  },
+  userName: {
+    fontSize: 16,
+    color: "#000",
+  },
+  loader: {
+    marginTop: 20,
+    alignSelf: "center",
   },
 });
 
