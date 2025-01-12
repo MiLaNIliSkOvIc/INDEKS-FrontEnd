@@ -1,64 +1,41 @@
 import React, { useState } from "react";
-import { View, Text, FlatList, StyleSheet } from "react-native";
+import {
+  View,
+  Text,
+  FlatList,
+  StyleSheet,
+  TouchableOpacity,
+} from "react-native";
 import Sidebar from "../components/SidebarComponent";
 import IconFeather from "react-native-vector-icons/Feather";
 import HeaderComponent from "../components/HeaderComponent";
 
 const data = [
-  { id: "1", name: "Dejan Janjić", registrationDate: "8. 10. 2021." },
-  { id: "2", name: "Marko Grabas", registrationDate: "27. 11. 2021." },
-  { id: "3", name: "Milan Ilišković", registrationDate: "11. 10. 2021." },
-  { id: "4", name: "Igor Piljagić", registrationDate: "16. 10. 2021." },
-  { id: "5", name: "Tijana Lazendić", registrationDate: "23. 10. 2021." },
-  { id: "6", name: "Mihajlo Ševa", registrationDate: "3. 11. 2021." },
-  { id: "7", name: "Registrovani korisnik", registrationDate: "13. 10. 2021." },
-  { id: "8", name: "Registrovani korisnik", registrationDate: "13. 10. 2021." },
-  { id: "9", name: "Registrovani korisnik", registrationDate: "13. 10. 2021." },
   {
-    id: "10",
-    name: "Registrovani korisnik",
-    registrationDate: "13. 10. 2021.",
+    id: "1",
+    name: "Dejan Janjić",
+    email: "dejan.janjic@student.etfbl.org",
+    status: "Aktivan",
   },
   {
-    id: "11",
-    name: "Registrovani korisnik",
-    registrationDate: "11. 10. 2021.",
+    id: "2",
+    name: "Marko Grabas",
+    email: "marko.grabas@student.etfbl.org",
+    status: "Suspendovan",
   },
   {
-    id: "12",
-    name: "Registrovani korisnik",
-    registrationDate: "13. 11. 2021.",
+    id: "3",
+    name: "Milan Ilišković",
+    email: "milan.iliskovic@student.etfbl.org",
+    status: "Aktivan",
   },
   {
-    id: "13",
-    name: "Registrovani korisnik",
-    registrationDate: "13. 10. 2021.",
+    id: "4",
+    name: "Igor Piljagić",
+    email: "igor.piljagic@student.etfbl.org",
+    status: "Suspendovan",
   },
-  {
-    id: "14",
-    name: "Registrovani korisnik",
-    registrationDate: "11. 10. 2021.",
-  },
-  {
-    id: "15",
-    name: "Registrovani korisnik",
-    registrationDate: "13. 11. 2021.",
-  },
-  {
-    id: "16",
-    name: "Registrovani korisnik",
-    registrationDate: "13. 10. 2021.",
-  },
-  {
-    id: "17",
-    name: "Registrovani korisnik",
-    registrationDate: "11. 10. 2021.",
-  },
-  {
-    id: "18",
-    name: "Registrovani korisnik",
-    registrationDate: "13. 11. 2021.",
-  },
+  // Dodaj i ostale korisnike
 ];
 
 const RegistredUsersScreen = () => {
@@ -68,14 +45,40 @@ const RegistredUsersScreen = () => {
     setSidebarVisible(!isSidebarVisible);
   };
 
+  const handleStatusChange = (item) => {
+    // Ovaj metod bi trebalo da menja status korisnika kada dugme bude pritisnuto
+    if (item.status === "Aktivan") {
+      item.status = "Suspendovan";
+    } else {
+      item.status = "Aktivan";
+    }
+  };
+
   const renderItem = ({ item }) => (
     <View style={styles.itemContainer}>
       <View style={styles.iconContainer}>
-        <IconFeather name="user" size={40} color="#a6a6a6" />
+        <IconFeather name="user" size={27} color="#a6a6a6" />
       </View>
       <View style={styles.detailsContainer}>
         <Text style={styles.nameText}>{item.name}</Text>
-        <Text style={styles.dateText}>Registrovan {item.registrationDate}</Text>
+        <Text style={styles.emailText}>{item.email}</Text>
+      </View>
+      <View style={styles.statusContainer}>
+        <Text style={styles.statusText}>{item.status}</Text>
+        <TouchableOpacity
+          style={[
+            styles.actionButton,
+            {
+              backgroundColor:
+                item.status === "Aktivan" ? "#FF6F61" : "#81C784",
+            },
+          ]}
+          onPress={() => handleStatusChange(item)}
+        >
+          <Text style={styles.actionText}>
+            {item.status === "Aktivan" ? "Suspenduj" : "Reaktiviraj"}
+          </Text>
+        </TouchableOpacity>
       </View>
     </View>
   );
@@ -122,15 +125,41 @@ const styles = StyleSheet.create({
     elevation: 2,
   },
   iconContainer: {
-    marginRight: 15,
+    marginRight: 10,
+    marginLeft: -8,
   },
   detailsContainer: {
     flex: 1,
   },
-  itemTitle: {
+  nameText: {
     fontSize: 16,
     fontWeight: "bold",
     color: "#013868",
+  },
+  emailText: {
+    fontSize: 11,
+    color: "#a6a6a6",
+  },
+  statusContainer: {
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  statusText: {
+    fontSize: 11,
+    fontWeight: "bold",
+    color: "#333",
+    marginBottom: 5,
+  },
+  actionButton: {
+    paddingHorizontal: 8,
+    paddingVertical: 8,
+    borderRadius: 5,
+  },
+  actionText: {
+    textAlign: "center",
+    fontSize: 10,
+    color: "#fff",
+    fontWeight: "bold",
   },
 });
 
