@@ -10,6 +10,7 @@ import Icon from "react-native-vector-icons/FontAwesome";
 import Sidebar from "../components/SidebarComponent";
 import HeaderComponent from "../components/HeaderComponent";
 import { useNavigation } from "@react-navigation/native";
+import ModalForReportedComments from "../components/ModalForReportedComments";
 
 const data = [
   {
@@ -17,6 +18,8 @@ const data = [
     icon: "comments",
     title: "Prijavljen komentar #1",
     text: "Tekst prijavljenog komentara #1",
+    reportedUser: "Reported user #1",
+    creatorOfReport: "Reported by #1",
     date: "13:40",
   },
   {
@@ -24,6 +27,8 @@ const data = [
     icon: "comments",
     title: "Prijavljen komentar #2",
     text: "Tekst prijavljenog komentara #2",
+    reportedUser: "Reported user #2",
+    creatorOfReport: "Reported by #2",
     date: "Juče",
   },
   {
@@ -31,6 +36,8 @@ const data = [
     icon: "comments",
     title: "Prijavljen komentar #3",
     text: "Tekst prijavljenog komentara #3",
+    reportedUser: "Reported user #3",
+    creatorOfReport: "Reported by #3",
     date: "28. 3. 2024.",
   },
 ];
@@ -40,24 +47,48 @@ const ReportedCommentsScreen = () => {
   const toggleSidebar = () => {
     setSidebarVisible(!isSidebarVisible);
   };
+  const [modalVisible, setModalVisible] = useState(false);
+  const [selectedItem, setSelectedItem] = useState(null);
 
   const navigation = useNavigation();
 
-  const handleItemPress = (screen) => {
-    navigation.navigate(screen);
+  const handleMorePress = (item) => {
+    setSelectedItem(item);
+    setModalVisible(true);
+  };
+
+  const handleDelete = () => {
+    console.log(`Komentar ${selectedItem.title} izbrisan`);
+    setModalVisible(false);
+  };
+
+  const handleSuspendAndDelete = () => {
+    console.log(
+      `Komentar ${selectedItem.title} izbrisan i korisnik suspendovan`
+    );
+    setModalVisible(false);
+  };
+
+  const handleCancel = () => {
+    setModalVisible(false);
   };
 
   const renderItem = ({ item }) => (
-    <TouchableOpacity style={styles.itemContainer}>
-      <View style={styles.iconContainer}>
+    <View style={styles.itemContainer}>
+      <View>
         <Icon name={item.icon} size={24} color="#013868" />
       </View>
       <View style={styles.detailsContainer}>
+        <TouchableOpacity onPress={() => handleMorePress(item)}>
+          <Icon name="ellipsis-h" style={styles.moreIcon} />
+        </TouchableOpacity>
         <Text style={styles.itemTitle}>{item.title}</Text>
         <Text style={styles.itemText}>{item.text}</Text>
+        <Text style={styles.itemCreator}>{item.creatorOfReport}</Text>
+        <Text style={styles.itemCreator}>{item.reportedUser}</Text>
         <Text style={styles.itemDate}>{item.date}</Text>
       </View>
-    </TouchableOpacity>
+    </View>
   );
 
   return (
@@ -70,6 +101,14 @@ const ReportedCommentsScreen = () => {
         keyExtractor={(item) => item.id}
       />
       <Sidebar visible={isSidebarVisible} onClose={toggleSidebar} />
+
+      <ModalForReportedComments
+        modalVisible={modalVisible}
+        setModalVisible={setModalVisible}
+        onDelete={handleDelete}
+        onSuspendAndDelete={handleSuspendAndDelete}
+        onCancel={handleCancel}
+      />
     </View>
   );
 };
@@ -120,6 +159,20 @@ const styles = StyleSheet.create({
     color: "#666",
     marginTop: 4,
     textAlign: "right",
+  },
+  itemCreator: {
+    fontSize: 12,
+    color: "#013868",
+    marginLeft: 10,
+    marginTop: 7,
+  },
+  moreIcon: {
+    color: "#013868",
+    fontSize: 27,
+    marginRight: 5,
+    marginTop: 5,
+    position: "absolute",
+    right: 0,
   },
 });
 

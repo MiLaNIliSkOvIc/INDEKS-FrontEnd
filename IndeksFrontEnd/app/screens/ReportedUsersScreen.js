@@ -10,6 +10,7 @@ import Icon from "react-native-vector-icons/FontAwesome";
 import Sidebar from "../components/SidebarComponent";
 import HeaderComponent from "../components/HeaderComponent";
 import { useNavigation } from "@react-navigation/native";
+import ModalForReportedUser from "../components/ModalForReportedUser";
 
 const data = [
   {
@@ -28,22 +29,36 @@ const ReportedUsersScreen = () => {
   };
 
   const navigation = useNavigation();
+  const [modalVisible, setModalVisible] = useState(false);
+  const [selectedItem, setSelectedItem] = useState(null);
+  const handleMorePress = (item) => {
+    setSelectedItem(item);
+    setModalVisible(true);
+  };
+  const handleSuspendAndDelete = () => {
+    console.log(`Korisnik ${selectedItem.title} suspendovan`);
+    setModalVisible(false);
+  };
 
-  const handleItemPress = (screen) => {
-    navigation.navigate(screen);
+  const handleCancel = () => {
+    console.log("Canceled.");
+    setModalVisible(false);
   };
 
   const renderItem = ({ item }) => (
-    <TouchableOpacity style={styles.itemContainer}>
-      <View style={styles.iconContainer}>
+    <View style={styles.itemContainer}>
+      <View>
         <Icon name={item.icon} size={24} color="#013868" />
       </View>
       <View style={styles.detailsContainer}>
+        <TouchableOpacity onPress={() => handleMorePress(item)}>
+          <Icon name="ellipsis-h" style={styles.moreIcon} />
+        </TouchableOpacity>
         <Text style={styles.itemTitle}>{item.title}</Text>
         <Text style={styles.itemText}>{item.text}</Text>
         <Text style={styles.itemDate}>{item.date}</Text>
       </View>
-    </TouchableOpacity>
+    </View>
   );
 
   return (
@@ -56,6 +71,12 @@ const ReportedUsersScreen = () => {
         keyExtractor={(item) => item.id}
       />
       <Sidebar visible={isSidebarVisible} onClose={toggleSidebar} />
+      <ModalForReportedUser
+        modalVisible={modalVisible}
+        setModalVisible={setModalVisible}
+        onSuspend={handleSuspendAndDelete}
+        onCancel={handleCancel}
+      ></ModalForReportedUser>
     </View>
   );
 };
@@ -106,6 +127,14 @@ const styles = StyleSheet.create({
     color: "#666",
     marginTop: 4,
     textAlign: "right",
+  },
+  moreIcon: {
+    color: "#013868",
+    fontSize: 27,
+    marginRight: 5,
+    marginTop: 5,
+    position: "absolute",
+    right: 0,
   },
 });
 
