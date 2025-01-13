@@ -1,72 +1,41 @@
-import React, { useState } from "react";
-import { View, Text, FlatList, StyleSheet } from "react-native";
+import React, { useState, useEffect } from "react";
+import { View, Text, FlatList, StyleSheet, ActivityIndicator } from "react-native";
 import Sidebar from "../components/SidebarComponent";
 import IconFeather from "react-native-vector-icons/Feather";
 import HeaderComponent from "../components/HeaderComponent";
-
-const data = [
-  { id: "1", name: "Dejan Janjić", registrationDate: "8. 10. 2021." },
-  { id: "2", name: "Marko Grabas", registrationDate: "27. 11. 2021." },
-  { id: "3", name: "Milan Ilišković", registrationDate: "11. 10. 2021." },
-  { id: "4", name: "Igor Piljagić", registrationDate: "16. 10. 2021." },
-  { id: "5", name: "Tijana Lazendić", registrationDate: "23. 10. 2021." },
-  { id: "6", name: "Mihajlo Ševa", registrationDate: "3. 11. 2021." },
-  { id: "7", name: "Registrovani korisnik", registrationDate: "13. 10. 2021." },
-  { id: "8", name: "Registrovani korisnik", registrationDate: "13. 10. 2021." },
-  { id: "9", name: "Registrovani korisnik", registrationDate: "13. 10. 2021." },
-  {
-    id: "10",
-    name: "Registrovani korisnik",
-    registrationDate: "13. 10. 2021.",
-  },
-  {
-    id: "11",
-    name: "Registrovani korisnik",
-    registrationDate: "11. 10. 2021.",
-  },
-  {
-    id: "12",
-    name: "Registrovani korisnik",
-    registrationDate: "13. 11. 2021.",
-  },
-  {
-    id: "13",
-    name: "Registrovani korisnik",
-    registrationDate: "13. 10. 2021.",
-  },
-  {
-    id: "14",
-    name: "Registrovani korisnik",
-    registrationDate: "11. 10. 2021.",
-  },
-  {
-    id: "15",
-    name: "Registrovani korisnik",
-    registrationDate: "13. 11. 2021.",
-  },
-  {
-    id: "16",
-    name: "Registrovani korisnik",
-    registrationDate: "13. 10. 2021.",
-  },
-  {
-    id: "17",
-    name: "Registrovani korisnik",
-    registrationDate: "11. 10. 2021.",
-  },
-  {
-    id: "18",
-    name: "Registrovani korisnik",
-    registrationDate: "13. 11. 2021.",
-  },
-];
+import httpService from "../services/HttpService"; 
 
 const RegistredUsersScreen = () => {
   const [isSidebarVisible, setSidebarVisible] = useState(false);
+  const [users, setUsers] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
 
   const toggleSidebar = () => {
     setSidebarVisible(!isSidebarVisible);
   };
+
+  const fetchUsers = async () => {
+    try {
+      setLoading(true);
+      const response = await httpService.get("userAccount/user-accounts/summary");
+      if (response.error) {
+        console.log(response)
+        setError(response.message || "Failed to fetch users.");
+      } else {
+        setUsers(response);
+      }
+    } catch (err) {
+      console.log("Error")
+   //  setError("An unexpected error occurred.");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchUsers();
+  }, []);
 
   const renderItem = ({ item }) => (
     <View style={styles.itemContainer}>
@@ -74,18 +43,37 @@ const RegistredUsersScreen = () => {
         <IconFeather name="user" size={40} color="#a6a6a6" />
       </View>
       <View style={styles.detailsContainer}>
-        <Text style={styles.nameText}>{item.name}</Text>
-        <Text style={styles.dateText}>Registrovan {item.registrationDate}</Text>
+        <Text style={styles.nameText}>{item.firstName + item.lastName || "Unknown User"}</Text>
+        <Text style={styles.dateText}>
+        {item.active ? "Aktivan" : "Neaktivan"}
+        </Text>
       </View>
     </View>
   );
+
+  if (loading) {
+    return (
+      <View style={styles.loadingContainer}>
+        <ActivityIndicator size="large" color="#013868" />
+        <Text>Loading users...</Text>
+      </View>
+    );
+  }
+
+  if (error) {
+    return (
+      <View style={styles.errorContainer}>
+        <Text style={styles.errorText}>{error}</Text>
+      </View>
+    );
+  }
 
   return (
     <View style={styles.container}>
       <HeaderComponent toggleSidebar={toggleSidebar} />
       <Text style={styles.headerTitle}>Registrovani korisnici</Text>
       <FlatList
-        data={data}
+        data={users}
         renderItem={renderItem}
         keyExtractor={(item) => item.id}
       />
@@ -127,10 +115,28 @@ const styles = StyleSheet.create({
   detailsContainer: {
     flex: 1,
   },
-  itemTitle: {
+  nameText: {
     fontSize: 16,
     fontWeight: "bold",
     color: "#013868",
+  },
+  dateText: {
+    fontSize: 14,
+    color: "#666",
+  },
+  loadingContainer: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  errorContainer: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  errorText: {
+    fontSize: 16,
+    color: "red",
   },
 });
 

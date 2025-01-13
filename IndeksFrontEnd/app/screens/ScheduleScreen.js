@@ -172,21 +172,19 @@ const ScheduleScreen = () => {
 
       <View style={styles.dropdownContainer}>
         <View style={styles.pickerWrapper}>
-          <Picker
-            selectedValue={selectedOption}
-            onValueChange={(itemValue) => setSelectedOption(itemValue)}
-            style={[styles.picker, !isEditable && styles.disabledPicker]}
-            enabled={isEditable}
-            dropdownIconColor={isEditable ? "#013868" : "#aaa"}
-          >
-            {options.map((option, index) => (
-              <Picker.Item
-                key={index}
-                label={option.label}
-                value={option.value}
-              />
-            ))}
+        <Picker
+          selectedValue={selectedOption}
+          onValueChange={(itemValue) => setSelectedOption(itemValue)}
+          style={[styles.picker, !isEditable && styles.disabledPicker]}
+          enabled={isEditable}
+          dropdownIconColor={isEditable ? "#013868" : "#aaa"}
+          mode="dropdown" // Ovo može pomoći
+        >
+          {options.map((option, index) => (
+            <Picker.Item key={index} label={option.label} value={option.value} />
+          ))}
           </Picker>
+
         </View>
 
         <TouchableOpacity
@@ -366,6 +364,11 @@ const styles = StyleSheet.create({
   },
   timeText: {
     fontWeight: "bold",
+  },
+  picker: {
+    height: 54,
+    width: "100%", // ili precizna širina
+    color: "#013868",
   },
   scheduleCell: {
     width: 120,
