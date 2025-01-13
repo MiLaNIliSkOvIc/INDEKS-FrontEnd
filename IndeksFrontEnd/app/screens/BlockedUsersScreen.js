@@ -10,11 +10,11 @@ import {
 import IconFeather from "react-native-vector-icons/Feather";
 import HeaderComponent from "../components/HeaderComponent";
 import Sidebar from "../components/SidebarComponent";
-import HttpService from "../services/HttpService"; 
+import HttpService from "../services/HttpService";
 import { useUser } from "../hooks/useUser";
 
 const BlockedUsersScreen = () => {
-   const user = useUser();
+  const user = useUser();
   const [isSidebarVisible, setSidebarVisible] = useState(false);
   const [blockedUsers, setBlockedUsers] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -23,15 +23,16 @@ const BlockedUsersScreen = () => {
     setSidebarVisible(!isSidebarVisible);
   };
 
+  const navigation = useNavigation();
+
   const fetchBlockedUsers = async () => {
     try {
-      console.log(user.accountId)
+      console.log(user.accountId);
       const data = await HttpService.get(`blocked-accounts/${user.accountId}`);
       if (data.error) {
-        console.log(data)
+        console.log(data);
         console.error(`Error fetching blocked users: ${data.message}`);
       } else {
-       
         setBlockedUsers(data);
       }
     } catch (error) {
@@ -42,28 +43,19 @@ const BlockedUsersScreen = () => {
   };
 
   const formatDate = (isoDate) => {
-    const date = new Date(isoDate); 
-    return date.toLocaleDateString("en-GB"); 
+    const date = new Date(isoDate);
+    return date.toLocaleDateString("en-GB");
   };
-
 
   const handleUnblock = async (blockedUserId) => {
-   
-      console.log(blockedUserId)
-      setBlockedUsers((blockedUsers) =>
-         
-        blockedUsers.filter((user) => user.id !== blockedUserId)
-      );
-      await HttpService.delete(
-        `blocked-accounts/${user.accountId}/unblock/${blockedUserId}`
-      );
-    
-      
-        
-
+    console.log(blockedUserId);
+    setBlockedUsers((blockedUsers) =>
+      blockedUsers.filter((user) => user.id !== blockedUserId)
+    );
+    await HttpService.delete(
+      `blocked-accounts/${user.accountId}/unblock/${blockedUserId}`
+    );
   };
-  
-
 
   useEffect(() => {
     fetchBlockedUsers();
@@ -75,8 +67,12 @@ const BlockedUsersScreen = () => {
         <IconFeather name="user" size={40} color="#a6a6a6" />
       </View>
       <View style={styles.detailsContainer}>
-        <Text style={styles.nameText}>{item.firstName +' '+ item.lastName}</Text>
-        <Text style={styles.dateText}>Blokiran {formatDate(item.dateBlocked)}</Text>
+        <Text style={styles.nameText}>
+          {item.firstName + " " + item.lastName}
+        </Text>
+        <Text style={styles.dateText}>
+          Blokiran {formatDate(item.dateBlocked)}
+        </Text>
       </View>
       <TouchableOpacity
         style={styles.unblockButton}
