@@ -68,7 +68,12 @@ const SettingsPersonalDataScreen = () => {
   );
   return (
     <View style={styles.container}>
-      <HeaderComponent toggleSidebar={toggleSidebar} />
+      <HeaderComponent
+        leftIcon="arrow-left"
+        leftAction={() => navigation.goBack()}
+        centerLogo={require("../assets/images/logo.png")}
+        centerText="Indeks"
+      />
       <Text style={styles.headerTitle}>Lični podaci</Text>
       <FlatList
         data={data}

@@ -49,7 +49,7 @@ const SidebarComponent = ({ visible, onClose }) => {
     {
       label: "Moja ponuda",
       icon: "book",
-      route: "InstructorProfileScreen",
+      route: "ListOfMyInstructionsScreen",
       iconType: "Feather",
     },
     {

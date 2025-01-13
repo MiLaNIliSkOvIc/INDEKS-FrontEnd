@@ -11,7 +11,7 @@ import Sidebar from "../components/SidebarComponent";
 import Icon from "react-native-vector-icons/FontAwesome";
 import HeaderComponent from "../components/HeaderComponent";
 import httpService from "../services/HttpService";
-import Announcements from "../model/Announcements"
+import Announcements from "../model/Announcements";
 
 const AnnouncementsListScreen = () => {
   const [isSidebarVisible, setSidebarVisible] = useState(false);
@@ -126,7 +126,12 @@ const AnnouncementsListScreen = () => {
 
   return (
     <View style={styles.container}>
-      <HeaderComponent toggleSidebar={toggleSidebar} />
+      <HeaderComponent
+        leftIcon="bars"
+        leftAction={toggleSidebar}
+        centerLogo={require("../assets/images/logo.png")}
+        centerText="Indeks"
+      />
       <Text style={styles.title}>Oglasi</Text>
       <FlatList
         data={yearTitles}

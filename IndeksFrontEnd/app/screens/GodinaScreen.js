@@ -9,6 +9,7 @@ import {
 } from "react-native";
 import Sidebar from "../components/SidebarComponent";
 import Icon from "react-native-vector-icons/FontAwesome";
+import HeaderComponent from "../components/HeaderComponent";
 
 const data = [
   { id: "1", icon: "calculator", title: "Matematika 1" },
@@ -56,7 +57,12 @@ const GodinaScreen = ({ route, navigation }) => {
 
   return (
     <View style={styles.container}>
-      <Header />
+      <HeaderComponent
+        leftIcon="arrow-left"
+        leftAction={() => navigation.goBack()}
+        centerLogo={require("../assets/images/logo.png")}
+        centerText="Indeks"
+      />
       <Text style={styles.title}>{title}</Text>
       <FlatList
         data={data}

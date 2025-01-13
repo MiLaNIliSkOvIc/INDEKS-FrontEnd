@@ -12,7 +12,7 @@ import { useNavigation } from "@react-navigation/native";
 import Icon from "react-native-vector-icons/FontAwesome";
 import Sidebar from "../components/SidebarComponent";
 import HttpService from "../services/HttpService";
-import { useUser } from "../hooks/useUser"
+import { useUser } from "../hooks/useUser";
 
 const ChatListScreen = () => {
   const navigation = useNavigation();
@@ -22,21 +22,23 @@ const ChatListScreen = () => {
   const user = useUser();
 
   useEffect(() => {
-    const unsubscribe = navigation.addListener('focus', () => {
+    const unsubscribe = navigation.addListener("focus", () => {
       const fetchChats = async () => {
         try {
           setIsLoading(true); // Postavljanje loading stanja
-          const response = await HttpService.get(`singleChat/user/${user.accountId}/summary`);
-  
+          const response = await HttpService.get(
+            `singleChat/user/${user.accountId}/summary`
+          );
+
           console.log("ChatList", response);
-  
+
           const mappedChats = response.map((chat) => ({
             id: chat.id.toString(),
             name: chat.name,
             sender: chat.sender,
             lastMessage: chat.lastMessage,
           }));
-  
+
           setChats(mappedChats);
         } catch (error) {
           console.error("Error fetching chats:", error.message);
@@ -44,31 +46,33 @@ const ChatListScreen = () => {
           setIsLoading(false);
         }
       };
-  
+
       fetchChats();
     });
-  
+
     return unsubscribe;
   }, [navigation, user.accountId]);
-  
-  
 
   const toggleSidebar = () => {
     setSidebarVisible(!isSidebarVisible);
   };
 
   const handleChatPress = (chat) => {
-    console.log(chat)
-    navigation.navigate("Chat", { chatId: chat.id,userId:user.accountId,name: chat.name });
+    console.log(chat);
+    navigation.navigate("Chat", {
+      chatId: chat.id,
+      userId: user.accountId,
+      name: chat.name,
+    });
   };
 
   const handlePlusPress = () => {
     console.log("Plus button pressed!");
-    navigation.navigate("NewPrivateGroupScreen")
+    navigation.navigate("NewPrivateGroupScreen");
   };
   const handleSearchPress = () => {
     console.log("Plus button pressed!");
-    navigation.navigate("SearchScreen")
+    navigation.navigate("SearchScreen");
   };
   const renderItem = ({ item }) => (
     <TouchableOpacity

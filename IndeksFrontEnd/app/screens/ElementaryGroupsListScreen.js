@@ -116,7 +116,12 @@ const ElementaryGroupsListScreen = ({ navigation }) => {
   return (
     <TouchableWithoutFeedback onPress={handleOutsidePress}>
       <View style={styles.container}>
-        <HeaderComponent toggleSidebar={toggleSidebar} />
+        <HeaderComponent
+          leftIcon="bars"
+          leftAction={toggleSidebar}
+          centerLogo={require("../assets/images/logo.png")}
+          centerText="Indeks"
+        />
         <Text style={styles.screenTitle}>Osnovne grupe</Text>
         {loading()}
         <Sidebar visible={isSidebarVisible} onClose={toggleSidebar} />

@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { View, Text, FlatList, StyleSheet } from "react-native";
 import {
   View,
   Text,
@@ -9,6 +10,7 @@ import {
 import IconFeather from "react-native-vector-icons/Feather";
 import HeaderComponent from "../components/HeaderComponent";
 import Sidebar from "../components/SidebarComponent";
+import { useNavigation } from "@react-navigation/native";
 
 const data = [
   { id: "1", name: "Dejan Janjić", blockedSince: "8. 10. 2021." },
@@ -46,7 +48,12 @@ const BlockedUsersScreen = () => {
 
   return (
     <View style={styles.container}>
-      <HeaderComponent toggleSidebar={toggleSidebar} />
+      <HeaderComponent
+        leftIcon="arrow-left"
+        leftAction={() => navigation.goBack()}
+        centerLogo={require("../assets/images/logo.png")}
+        centerText="Indeks"
+      />
       <Text style={styles.headerTitle}>Blokirani korisnici</Text>
       <FlatList
         data={data}
@@ -93,6 +100,7 @@ const styles = StyleSheet.create({
   nameText: {
     fontSize: 16,
     fontWeight: "bold",
+    color: "#013868",
     color: "#013868",
   },
   unblockButton: {
