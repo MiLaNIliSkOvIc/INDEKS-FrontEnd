@@ -37,16 +37,23 @@ const RegistredUsersScreen = () => {
     fetchUsers();
   }, []);
 
+  const handleStatusChange = (item) => {
+    // Ovaj metod bi trebalo da menja status korisnika kada dugme bude pritisnuto
+    if (item.status === "Aktivan") {
+      item.status = "Suspendovan";
+    } else {
+      item.status = "Aktivan";
+    }
+  };
+
   const renderItem = ({ item }) => (
     <View style={styles.itemContainer}>
       <View style={styles.iconContainer}>
-        <IconFeather name="user" size={40} color="#a6a6a6" />
+        <IconFeather name="user" size={27} color="#a6a6a6" />
       </View>
       <View style={styles.detailsContainer}>
-        <Text style={styles.nameText}>{item.firstName + item.lastName || "Unknown User"}</Text>
-        <Text style={styles.dateText}>
-        {item.active ? "Aktivan" : "Neaktivan"}
-        </Text>
+        <Text style={styles.nameText}>{item.name}</Text>
+        <Text style={styles.dateText}>Registrovan {item.registrationDate}</Text>
       </View>
     </View>
   );
@@ -110,7 +117,8 @@ const styles = StyleSheet.create({
     elevation: 2,
   },
   iconContainer: {
-    marginRight: 15,
+    marginRight: 10,
+    marginLeft: -8,
   },
   detailsContainer: {
     flex: 1,
@@ -137,6 +145,31 @@ const styles = StyleSheet.create({
   errorText: {
     fontSize: 16,
     color: "red",
+  },
+  emailText: {
+    fontSize: 11,
+    color: "#a6a6a6",
+  },
+  statusContainer: {
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  statusText: {
+    fontSize: 11,
+    fontWeight: "bold",
+    color: "#333",
+    marginBottom: 5,
+  },
+  actionButton: {
+    paddingHorizontal: 8,
+    paddingVertical: 8,
+    borderRadius: 5,
+  },
+  actionText: {
+    textAlign: "center",
+    fontSize: 10,
+    color: "#fff",
+    fontWeight: "bold",
   },
 });
 
