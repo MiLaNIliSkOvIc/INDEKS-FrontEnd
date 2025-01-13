@@ -86,39 +86,35 @@ const ScheduleScreen = () => {
       // Dimensions.removeEventListener("change", handleResize);
     };
   }, []);
+  const fetchScheduleData = async (scheduleId) => {
+    try {
+      const data = await HttpService.get(`schedule/${scheduleId}/items`);
 
+      const initialSchedule = Array(times.length)
+        .fill(null)
+        .map(() => Array(days.length).fill(""));
+
+      data.forEach((item) => {
+        const dayIndex = item.day;
+        const timeIndex = times.indexOf(item.time);
+        if (timeIndex !== -1 && dayIndex >= 0 && dayIndex < days.length) {
+          initialSchedule[timeIndex][dayIndex] = item.content || "";
+        }
+      });
+
+      setScheduleData(initialSchedule);
+    } catch (error) {
+      console.error("Error fetching schedule data:", error);
+      const fallbackSchedule = Array(times.length)
+        .fill(null)
+        .map(() => Array(days.length).fill(""));
+      setScheduleData(fallbackSchedule);
+    }
+  };
   useEffect(() => {
-    const fetchScheduleData = async (scheduleId, selectedOption) => {
-      try {
-        const data = await HttpService.get(
-          `schedule/${scheduleId}/items?option=${selectedOption}`
-        );
-
-        const initialSchedule = Array(times.length)
-          .fill(null)
-          .map(() => Array(days.length).fill(""));
-
-        data.forEach((item) => {
-          const dayIndex = item.day;
-          const timeIndex = times.indexOf(item.time);
-          if (timeIndex !== -1 && dayIndex >= 0 && dayIndex < days.length) {
-            initialSchedule[timeIndex][dayIndex] = item.content || "";
-          }
-        });
-
-        setScheduleData(initialSchedule);
-      } catch (error) {
-        console.error("Error fetching schedule data:", error);
-        const fallbackSchedule = Array(times.length)
-          .fill(null)
-          .map(() => Array(days.length).fill(""));
-        setScheduleData(fallbackSchedule);
-      }
-    };
-
     const scheduleId = 5; // Pretpostavljeni ID rasporeda
-    fetchScheduleData(scheduleId, selectedOption);
-  }, [selectedOption]);
+    fetchScheduleData(scheduleId);
+  }, []);
 
   const toggleSidebar = () => {
     setSidebarVisible(!isSidebarVisible);
@@ -161,13 +157,37 @@ const ScheduleScreen = () => {
     }
   };
 
-  const toggleEditMode = () => {
+  const toggleEditMode = async () => {
+    // Prebacivanje režima editovanja
     setIsEditable((prevState) => !prevState);
+
+    if (isEditable) {
+      // Ako se izlazi iz režima uređivanja, poziva se API za ažuriranje podataka
+      try {
+        const scheduleId = 5; // Pretpostavljeni ID rasporeda
+        const queryParam = `?option=${selectedOption.value}`; // Dodavanje query parametra
+
+        console.log("Šalje se API zahtev sa podacima:");
+
+        // Slanje PUT zahteva sa query parametrom
+        await HttpService.update(`schedule/${scheduleId}/update${queryParam}`);
+        // console.log(data);
+
+        console.log("Raspored uspešno ažuriran.");
+      } catch (error) {
+        console.error("Greška pri ažuriranju rasporeda:", error);
+      }
+    }
   };
 
   return (
     <View style={styles.container}>
-      <HeaderComponent toggleSidebar={toggleSidebar} />
+      <HeaderComponent
+        leftIcon="bars"
+        leftAction={toggleSidebar}
+        centerLogo={require("../assets/images/logo.png")}
+        centerText="Indeks"
+      />
       <Text style={styles.headerTitle}>Raspored</Text>
 
       <View style={styles.dropdownContainer}>

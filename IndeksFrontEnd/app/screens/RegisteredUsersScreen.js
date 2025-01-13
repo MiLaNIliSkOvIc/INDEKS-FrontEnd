@@ -98,7 +98,12 @@ const RegistredUsersScreen = () => {
 
   return (
     <View style={styles.container}>
-      <HeaderComponent toggleSidebar={toggleSidebar} />
+      <HeaderComponent
+        leftIcon="bars"
+        leftAction={toggleSidebar}
+        centerLogo={require("../assets/images/logo.png")}
+        centerText="Indeks"
+      />
       <Text style={styles.headerTitle}>Registrovani korisnici</Text>
       <FlatList
         data={users}

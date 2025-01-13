@@ -77,7 +77,13 @@ const SettingsScreen = () => {
   );
   return (
     <View style={styles.container}>
-      <HeaderComponent toggleSidebar={toggleSidebar} />
+      <HeaderComponent
+        leftIcon="bars"
+        leftAction={toggleSidebar}
+        centerLogo={require("../assets/images/logo.png")}
+        centerText="Indeks"
+      />
+
       <Text style={styles.headerTitle}>Podešavanja</Text>
       <FlatList
         data={data}

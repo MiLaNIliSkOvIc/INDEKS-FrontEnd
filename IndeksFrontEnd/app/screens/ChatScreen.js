@@ -16,55 +16,66 @@ import { Ionicons } from "@expo/vector-icons";
 import { useNavigation, useRoute } from "@react-navigation/native";
 import HttpService from "../services/HttpService";
 import { useUser } from "../hooks/useUser";
-
+import ModalBlockingUserFromChat from "../components/ModalBlockingUserFromChat";
 const ChatScreen = () => {
   const navigation = useNavigation();
   const route = useRoute();
   const user = useUser();
   var IdChat;
-  var { chatId, userId,name } = route.params;
-  var br=0
+  var { chatId, userId, name } = route.params;
+  var br = 0;
   const [messages, setMessages] = useState([]);
   const [loading, setLoading] = useState(true);
   const [messageText, setMessageText] = useState("");
+  const [isModalVisible, setIsModalVisible] = useState(false);
+
+  const handleBlockUser = () => {
+    setIsModalVisible(false);
+    // Logika za blokiranje korisnika
+  };
+
+  const formatTime = (isoDate) => {
+    const date = new Date(isoDate);
+    const hours = date.getHours().toString().padStart(2, "0");
+    const minutes = date.getMinutes().toString().padStart(2, "0");
+    return `${hours}:${minutes}`;
+  };
 
   useEffect(() => {
-     
-    
-    userId=user.accountId
+    userId = user.accountId;
     const fetchMessages = async () => {
       try {
-        IdChat=chatId;
-       
+        IdChat = chatId;
+
         const response = await HttpService.get(
           `singleChat/${chatId}/messages?userId=${userId}`
         );
-        
+
         if (response.error) {
           console.log("Chat ne postoji. Kreiram novi chat...");
-  
-          
-          const otherUserId = route.params.otherUserId; 
-          console.log(otherUserId)
-          console.log(userId)
+
+          const otherUserId = route.params.otherUserId;
+          console.log(otherUserId);
+          console.log(userId);
           var resp = await HttpService.create("singleChat", {
             firstParticipantId: userId,
             secondParticipantId: otherUserId,
           });
-          
-          
-          console.log(resp)
-          chatId=resp.id;
-          
+
+          console.log(resp);
+          chatId = resp.id;
+
           navigation.navigate("Chat", {
-            chatId: chatId ,
+            chatId: chatId,
             otherUserId: otherUserId,
-            name: resp.secondParticipant.firstName
+            name: resp.secondParticipant.firstName,
           });
           setMessages([]);
           console.log("Novi chat kreiran uspešno.");
         } else {
-          const sortedMessages = response.sort((a, b) => new Date(b.time) - new Date(a.time));
+          const sortedMessages = response.sort(
+            (a, b) => new Date(b.time) - new Date(a.time)
+          );
           setMessages(sortedMessages);
         }
       } catch (error) {
@@ -73,63 +84,60 @@ const ChatScreen = () => {
         setLoading(false);
       }
     };
-  
+
     fetchMessages();
   }, [chatId, userId]);
-  
 
   const addMessage = (newMessage) => {
-    const updatedMessages = [newMessage,...messages];  
+    const updatedMessages = [newMessage, ...messages];
     setMessages(updatedMessages);
   };
   const generateUniqueId = () => {
     let newId;
     let exists = true;
-    
-   
+
     while (exists) {
-      newId = Math.random().toString(36).substr(2, 9); 
-      exists = messages.some(message => message.id === newId); 
+      newId = Math.random().toString(36).substr(2, 9);
+      exists = messages.some((message) => message.id === newId);
     }
-  
+
     return newId;
   };
 
   const sendMessage = async (chatId) => {
-    
     if (messageText.trim() === "") return;
-    setMessageText(""); 
+    setMessageText("");
     const newMessage = {
       text: messageText,
       time: new Date().toISOString(),
       singleChatId: chatId,
-      groupChatId: 0, 
+      groupChatId: 0,
       status: "SENT",
       userAccountId: user.accountId,
     };
-   
-    const mess={
+
+    const mess = {
       id: generateUniqueId(),
       text: messageText,
       time: newMessage.time,
-      sentByUser: true
-    }
-      addMessage(mess)
+      sentByUser: true,
+    };
+    addMessage(mess);
     try {
       await HttpService.create("message", newMessage);
 
-      
-      console.log(user.accountId)
-      console.log(chatId)
+      console.log(user.accountId);
+      console.log(chatId);
       const response = await HttpService.get(
         `singleChat/${chatId}/messages?userId=${user.accountId}`
       );
 
-     console.log(response)
-      const sortedMessages = response.sort((a, b) => new Date(b.time) - new Date(a.time));
+      console.log(response);
+      const sortedMessages = response.sort(
+        (a, b) => new Date(b.time) - new Date(a.time)
+      );
 
       setMessages(sortedMessages);
-      
     } catch (error) {
       console.error("Error sending message:", error);
     }
@@ -139,11 +147,16 @@ const ChatScreen = () => {
     <View
       style={[
         styles.messageWrapper,
-        item.sentByUser ? styles.userMessageWrapper : styles.otherMessageWrapper,
+        item.sentByUser
+          ? styles.userMessageWrapper
+          : styles.otherMessageWrapper,
       ]}
     >
       {!item.sentByUser && item.profileImage && (
-        <Image source={{ uri: item.profileImage }} style={styles.profileImage} />
+        <Image
+          source={{ uri: item.profileImage }}
+          style={styles.profileImage}
+        />
       )}
       <View
         style={[
@@ -155,7 +168,7 @@ const ChatScreen = () => {
       >
         <Text style={styles.messageText}>{item.text}</Text>
         <View style={styles.timeContainer}>
-          <Text style={styles.messageTime}>{item.time}</Text>
+          <Text style={styles.messageTime}>{formatTime(item.time)}</Text>
           {item.sentByUser && (
             <Ionicons name="checkmark-done-outline" size={14} color="#999" />
           )}
@@ -174,9 +187,20 @@ const ChatScreen = () => {
           <Ionicons name="arrow-back-outline" size={24} color="black" />
         </TouchableOpacity>
         <Text style={styles.headerTitle}>{name}</Text>
-        <TouchableOpacity>
+        <TouchableOpacity onPress={() => setIsModalVisible(true)}>
           <Ionicons name="ellipsis-vertical-outline" size={24} color="black" />
         </TouchableOpacity>
+        {isModalVisible && (
+          <ModalBlockingUserFromChat
+            visible={isModalVisible}
+            onClose={() => setIsModalVisible(false)}
+            onConfirm={() => {
+              console.log("User blocked!");
+              setIsModalVisible(false);
+            }}
+            userName={name}
+          />
+        )}
       </View>
       {loading ? (
         <ActivityIndicator size="large" color="#007aff" style={styles.loader} />
@@ -185,7 +209,7 @@ const ChatScreen = () => {
           data={messages}
           renderItem={renderItem}
           keyExtractor={(item) => item.id.toString()}
-          inverted 
+          inverted
           contentContainerStyle={styles.chatContainer}
         />
       )}
@@ -196,7 +220,10 @@ const ChatScreen = () => {
           value={messageText}
           onChangeText={setMessageText}
         />
-        <TouchableOpacity style={styles.sendButton}  onPress={() => sendMessage(chatId)} >
+        <TouchableOpacity
+          style={styles.sendButton}
+          onPress={() => sendMessage(chatId)}
+        >
           <Ionicons name="send-outline" size={24} color="#007aff" />
         </TouchableOpacity>
       </View>

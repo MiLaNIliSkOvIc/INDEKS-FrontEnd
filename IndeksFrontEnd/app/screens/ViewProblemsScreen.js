@@ -1,10 +1,5 @@
 import React, { useState } from "react";
-import {
-  View,
-  Text,
-  FlatList,
-  StyleSheet,
-} from "react-native";
+import { View, Text, FlatList, StyleSheet } from "react-native";
 import Sidebar from "../components/SidebarComponent";
 import HeaderComponent from "../components/HeaderComponent";
 import { useNavigation } from "@react-navigation/native";
@@ -49,13 +44,21 @@ const ProblemsScreen = () => {
 
   const renderItem = ({ item }) => (
     <ReportedProblemGenericComponent
-      title={item.title} iconName={item.iconName} onPress={()=>handleItemPress(item.screen)} count={item.count} >
-    </ReportedProblemGenericComponent>
+      title={item.title}
+      iconName={item.iconName}
+      onPress={() => handleItemPress(item.screen)}
+      count={item.count}
+    ></ReportedProblemGenericComponent>
   );
 
   return (
     <View style={styles.container}>
-      <HeaderComponent toggleSidebar={toggleSidebar} />
+      <HeaderComponent
+        leftIcon="bars"
+        leftAction={toggleSidebar}
+        centerLogo={require("../assets/images/logo.png")}
+        centerText="Indeks"
+      />
       <Text style={styles.headerTitle}>Prijavljeni problemi</Text>
       <FlatList
         data={data}
@@ -115,10 +118,10 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
     fontSize: 14,
   },
-  icon:{
-    color:'#013868',
-    fontSize:24
-  }
+  icon: {
+    color: "#013868",
+    fontSize: 24,
+  },
 });
 
 export default ProblemsScreen;

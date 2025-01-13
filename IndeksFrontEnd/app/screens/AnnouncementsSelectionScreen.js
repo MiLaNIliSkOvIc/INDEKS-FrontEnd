@@ -5,6 +5,7 @@ import Icon from "react-native-vector-icons/FontAwesome";
 import Icon5 from "react-native-vector-icons/FontAwesome5";
 import Icon6 from "react-native-vector-icons/FontAwesome6";
 import HeaderComponent from "../components/HeaderComponent";
+import { useNavigation } from "@react-navigation/native";
 
 const data = [
   { id: "1", icon: "list-alt", title: "Prva godina", family: "FontAwesome" },
@@ -22,6 +23,8 @@ const AnnouncementsSelectionScreen = () => {
   const toggleSidebar = () => {
     setSidebarVisible(!isSidebarVisible);
   };
+
+  const navigation = useNavigation();
 
   // Funkcija za promenu stanja Switch-a
   const toggleSwitch = (id) => {
@@ -61,7 +64,12 @@ const AnnouncementsSelectionScreen = () => {
 
   return (
     <View style={styles.container}>
-      <HeaderComponent toggleSidebar={toggleSidebar} />
+      <HeaderComponent
+        leftIcon="arrow-left"
+        leftAction={() => navigation.goBack()}
+        centerLogo={require("../assets/images/logo.png")}
+        centerText="Indeks"
+      />
       <Text style={styles.headerTitle}>Odabir oglasa</Text>
       <FlatList
         data={data}

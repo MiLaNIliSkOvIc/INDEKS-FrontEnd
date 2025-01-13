@@ -78,7 +78,6 @@ const data = [
   },
 ];
 
-
 const InstructionsListScreen = () => {
   const [isSidebarVisible, setSidebarVisible] = useState(false);
 
@@ -92,7 +91,12 @@ const InstructionsListScreen = () => {
 
   return (
     <View style={styles.container}>
-      <HeaderComponent toggleSidebar={toggleSidebar} />
+      <HeaderComponent
+        leftIcon="bars"
+        leftAction={toggleSidebar}
+        centerLogo={require("../assets/images/logo.png")}
+        centerText="Indeks"
+      />
 
       <Text style={styles.title}>Instrukcije</Text>
 
@@ -100,7 +104,7 @@ const InstructionsListScreen = () => {
         data={data}
         renderItem={({ item }) => (
           <InstructionItemComponent
-          navigate={"Instruction"}
+            navigate={"Instruction"}
             course={item.course}
             teacher={item.teacher}
             rating={item.rating}
@@ -127,7 +131,7 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
     marginVertical: 10,
     color: "#013868",
-  }
+  },
 });
 
 export default InstructionsListScreen;

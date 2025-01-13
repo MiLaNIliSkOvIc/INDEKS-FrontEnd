@@ -2,24 +2,45 @@ import React from "react";
 import { View, Text, Image, TouchableOpacity, StyleSheet } from "react-native";
 import Icon from "react-native-vector-icons/FontAwesome";
 
-const HeaderComponent = ({ toggleSidebar }) => {
+const HeaderComponent = ({
+  leftIcon,
+  leftAction,
+  centerLogo,
+  centerText,
+  rightIcon,
+  rightAction,
+}) => {
   return (
     <View style={styles.header}>
-      <TouchableOpacity onPress={toggleSidebar}>
-        <Icon name="bars" size={28} color="#fff" />
-      </TouchableOpacity>
-      <Image
-        source={require("../assets/images/logo.png")}
-        style={styles.headerLogo}
-        resizeMode="contain"
-      />
-      <Text style={styles.headerText}>Indeks</Text>
-      <TouchableOpacity>
-        <Image
-          source={require("../assets/images/search.png")}
-          style={styles.icon}
-        />
-      </TouchableOpacity>
+      {/* Levi deo */}
+      {leftIcon ? (
+        <TouchableOpacity onPress={leftAction} style={styles.iconContainer}>
+          <Icon name={leftIcon} size={28} color="#fff" />
+        </TouchableOpacity>
+      ) : (
+        <View style={styles.iconPlaceholder} />
+      )}
+
+      {/* Srednji deo */}
+      <View style={styles.centerContainer}>
+        {centerLogo && (
+          <Image
+            source={centerLogo}
+            style={styles.headerLogo}
+            resizeMode="contain"
+          />
+        )}
+        {centerText && <Text style={styles.headerText}>{centerText}</Text>}
+      </View>
+
+      {/* Desni deo */}
+      {rightIcon ? (
+        <TouchableOpacity onPress={rightAction} style={styles.iconContainer}>
+          <Icon name={rightIcon} size={28} color="#fff" />
+        </TouchableOpacity>
+      ) : (
+        <View style={styles.iconPlaceholder} />
+      )}
     </View>
   );
 };
@@ -33,22 +54,32 @@ const styles = StyleSheet.create({
     paddingTop: 35,
     paddingVertical: 10,
     paddingHorizontal: 15,
+    position: "relative", // Potrebno za apsolutno pozicioniranje centra
+  },
+  centerContainer: {
+    position: "absolute", // Apsolutno centriranje
+    top: 35, // Mora biti isto kao paddingTop za pravilno poravnanje
+    left: 0,
+    right: 0,
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "center",
   },
   headerLogo: {
-    width: 100,
+    width: 40, // Veličina logotipa
     height: 40,
-    marginRight: 20,
+    marginRight: 8, // Razmak između logoa i teksta
   },
   headerText: {
-    marginRight: 30,
-    marginLeft: -100,
     fontSize: 20,
     fontWeight: "bold",
     color: "#fff",
   },
-  icon: {
-    width: 40,
-    height: 40,
+  iconContainer: {
+    paddingHorizontal: 10,
+  },
+  iconPlaceholder: {
+    width: 28, // Širina ikone za balans
   },
 });
 
