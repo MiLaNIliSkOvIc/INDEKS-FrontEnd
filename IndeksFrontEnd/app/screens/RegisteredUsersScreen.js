@@ -64,13 +64,13 @@ const RegistredUsersScreen = () => {
             styles.actionButton,
             {
               backgroundColor:
-                item.status === "Aktivan" ? "#FF6F61" : "#81C784",
+                item.active  ? "#FF6F61" : "#81C784",
             },
           ]}
           onPress={() => handleStatusChange(item)}
         >
           <Text style={styles.actionText}>
-            {item.status === "Aktivan" ? "Suspenduj" : "Reaktiviraj"}
+            {item.active ? "Suspenduj" : "Reaktiviraj"}
           </Text>
         </TouchableOpacity>
       </View>
