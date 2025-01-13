@@ -12,6 +12,7 @@ import HeaderComponent from "../components/HeaderComponent";
 import Sidebar from "../components/SidebarComponent";
 import HttpService from "../services/HttpService";
 import { useUser } from "../hooks/useUser";
+import { useNavigation } from "@react-navigation/native";
 
 const BlockedUsersScreen = () => {
   const user = useUser();
