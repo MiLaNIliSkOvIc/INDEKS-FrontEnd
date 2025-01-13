@@ -1,66 +1,123 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
   View,
   Text,
   FlatList,
   StyleSheet,
   TouchableOpacity,
+  ActivityIndicator,
 } from "react-native";
 import IconFeather from "react-native-vector-icons/Feather";
 import HeaderComponent from "../components/HeaderComponent";
 import Sidebar from "../components/SidebarComponent";
-
-const data = [
-  { id: "1", name: "Dejan Janjić", blockedSince: "8. 10. 2021." },
-  { id: "2", name: "Marko Grabas", blockedSince: "27. 11. 2021." },
-  { id: "3", name: "Milan Ilišković", blockedSince: "11. 10. 2021." },
-  { id: "4", name: "Igor Piljagić", blockedSince: "16. 10. 2021." },
-];
+import HttpService from "../services/HttpService"; 
+import { useUser } from "../hooks/useUser";
 
 const BlockedUsersScreen = () => {
+   const user = useUser();
   const [isSidebarVisible, setSidebarVisible] = useState(false);
+  const [blockedUsers, setBlockedUsers] = useState([]);
+  const [loading, setLoading] = useState(true);
 
   const toggleSidebar = () => {
     setSidebarVisible(!isSidebarVisible);
   };
-  const handleUnblock = (userName) => {
-    console.log(`Odblokiraj: ${userName}`);
+
+  const fetchBlockedUsers = async () => {
+    try {
+      console.log(user.accountId)
+      const data = await HttpService.get(`blocked-accounts/${user.accountId}`);
+      if (data.error) {
+        console.log(data)
+        console.error(`Error fetching blocked users: ${data.message}`);
+      } else {
+       
+        setBlockedUsers(data);
+      }
+    } catch (error) {
+      console.error("Error fetching blocked users:", error);
+    } finally {
+      setLoading(false);
+    }
   };
+
+  const formatDate = (isoDate) => {
+    const date = new Date(isoDate); 
+    return date.toLocaleDateString("en-GB"); 
+  };
+
+
+  const handleUnblock = async (blockedUserId) => {
+   
+      console.log(blockedUserId)
+      setBlockedUsers((blockedUsers) =>
+         
+        blockedUsers.filter((user) => user.id !== blockedUserId)
+      );
+      await HttpService.delete(
+        `blocked-accounts/${user.accountId}/unblock/${blockedUserId}`
+      );
+    
+      
+        
+
+  };
+  
+
+
+  useEffect(() => {
+    fetchBlockedUsers();
+  }, []);
+
   const renderItem = ({ item }) => (
     <View style={styles.itemContainer}>
       <View style={styles.iconContainer}>
         <IconFeather name="user" size={40} color="#a6a6a6" />
       </View>
       <View style={styles.detailsContainer}>
-        <Text style={styles.nameText}>{item.name}</Text>
-        <Text style={styles.dateText}>Blokiran {item.blockedSince}</Text>
+        <Text style={styles.nameText}>{item.firstName +' '+ item.lastName}</Text>
+        <Text style={styles.dateText}>Blokiran {formatDate(item.dateBlocked)}</Text>
       </View>
       <TouchableOpacity
         style={styles.unblockButton}
-        onPress={() => handleUnblock(item.name)}
+        onPress={() => handleUnblock(item.id)}
       >
         <Text style={styles.unblockButtonText}>Odblokiraj</Text>
       </TouchableOpacity>
     </View>
   );
 
+  if (loading) {
+    return (
+      <View style={styles.loadingContainer}>
+        <ActivityIndicator size="large" color="#013868" />
+      </View>
+    );
+  }
+
   return (
     <View style={styles.container}>
       <HeaderComponent toggleSidebar={toggleSidebar} />
       <Text style={styles.headerTitle}>Blokirani korisnici</Text>
       <FlatList
-        data={data}
+        data={blockedUsers}
         renderItem={renderItem}
-        keyExtractor={(item) => item.id}
+        keyExtractor={(item) => item.id.toString()}
       />
       <Sidebar visible={isSidebarVisible} onClose={toggleSidebar} />
     </View>
   );
 };
+
 const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: "#e6e6e6",
+  },
+  loadingContainer: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
   },
   headerTitle: {
     fontSize: 22,
@@ -94,6 +151,10 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontWeight: "bold",
     color: "#013868",
+  },
+  dateText: {
+    fontSize: 14,
+    color: "#555",
   },
   unblockButton: {
     backgroundColor: "#013868",

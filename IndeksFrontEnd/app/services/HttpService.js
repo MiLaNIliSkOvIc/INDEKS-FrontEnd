@@ -52,9 +52,9 @@ class HttpService {
     return this.handleResponse(response);
   }
 
-  async delete(resource, id) {
+  async delete(resource) {
     await this.getHeaders();
-    const response = await api.delete(`/${resource}/${id}`);
+    const response = await api.delete(`/${resource}`);
     return this.handleResponse(response);
   }
 }

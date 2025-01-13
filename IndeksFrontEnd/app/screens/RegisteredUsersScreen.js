@@ -39,13 +39,15 @@ const RegistredUsersScreen = () => {
     fetchUsers();
   }, []);
 
-  const handleStatusChange = (item) => {
+  const handleStatusChange = async (item) => {
    
-    if (item.status === "Aktivan") {
-      item.status = "Suspendovan";
-    } else {
-      item.status = "Aktivan";
-    }
+    const updatedUsers = users.map((user) =>
+      user.id === item.id ? { ...user, active: !user.active } : user
+    );
+    console.log(item.id)
+    await httpService.create(`userAccount/${item.id}/suspend`);
+    setUsers(updatedUsers);
+    
   };
 
   const renderItem = ({ item }) => (
@@ -58,7 +60,7 @@ const RegistredUsersScreen = () => {
         <Text style={styles.emailText}>{item.email}</Text>
       </View>
       <View style={styles.statusContainer}>
-        <Text style={styles.statusText}> {item.active ? "Aktivan" : "Suspendovan"}</Text>
+        <Text style={styles.statusText}> {item.active ?  "Suspendovan" : "Aktivan"}</Text>
         <TouchableOpacity
           style={[
             styles.actionButton,
