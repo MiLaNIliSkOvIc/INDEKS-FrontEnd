@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { View, Text, FlatList, StyleSheet, ActivityIndicator } from "react-native";
+import { View, Text, FlatList, StyleSheet, ActivityIndicator,TouchableOpacity } from "react-native";
 import Sidebar from "../components/SidebarComponent";
 import IconFeather from "react-native-vector-icons/Feather";
 import HeaderComponent from "../components/HeaderComponent";
@@ -23,6 +23,7 @@ const RegistredUsersScreen = () => {
         console.log(response)
         setError(response.message || "Failed to fetch users.");
       } else {
+        console.log(response)
         setUsers(response);
       }
     } catch (err) {
@@ -34,11 +35,12 @@ const RegistredUsersScreen = () => {
   };
 
   useEffect(() => {
+    
     fetchUsers();
   }, []);
 
   const handleStatusChange = (item) => {
-    // Ovaj metod bi trebalo da menja status korisnika kada dugme bude pritisnuto
+   
     if (item.status === "Aktivan") {
       item.status = "Suspendovan";
     } else {
@@ -52,8 +54,25 @@ const RegistredUsersScreen = () => {
         <IconFeather name="user" size={27} color="#a6a6a6" />
       </View>
       <View style={styles.detailsContainer}>
-        <Text style={styles.nameText}>{item.name}</Text>
-        <Text style={styles.dateText}>Registrovan {item.registrationDate}</Text>
+        <Text style={styles.nameText}>{item.firstName + ' ' +item.lastName}</Text>
+        <Text style={styles.emailText}>{item.email}</Text>
+      </View>
+      <View style={styles.statusContainer}>
+        <Text style={styles.statusText}> {item.active ? "Aktivan" : "Suspendovan"}</Text>
+        <TouchableOpacity
+          style={[
+            styles.actionButton,
+            {
+              backgroundColor:
+                item.status === "Aktivan" ? "#FF6F61" : "#81C784",
+            },
+          ]}
+          onPress={() => handleStatusChange(item)}
+        >
+          <Text style={styles.actionText}>
+            {item.status === "Aktivan" ? "Suspenduj" : "Reaktiviraj"}
+          </Text>
+        </TouchableOpacity>
       </View>
     </View>
   );
