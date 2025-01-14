@@ -24,6 +24,15 @@
     "web": {
       "favicon": "./app/assets/images/favicon.png"
     },
-    "plugins": ["expo-font", "expo-secure-store"]
+    "plugins": [
+      "expo-font",
+      "expo-secure-store"
+    ],
+    "extra": {
+      "eas": {
+        "projectId": "38e1ad20-eda9-4cb6-89fc-c66fc5b276c7"
+      }
+    },
+    "owner": "indeks.aplikacija"
   }
 }

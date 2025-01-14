@@ -1,4 +1,5 @@
 import { createStackNavigator } from "@react-navigation/stack";
+import * as Notifications from "expo-notifications";
 
 import ChatList from "../screens/ChatListScreen";
 import ChatScreen from "../screens/ChatScreen";
@@ -12,6 +13,7 @@ import ElementaryGroupChatScreen from "../screens/ElementaryGroupsListScreen";
 import AnnouncementsListScreen from "../screens/AnnouncementsListScreen";
 import InstructorProfileScreen from "../screens/InstructorProfileScreen";
 import BlockedUsersScreen from "../screens/BlockedUsersScreen";
+import expoPushTokensApi from "../api/expoPushTokens";
 
 import ReportedCommentsScreen from "../screens/ReportedCommentsScreen";
 import ReportedMaterialsScreen from "../screens/ReportedMaterialsScreen";
@@ -25,10 +27,27 @@ import AnnouncementsSelectionScreen from "../screens/AnnouncementsSelectionScree
 import RegisteredUsersScreen from "../screens/RegisteredUsersScreen";
 import AddingNewInstructionOfferScreen from "../screens/AddingNewInstructionOfferScreen";
 import ListOfMyInstructionsScreen from "../screens/ListOfMyInstructionsScreen";
+import { useEffect } from "react";
+import Constants from "expo-constants";
 
 const Stack = createStackNavigator();
 
 export default function StudentAppNavigator() {
+  useEffect(() => {
+    registerForPushNotifications();
+  }, []);
+  const registerForPushNotifications = async () => {
+    try {
+      const permission = await Notifications.getPermissionsAsync();
+      if (!permission.granted) return;
+      const token = await Notifications.getExpoPushTokenAsync({
+        projectId: Constants.expoConfig.extra.eas.projectId,
+      });
+      console.log(expoPushTokensApi.register(token));
+    } catch (error) {
+      console.log("error getting a push token", error);
+    }
+  };
   return (
     <Stack.Navigator screenOptions={{ headerShown: false }}>
       <Stack.Screen name="ChatList" component={ChatList} />
