@@ -22,7 +22,7 @@ const ChatScreen = () => {
   const route = useRoute();
   const user = useUser();
   var IdChat;
-  var { chatId, userId, name } = route.params;
+  var { chatId, userId, name, group } = route.params;
   var br = 0;
   const [messages, setMessages] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -46,29 +46,40 @@ const ChatScreen = () => {
     const fetchMessages = async () => {
       try {
         IdChat = chatId;
-
-        const response = await HttpService.get(
-          `singleChat/${chatId}/messages?userId=${userId}`
-        );
-
-        if (response.error) {
+        let response;
+       
+        if (group) {
+         
+          response = await HttpService.get(
+            `privateGroup/${chatId}/messages?userId=${userId}`
+          );
+        } else {
+          
+          response = await HttpService.get(
+            `singleChat/${chatId}/messages?userId=${userId}`
+          );
+        }
+       
+        if (response.error && !group) {
           console.log("Chat ne postoji. Kreiram novi chat...");
-
+  
           const otherUserId = route.params.otherUserId;
           console.log(otherUserId);
           console.log(userId);
-          var resp = await HttpService.create("singleChat", {
+  
+          const resp = await HttpService.create("singleChat", {
             firstParticipantId: userId,
             secondParticipantId: otherUserId,
           });
-
-          console.log(resp);
+  
+         
           chatId = resp.id;
-
+  
           navigation.navigate("Chat", {
             chatId: chatId,
             otherUserId: otherUserId,
             name: resp.secondParticipant.firstName,
+            group: false,
           });
           setMessages([]);
           console.log("Novi chat kreiran uspešno.");
@@ -76,6 +87,7 @@ const ChatScreen = () => {
           const sortedMessages = response.sort(
             (a, b) => new Date(b.time) - new Date(a.time)
           );
+          console.log(sortedMessages)
           setMessages(sortedMessages);
         }
       } catch (error) {
@@ -84,9 +96,9 @@ const ChatScreen = () => {
         setLoading(false);
       }
     };
-
+  
     fetchMessages();
-  }, [chatId, userId]);
+  }, [chatId, userId, group]);
 
   const addMessage = (newMessage) => {
     const updatedMessages = [newMessage, ...messages];
@@ -110,8 +122,8 @@ const ChatScreen = () => {
     const newMessage = {
       text: messageText,
       time: new Date().toISOString(),
-      singleChatId: chatId,
-      groupChatId: 0,
+      singleChatId: 0,
+      groupChatId: chatId,
       status: "SENT",
       userAccountId: user.accountId,
     };
@@ -128,9 +140,16 @@ const ChatScreen = () => {
 
       console.log(user.accountId);
       console.log(chatId);
-      const response = await HttpService.get(
-        `singleChat/${chatId}/messages?userId=${user.accountId}`
-      );
+      let response;
+      if (group) { 
+        response = await HttpService.get(
+          `privateGroup/${chatId}/messages?userId=${userId}`
+        );
+      } else {  
+        response = await HttpService.get(
+          `singleChat/${chatId}/messages?userId=${userId}`
+        );
+      }
 
       console.log(response);
       const sortedMessages = response.sort(
@@ -152,12 +171,6 @@ const ChatScreen = () => {
           : styles.otherMessageWrapper,
       ]}
     >
-      {!item.sentByUser && item.profileImage && (
-        <Image
-          source={{ uri: item.profileImage }}
-          style={styles.profileImage}
-        />
-      )}
       <View
         style={[
           styles.messageContainer,
@@ -166,6 +179,10 @@ const ChatScreen = () => {
             : styles.otherMessageContainer,
         ]}
       >
+        {/* Prikaz imena unutar bijelog okvira iznad poruke */}
+        {!item.sentByUser && (
+          <Text style={styles.senderName}>{item.senderFullName}</Text>
+        )}
         <Text style={styles.messageText}>{item.text}</Text>
         <View style={styles.timeContainer}>
           <Text style={styles.messageTime}>{formatTime(item.time)}</Text>
@@ -290,6 +307,7 @@ const styles = StyleSheet.create({
     alignSelf: "flex-start",
   },
   messageText: {
+    marginLeft : 5,
     fontSize: 16,
     color: "#000",
   },
@@ -324,6 +342,19 @@ const styles = StyleSheet.create({
   },
   sendButton: {
     marginLeft: 10,
+  },
+  username: {
+    fontSize: 14,
+    fontWeight: "bold",
+    color: "#555",
+    marginBottom: 5, 
+    alignSelf: "flex-start",
+  },
+  senderName: {
+    fontSize: 14,
+    fontWeight: "bold",
+    color: "#555",
+    marginBottom: 5, 
   },
 });
 
