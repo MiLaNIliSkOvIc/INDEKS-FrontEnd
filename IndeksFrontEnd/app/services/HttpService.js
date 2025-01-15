@@ -52,11 +52,6 @@ class HttpService {
     const response = await api.put(`/${resource}`, data);
     return this.handleResponse(response);
   }
-  async update(resource, id, data) {
-    await this.getHeaders();
-    const response = await api.put(`/${resource}/${id}`, data);
-    return this.handleResponse(response);
-  }
 
   async delete(resource) {
     await this.getHeaders();

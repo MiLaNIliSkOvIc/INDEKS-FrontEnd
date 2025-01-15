@@ -61,7 +61,7 @@ const LoginScreen = () => {
     try {
       setLoginError(""); // Reset error state
       const response = await authApi.login(email, password);
-
+      console.log(response);
       if (response.token) {
         authStorage.storeToken(response.token);
         const user = jwtDecode(response.token);

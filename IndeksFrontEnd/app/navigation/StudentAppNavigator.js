@@ -29,25 +29,49 @@ import AddingNewInstructionOfferScreen from "../screens/AddingNewInstructionOffe
 import ListOfMyInstructionsScreen from "../screens/ListOfMyInstructionsScreen";
 import { useEffect } from "react";
 import Constants from "expo-constants";
+import { useUser } from "../hooks/useUser";
 
 const Stack = createStackNavigator();
 
 export default function StudentAppNavigator() {
+  const user = useUser();
   useEffect(() => {
+    const registerForPushNotifications = async () => {
+      try {
+        const permission = await Notifications.getPermissionsAsync();
+        if (!permission.granted) return;
+
+        const token = await Notifications.getExpoPushTokenAsync({
+          projectId: Constants.expoConfig.extra.eas.projectId,
+        });
+        const encodedToken = token.data
+          .replace(/\[/g, "%5B")
+          .replace(/\]/g, "%5D"); // promijenim [ i ] u odgovarajuce kodove za url
+        expoPushTokensApi.register(encodedToken, user.accountId);
+      } catch (error) {
+        console.log("error getting a push token", error);
+      }
+    };
+
     registerForPushNotifications();
-  }, []);
-  const registerForPushNotifications = async () => {
-    try {
-      const permission = await Notifications.getPermissionsAsync();
-      if (!permission.granted) return;
-      const token = await Notifications.getExpoPushTokenAsync({
-        projectId: Constants.expoConfig.extra.eas.projectId,
-      });
-      console.log(expoPushTokensApi.register(token));
-    } catch (error) {
-      console.log("error getting a push token", error);
-    }
-  };
+  }, [user]);
+
+  // const registerForPushNotifications = async () => {
+  //   try {
+  //     if (!user) return;
+  //     const permission = await Notifications.getPermissionsAsync();
+  //     if (!permission.granted) return;
+  //     const token = await Notifications.getExpoPushTokenAsync({
+  //       projectId: Constants.expoConfig.extra.eas.projectId,
+  //     }).data;
+  //     console.log("hi");
+  //     console.log(token);
+  //     const response = await expoPushTokensApi.register(token, user.accountId);
+  //     console.log(response);
+  //   } catch (error) {
+  //     console.log("error getting a push token", error);
+  //   }
+  // };
   return (
     <Stack.Navigator screenOptions={{ headerShown: false }}>
       <Stack.Screen name="ChatList" component={ChatList} />
