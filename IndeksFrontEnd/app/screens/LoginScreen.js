@@ -33,7 +33,7 @@ Yup.setLocale({
 
 const validationSchema = Yup.object().shape({
   email: Yup.string().required().email().label("E-Mail"),
-  password: Yup.string().required().min(8).label("Lozinka"),
+  password: Yup.string().required().label("Lozinka"),
 });
 
 const LoginScreen = () => {
