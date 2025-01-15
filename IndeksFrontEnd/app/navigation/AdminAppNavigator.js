@@ -2,7 +2,7 @@ import { createStackNavigator } from "@react-navigation/stack";
 import ChatScreen from "../screens/ChatScreen";
 import MaterialsScreen from "../screens/MaterialsScreen";
 import ViewProblemsScreen from "../screens/ViewProblemsScreen";
-import GodinaScreen from "../screens/GodinaScreen";
+import MaterialsYearsItemsScreen from "../screens/MaterialsYearsItemsScreen";
 import InstructionsListScreen from "../screens/InstructionsListScreen";
 import InstructionDetailsScreen from "../screens/InstructionDetailsScreen";
 import ElementaryGroupChatScreen from "../screens/ElementaryGroupsListScreen";

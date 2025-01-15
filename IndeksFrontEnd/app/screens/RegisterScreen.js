@@ -64,16 +64,21 @@ const RegisterScreen = () => {
     navigation.navigate("Login");
   };
 
-  const handleRegisterPress = async () => {
+  const handleRegisterPress = async ({
+    firstName,
+    lastName,
+    email,
+    password,
+  }) => {
     try {
-      const accountType = userAccountSelected ? "STUDENT" : "TUTOR";
-      console.log(firstName + lastName + email + password);
+      //const accountType = userAccountSelected ? "STUDENT" : "TUTOR";
+      console.log(firstName + " " + lastName + " " + email + " " + password);
       const response = await authApi.register(
         firstName,
         lastName,
         email,
         password,
-        accountType
+        "STUDENT"
       );
       console.log(response.message);
       navigation.navigate("Login");
