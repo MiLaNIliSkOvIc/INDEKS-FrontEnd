@@ -3,6 +3,7 @@ import { useFonts } from "expo-font";
 import * as SplashScreen from "expo-splash-screen";
 import { NavigationContainer } from "@react-navigation/native";
 import { jwtDecode } from "jwt-decode";
+import * as Notificatons from "expo-notifications";
 
 import AuthNavigator from "./app/navigation/AuthNavigator";
 import AuthContext from "./app/auth/context";
@@ -14,6 +15,17 @@ import authStorage from "./app/auth/storage";
 SplashScreen.preventAutoHideAsync();
 
 const App = () => {
+  const requestPermissions = async () => {
+    const { granted } = await Notificatons.requestPermissionsAsync();
+    if (!granted) {
+      console.log("nije prihvaceno");
+    } else {
+      console.log("prihvaceno");
+    }
+  };
+  useEffect(() => {
+    requestPermissions();
+  }, []);
   const [loaded, error] = useFonts({
     Kodchasan: require("./app/assets/fonts/KodchasanRegular.ttf"),
     KodchasanMedium: require("./app/assets/fonts/KodchasanMedium.ttf"),

@@ -28,7 +28,11 @@ const AnnouncementsSelectionScreen = () => {
 
   // Funkcija za promenu stanja Switch-a
   const toggleSwitch = (id) => {
-    setSelectedItems((prev) => ({ ...prev, [id]: !prev[id] }));
+    setSelectedItems((prev) => {
+      const updatedState = { ...prev, [id]: !prev[id] };
+      console.log(updatedState);
+      return updatedState;
+    });
   };
 
   const renderIcon = (family, iconName) => {

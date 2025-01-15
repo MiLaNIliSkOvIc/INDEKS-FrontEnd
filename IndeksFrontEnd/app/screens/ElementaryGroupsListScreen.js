@@ -15,12 +15,59 @@ import Sidebar from "../components/SidebarComponent";
 import HeaderComponent from "../components/HeaderComponent";
 import HttpService from "../services/HttpService";
 import ElementaryGroup from "../model/ElementaryGroup";
+import ModalDeletingElementaryGroup from "../components/ModalDeletingElementaryGroup";
 
 const ElementaryGroupsListScreen = ({ navigation }) => {
   const [isSidebarVisible, setSidebarVisible] = useState(false);
   const [blurredItem, setBlurredItem] = useState(null);
   const [data, setData] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
+
+  const [isModalVisible, setModalVisible] = useState(false);
+  const [selectedGroup, setSelectedGroup] = useState(null);
+
+  const handleLongPressDelete = (item) => {
+    setSelectedGroup(item);
+    setModalVisible(true);
+  };
+  
+  const handleModalClose = () => {
+    setModalVisible(false);
+    setBlurredItem(null); // Resetuj blurredItem kad zatvoriš modal
+  };
+  
+  const handleModalConfirm = async () => {
+    try {
+      if (!selectedGroup?.id) {
+        console.error("ID grupe nije definisan.");
+        return;
+      }
+  
+      const response = await HttpService.delete(
+        "elementaryGroup",
+        selectedGroup.id
+      );
+  
+      // Ako status odgovora ukazuje na uspeh (200 OK)
+      if (response?.status === 200) {
+        console.log(`Grupa "${selectedGroup?.title}" je uspešno obrisana.`);
+        setData((prevData) =>
+          prevData.filter((group) => group.id !== selectedGroup.id)
+        );
+        setModalVisible(false);
+        setBlurredItem(null); // Dodaj ovo da ukloniš blur nakon brisanja
+      } else {
+        console.error(
+          `Nepoznat odgovor servera. Status: ${
+            response?.status
+          }. Telo odgovora: ${JSON.stringify(response?.data)}`
+        );
+      }
+    } catch (error) {
+      console.error("Greška pri slanju DELETE zahteva:", error);
+    }
+  };
+  
 
   useEffect(() => {
     const fetchData = async () => {
@@ -63,15 +110,15 @@ const ElementaryGroupsListScreen = ({ navigation }) => {
         {blurredItem === item.id ? (
           <BlurView style={styles.absoluteBlur} intensity={50}>
             <View style={styles.iconOverlayContainer}>
-              <TouchableOpacity onPress={handleClose}>
+              <TouchableOpacity onPress={() => handleLongPressDelete(item)}>
                 <View style={styles.iconCircle}>
-                  <Icon name="close" size={15} color="#fff" />
+                  <Icon name="trash-o" size={15} color="#fff" />
                 </View>
               </TouchableOpacity>
 
-              <TouchableOpacity>
+              <TouchableOpacity onPress={handleClose}>
                 <View style={styles.iconCircle}>
-                  <Icon name="exclamation" size={15} color="#fff" />
+                  <Icon name="close" size={15} color="#fff" />
                 </View>
               </TouchableOpacity>
             </View>
@@ -91,7 +138,6 @@ const ElementaryGroupsListScreen = ({ navigation }) => {
     </TouchableOpacity>
   );
 
-  //ovo je se poziva da se vrti ono pri dohvacanju iz baze
   const loading = () => {
     if (isLoading) {
       return (
@@ -125,6 +171,12 @@ const ElementaryGroupsListScreen = ({ navigation }) => {
         <Text style={styles.screenTitle}>Osnovne grupe</Text>
         {loading()}
         <Sidebar visible={isSidebarVisible} onClose={toggleSidebar} />
+        <ModalDeletingElementaryGroup
+          visible={isModalVisible}
+          onClose={handleModalClose}
+          onConfirm={handleModalConfirm}
+          groupName={selectedGroup?.title}
+        />
       </View>
     </TouchableWithoutFeedback>
   );

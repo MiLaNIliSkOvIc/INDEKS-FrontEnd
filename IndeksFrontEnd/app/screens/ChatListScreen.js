@@ -4,15 +4,14 @@ import {
   Text,
   FlatList,
   StyleSheet,
-  Image,
   TouchableOpacity,
   ActivityIndicator,
 } from "react-native";
 import { useNavigation } from "@react-navigation/native";
-import Icon from "react-native-vector-icons/FontAwesome";
 import Sidebar from "../components/SidebarComponent";
 import HttpService from "../services/HttpService";
 import { useUser } from "../hooks/useUser";
+import HeaderComponent from "../components/HeaderComponent";
 
 const ChatListScreen = () => {
   const navigation = useNavigation();
@@ -25,7 +24,7 @@ const ChatListScreen = () => {
     const unsubscribe = navigation.addListener("focus", () => {
       const fetchChats = async () => {
         try {
-          setIsLoading(true); // Postavljanje loading stanja
+          setIsLoading(true);
           const response = await HttpService.get(
             `singleChat/user/${user.accountId}/summary`
           );
@@ -72,10 +71,12 @@ const ChatListScreen = () => {
     console.log("Plus button pressed!");
     navigation.navigate("NewPrivateGroupScreen");
   };
+
   const handleSearchPress = () => {
-    console.log("Plus button pressed!");
+    console.log("Search button pressed!");
     navigation.navigate("SearchScreen");
   };
+
   const renderItem = ({ item }) => (
     <TouchableOpacity
       style={styles.chatItem}
@@ -91,29 +92,16 @@ const ChatListScreen = () => {
     </TouchableOpacity>
   );
 
-  const Header = () => (
-    <View style={styles.header}>
-      <TouchableOpacity onPress={toggleSidebar}>
-        <Icon name="bars" size={30} color="#888" style={styles.headerIcon} />
-      </TouchableOpacity>
-      <Image
-        source={require("../assets/images/logo.png")}
-        style={styles.headerLogo}
-        resizeMode="contain"
-      />
-      <Text style={styles.headerText}>Indeks</Text>
-      <TouchableOpacity onPress={handleSearchPress}>
-        <Image
-          source={require("../assets/images/search.png")}
-          style={styles.headerIcon}
-        />
-      </TouchableOpacity>
-    </View>
-  );
-
   return (
     <View style={styles.container}>
-      <Header />
+      <HeaderComponent
+        leftIcon="bars"
+        leftAction={toggleSidebar}
+        centerLogo={require("../assets/images/logo.png")}
+        centerText="Indeks"
+        rightIcon="search"
+        rightAction={handleSearchPress}
+      />
       {isLoading ? (
         <ActivityIndicator size="large" color="#013868" />
       ) : (
@@ -124,10 +112,7 @@ const ChatListScreen = () => {
         />
       )}
       <TouchableOpacity style={styles.floatingButton} onPress={handlePlusPress}>
-        <Image
-          source={require("../assets/images/plus.png")}
-          style={styles.floatingButtonImage}
-        />
+        <Text style={styles.floatingButtonText}>+</Text>
       </TouchableOpacity>
       <Sidebar visible={isSidebarVisible} onClose={toggleSidebar} />
     </View>
@@ -138,33 +123,6 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: "#C7C7C7",
-  },
-  header: {
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "space-between",
-    backgroundColor: "#C7C7C7",
-    paddingTop: 40,
-    paddingVertical: 10,
-    paddingHorizontal: 15,
-    borderBottomWidth: 1,
-    borderBottomColor: "#aaa",
-  },
-  headerLogo: {
-    width: 40,
-    height: 40,
-    marginRight: -75,
-  },
-  headerText: {
-    fontSize: 18,
-    fontWeight: "bold",
-    color: "#013868",
-  },
-  headerIcon: {
-    width: 50,
-    height: 40,
-    paddingTop: 8,
-    right: -7,
   },
   chatItem: {
     flexDirection: "row",
@@ -203,14 +161,16 @@ const styles = StyleSheet.create({
     bottom: 40,
     width: 60,
     height: 60,
-    marginBottom: 20,
+    borderRadius: 30,
+    backgroundColor: "#013868",
     justifyContent: "center",
     alignItems: "center",
     elevation: 8,
   },
-  floatingButtonImage: {
-    width: 70,
-    height: 70,
+  floatingButtonText: {
+    color: "#fff",
+    fontSize: 30,
+    fontWeight: "bold",
   },
 });
 
