@@ -11,19 +11,33 @@ import Sidebar from "../components/SidebarComponent";
 import Icon from "react-native-vector-icons/FontAwesome";
 import HeaderComponent from "../components/HeaderComponent";
 
-const data = [
-  { id: "1", icon: "calculator", title: "Matematika 1" },
-  { id: "2", icon: "flask", title: "Fizika" },
-  { id: "3", icon: "bolt", title: "Elektrotehnika" },
-  { id: "4", icon: "desktop", title: "Osnovi racunarske tehnike" },
+// Podaci za dokumente
+const documents = [
+  { id: "1", icon: "file-text", title: "Priručnik za vežbe" },
+  { id: "2", icon: "file-text", title: "Skripta za predavanja" },
+  { id: "3", icon: "file-text", title: "Zbirka zadataka" },
+  { id: "4", icon: "file-text", title: "Prezentacije" },
+  { id: "5", icon: "file-text", title: "Priručnik za vežbe" },
+  { id: "6", icon: "file-text", title: "Skripta za predavanja" },
+  { id: "7", icon: "file-text", title: "Zbirka zadataka" },
+  { id: "8", icon: "file-text", title: "Prezentacije" },
+  { id: "9", icon: "file-text", title: "Priručnik za vežbe" },
+  { id: "10", icon: "file-text", title: "Skripta za predavanja" },
+  { id: "11", icon: "file-text", title: "Zbirka zadataka" },
+  { id: "12", icon: "file-text", title: "Prezentacije" },
 ];
 
-const GodinaScreen = ({ route, navigation }) => {
-  const { title } = route.params;
+const MaterialsSubjectItemsScreen = ({ route, navigation }) => {
+  const { subjectTitle } = route.params; // Dobijanje naziva predmeta iz navigacije
   const [isSidebarVisible, setSidebarVisible] = useState(false);
 
   const toggleSidebar = () => {
     setSidebarVisible(!isSidebarVisible);
+  };
+
+  const handleDownload = (documentTitle) => {
+    console.log(`Downloading: ${documentTitle}`);
+    // Ovde možete dodati funkcionalnost za preuzimanje fajla.
   };
 
   const renderItem = ({ item }) => (
@@ -32,25 +46,11 @@ const GodinaScreen = ({ route, navigation }) => {
         <Icon name={item.icon} size={22} color="#013868" />
       </View>
       <Text style={styles.itemText}>{item.title}</Text>
-    </View>
-  );
-
-  const Header = () => (
-    <View style={styles.header}>
-      <TouchableOpacity onPress={() => navigation.goBack()}>
-        <Icon name="arrow-left" size={20} color="#fff" />
-      </TouchableOpacity>
-      <Image
-        source={require("../assets/images/logo.png")}
-        style={styles.headerLogo}
-        resizeMode="contain"
-      />
-      <Text style={styles.headerText}>Indeks</Text>
-      <TouchableOpacity>
-        <Image
-          source={require("../assets/images/search.png")}
-          style={styles.headerIcon}
-        />
+      <TouchableOpacity
+        style={styles.downloadButton}
+        onPress={() => handleDownload(item.title)}
+      >
+        <Icon name="download" size={20} color="#013868" />
       </TouchableOpacity>
     </View>
   );
@@ -63,9 +63,9 @@ const GodinaScreen = ({ route, navigation }) => {
         centerLogo={require("../assets/images/logo.png")}
         centerText="Indeks"
       />
-      <Text style={styles.title}>{title}</Text>
+      <Text style={styles.title}>{subjectTitle}</Text>
       <FlatList
-        data={data}
+        data={documents}
         renderItem={renderItem}
         keyExtractor={(item) => item.id}
         contentContainerStyle={styles.cardList}
@@ -82,33 +82,6 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: "#c7c7c7",
-  },
-  header: {
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "space-between",
-    backgroundColor: "#013868",
-    paddingTop: 37,
-    paddingVertical: 10,
-    paddingHorizontal: 15,
-    borderBottomWidth: 1,
-    borderBottomColor: "#C7C7C7",
-  },
-  headerIcon: {
-    width: 50,
-    height: 40,
-  },
-  headerLogo: {
-    width: 100,
-    height: 40,
-    marginRight: 30,
-  },
-  headerText: {
-    marginRight: 30,
-    marginLeft: -100,
-    fontSize: 18,
-    fontWeight: "bold",
-    color: "#fff",
   },
   title: {
     fontSize: 20,
@@ -146,10 +119,14 @@ const styles = StyleSheet.create({
     borderRadius: 90,
   },
   itemText: {
+    flex: 1, // Omogućava tekstu da zauzme preostali prostor između ikonica
     marginLeft: 20,
     fontSize: 16,
     fontWeight: "bold",
     color: "#013868",
+  },
+  downloadButton: {
+    padding: 10, // Daje prostor oko ikonice za lakše klikanje
   },
   floatingButton: {
     position: "absolute",
@@ -172,4 +149,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default GodinaScreen;
+export default MaterialsSubjectItemsScreen;
