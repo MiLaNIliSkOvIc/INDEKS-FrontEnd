@@ -33,7 +33,7 @@ const ElementaryGroupsListScreen = ({ navigation }) => {
   
   const handleModalClose = () => {
     setModalVisible(false);
-    setBlurredItem(null); // Resetuj blurredItem kad zatvoriš modal
+    setBlurredItem(null);
   };
   
   const handleModalConfirm = async () => {
@@ -48,14 +48,14 @@ const ElementaryGroupsListScreen = ({ navigation }) => {
         
       );
       
-      // Ako status odgovora ukazuje na uspeh (200 OK)
+
       if (response==null) {
         console.log(`Grupa "${selectedGroup?.title}" je uspešno obrisana.`);
         setData((prevData) =>
           prevData.filter((group) => group.id !== selectedGroup.id)
         );
         setModalVisible(false);
-        setBlurredItem(null); // Dodaj ovo da ukloniš blur nakon brisanja
+        setBlurredItem(null); 
       } else {
         console.error(
           `Nepoznat odgovor servera. Status: ${
@@ -104,8 +104,20 @@ const ElementaryGroupsListScreen = ({ navigation }) => {
     setBlurredItem(null);
   };
 
+
+  const handleChatPress = (chat) => {
+    console.log(chat);
+     navigation.navigate("Chat", {
+       chatId: chat.id,
+       name: chat.title,
+       group : chat.group,
+       elementary : true,
+       fromElementary : true
+     });
+  };
+
   const renderItem = ({ item }) => (
-    <TouchableOpacity onLongPress={() => handleLongPress(item)}>
+    <TouchableOpacity  onPress={() => handleChatPress(item)} onLongPress={() => handleLongPress(item)}  >
       <View style={styles.cardContainer}>
         {blurredItem === item.id ? (
           <BlurView style={styles.absoluteBlur} intensity={50}>
