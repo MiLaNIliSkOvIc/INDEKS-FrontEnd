@@ -44,12 +44,12 @@ const ElementaryGroupsListScreen = ({ navigation }) => {
       }
   
       const response = await HttpService.delete(
-        "elementaryGroup",
-        selectedGroup.id
+        `elementaryGroup/${selectedGroup.id}`,
+        
       );
-  
+      
       // Ako status odgovora ukazuje na uspeh (200 OK)
-      if (response?.status === 200) {
+      if (response==null) {
         console.log(`Grupa "${selectedGroup?.title}" je uspešno obrisana.`);
         setData((prevData) =>
           prevData.filter((group) => group.id !== selectedGroup.id)
