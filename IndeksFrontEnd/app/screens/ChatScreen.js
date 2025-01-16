@@ -139,12 +139,12 @@ const ChatScreen = () => {
     const newMessage = {
       text: messageText,
       time: new Date().toISOString(),
-      singleChatId: 0,
-      groupChatId: chatId,
+      singleChatId: chatId,
+      groupChatId: 0,
       status: "SENT",
       userAccountId: user.accountId,
     };
-
+    console.log(newMessage)
     const mess = {
       id: generateUniqueId(),
       text: messageText,
@@ -171,12 +171,11 @@ const ChatScreen = () => {
           `privateGroup/${chatId}/messages?userId=${userId}`
         );
       } else {  
+     
         response = await HttpService.get(
           `singleChat/${chatId}/messages?userId=${userId}`
         );
       }
-
-      //console.log(response);
       const sortedMessages = response.sort(
         (a, b) => new Date(b.time) - new Date(a.time)
       );
