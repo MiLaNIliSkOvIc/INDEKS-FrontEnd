@@ -60,7 +60,7 @@ const RegistredUsersScreen = () => {
         <Text style={styles.emailText}>{item.email}</Text>
       </View>
       <View style={styles.statusContainer}>
-        <Text style={styles.statusText}> {item.active ?  "Suspendovan" : "Aktivan"}</Text>
+        <Text style={styles.statusText}> {item.active ?  "Aktivan" :  "Suspendovan" }</Text>
         <TouchableOpacity
           style={[
             styles.actionButton,

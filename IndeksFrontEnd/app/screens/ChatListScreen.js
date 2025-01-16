@@ -36,7 +36,8 @@ const ChatListScreen = () => {
             name: chat.name,
             sender: chat.sender,
             lastMessage: chat.lastMessage,
-            group: chat.group
+            group: chat.group,
+            elementary : chat.elementaryGroup
           }));
 
           setChats(mappedChats);
@@ -63,7 +64,8 @@ const ChatListScreen = () => {
       chatId: chat.id,
       userId: user.accountId,
       name: chat.name,
-      group : chat.group
+      group : chat.group,
+      elementary : chat.elementary
     });
   };
 

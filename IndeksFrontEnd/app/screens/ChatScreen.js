@@ -22,7 +22,7 @@ const ChatScreen = () => {
   const route = useRoute();
   const user = useUser();
   var IdChat;
-  var { chatId, userId, name, group } = route.params;
+  var { chatId, userId, name, group,elementary,fromElementary } = route.params;
   var br = 0;
   const [messages, setMessages] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -47,8 +47,19 @@ const ChatScreen = () => {
       try {
         IdChat = chatId;
         let response;
-       
-        if (group) {
+    
+        if(elementary)
+        {
+          response = await HttpService.get(
+            `elementaryGroup/${chatId}/messages?userId=${userId}`
+          );
+          if(response.error)
+           { navigation.navigate("ElementaryGroupChat");
+            return;
+           }
+            
+        }
+        else if (group) {
          
           response = await HttpService.get(
             `privateGroup/${chatId}/messages?userId=${userId}`
@@ -115,7 +126,13 @@ const ChatScreen = () => {
 
     return newId;
   };
-
+  const back = () =>
+  {
+    if(!fromElementary)
+      navigation.navigate("ChatList")
+    else
+    navigation.navigate("ElementaryGroupChat")
+  }
   const sendMessage = async (chatId) => {
     if (messageText.trim() === "") return;
     setMessageText("");
@@ -141,7 +158,15 @@ const ChatScreen = () => {
       console.log(user.accountId);
       console.log(chatId);
       let response;
-      if (group) { 
+      if(elementary)
+      {
+        
+         response = await HttpService.get(
+            `elementaryGroup/${chatId}/messages?userId=${user.accountId}`
+        );
+        console.log(response)
+      }
+      else if (group) { 
         response = await HttpService.get(
           `privateGroup/${chatId}/messages?userId=${userId}`
         );
@@ -151,7 +176,7 @@ const ChatScreen = () => {
         );
       }
 
-      console.log(response);
+      //console.log(response);
       const sortedMessages = response.sort(
         (a, b) => new Date(b.time) - new Date(a.time)
       );
@@ -200,7 +225,7 @@ const ChatScreen = () => {
       style={styles.container}
     >
       <View style={styles.header}>
-        <TouchableOpacity onPress={() => navigation.navigate("ChatList")}>
+        <TouchableOpacity onPress={() => back()}>
           <Ionicons name="arrow-back-outline" size={24} color="black" />
         </TouchableOpacity>
         <Text style={styles.headerTitle}>{name}</Text>

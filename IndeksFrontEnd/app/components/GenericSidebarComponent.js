@@ -14,11 +14,12 @@ import FeatherIcon from "react-native-vector-icons/Feather";
 import { useNavigation } from "@react-navigation/native";
 import AuthContext from "../auth/context";
 import authStorage from "../auth/storage";
+import { useUser } from "../hooks/useUser";
 
 const GenericSidebarComponent = ({ visible, onClose, menuItems }) => {
   const navigation = useNavigation();
   const translateX = useRef(new Animated.Value(-350)).current;
-
+  const user = useUser()
   const { setUser } = useContext(AuthContext);
   useEffect(() => {
     if (visible) {
@@ -66,9 +67,9 @@ const GenericSidebarComponent = ({ visible, onClose, menuItems }) => {
               <Icon name="user" size={80} color="#0b4b85" />
             </View>
             <View style={styles.SidebarComponentProfileDetails}>
-              <Text style={styles.SidebarComponentName}>Milan Iliskovic</Text>
+              <Text style={styles.SidebarComponentName}>{user.firstName +' '+ user.lastName}</Text>
               <Text style={styles.SidebarComponentEmail}>
-                milan.iliskovic@student.etf.unibl.org
+                {user.sub}
               </Text>
             </View>
           </View>

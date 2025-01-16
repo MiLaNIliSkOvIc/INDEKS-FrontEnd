@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState ,useEffect } from "react";
 import { View, Text, FlatList, StyleSheet, Switch } from "react-native";
 import Sidebar from "../components/SidebarComponent";
 import Icon from "react-native-vector-icons/FontAwesome";
@@ -6,6 +6,8 @@ import Icon5 from "react-native-vector-icons/FontAwesome5";
 import Icon6 from "react-native-vector-icons/FontAwesome6";
 import HeaderComponent from "../components/HeaderComponent";
 import { useNavigation } from "@react-navigation/native";
+import httpService from "../services/HttpService"; 
+import { useUser } from "../hooks/useUser";
 
 const data = [
   { id: "1", icon: "list-alt", title: "Prva godina", family: "FontAwesome" },
@@ -16,23 +18,67 @@ const data = [
 
 const AnnouncementsSelectionScreen = () => {
   const [isSidebarVisible, setSidebarVisible] = useState(false);
-
-  // Stanje za praćenje stanja Switch komponenata
+  const user = useUser()
+  
   const [selectedItems, setSelectedItems] = useState({});
 
   const toggleSidebar = () => {
     setSidebarVisible(!isSidebarVisible);
   };
 
+  useEffect(() => {
+    console.log("AAAAAA")
+    const fetchVisibilityData = async () => {
+      try {
+        const response = await httpService.get(`announcement-visibility/${user.accountId}`);
+        console.log(response)
+        if (response) {
+          setSelectedItems({
+            "1": response.canSeeYear1 || false,
+            "2": response.canSeeYear2 || false,
+            "3": response.canSeeYear3 || false,
+            "4": response.canSeeYear4 || false,
+          });
+        } else {
+          console.error("Failed to fetch visibility data");
+        }
+      } catch (error) {
+        console.error("Error fetching visibility data:", error);
+      }
+    };
+
+    fetchVisibilityData();
+  }, [user.accountId]);
+
   const navigation = useNavigation();
 
-  // Funkcija za promenu stanja Switch-a
-  const toggleSwitch = (id) => {
-    setSelectedItems((prev) => {
-      const updatedState = { ...prev, [id]: !prev[id] };
-      console.log(updatedState);
-      return updatedState;
-    });
+  const toggleSwitch = async (id) => {
+    const updatedState = { ...selectedItems, [id]: !selectedItems[id] };
+    setSelectedItems(updatedState);
+    console.log(user.accountId)
+    const visibilityData = {
+      studentAccountId: user.accountId, 
+      canSeeYear1: updatedState["1"] || false,
+      canSeeYear2: updatedState["2"] || false,
+      canSeeYear3: updatedState["3"] || false,
+      canSeeYear4: updatedState["4"] || false,
+      canSeeMaster: true, 
+      canSeeDoctorate: true,
+    };
+
+    try {
+      const response = await httpService.update("announcement-visibility", visibilityData);
+      console.log(response)
+      if (response==null) {
+        console.log("Visibility updated successfully");
+      
+       
+      } else {
+        console.error("Failed to update visibility:", response.message);
+      }
+    } catch (error) {
+      console.error("Error in updating visibility:", error);
+    }
   };
 
   const renderIcon = (family, iconName) => {
@@ -79,7 +125,7 @@ const AnnouncementsSelectionScreen = () => {
         data={data}
         renderItem={renderItem}
         keyExtractor={(item) => item.id}
-        extraData={selectedItems} // Osvježava listu pri promeni Switch stanja
+        extraData={selectedItems} // Refresh the list when Switch state changes
       />
       <Sidebar visible={isSidebarVisible} onClose={toggleSidebar} />
     </View>
