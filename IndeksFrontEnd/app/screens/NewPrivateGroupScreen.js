@@ -12,11 +12,11 @@ import {
   ActivityIndicator,
 } from "react-native";
 import Icon from "react-native-vector-icons/FontAwesome";
-import HttpService from "../services/HttpService"; 
+import HttpService from "../services/HttpService";
 const NewPrivateGroupScreen = ({ navigation }) => {
   const [searchText, setSearchText] = useState("");
-  const [addedUsers, setAddedUsers] = useState([]); 
-  const [allUsers, setAllUsers] = useState([]); 
+  const [addedUsers, setAddedUsers] = useState([]);
+  const [allUsers, setAllUsers] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
@@ -24,7 +24,14 @@ const NewPrivateGroupScreen = ({ navigation }) => {
     const fetchUsers = async () => {
       try {
         const users = await HttpService.get("userAccount");
-        setAllUsers(users.map((user) => ({ id: user.account.id, email: user.account.email })));
+        console.log("API response:", users);
+
+        setAllUsers(
+          users.map((user) => ({
+            id: user.account.id,
+            name: `${user.firstName || "N/A"} ${user.lastName || "N/A"}`,
+          }))
+        );
         setLoading(false);
       } catch (err) {
         setError("Greška prilikom učitavanja korisnika.");
@@ -34,11 +41,10 @@ const NewPrivateGroupScreen = ({ navigation }) => {
 
     fetchUsers();
   }, []);
-  
 
   const filteredUsers = allUsers.filter(
     (user) =>
-      user.email.toLowerCase().includes(searchText.toLowerCase()) &&
+      user.name.toLowerCase().includes(searchText.toLowerCase()) &&
       !addedUsers.some((added) => added.id === user.id)
   );
 
@@ -88,13 +94,13 @@ const NewPrivateGroupScreen = ({ navigation }) => {
         ) : filteredUsers.length > 0 ? (
           <FlatList
             data={filteredUsers}
-            keyExtractor={(item) => item.id.toString()} 
+            keyExtractor={(item) => item.id.toString()}
             renderItem={({ item }) => (
               <TouchableOpacity
                 style={styles.userItem}
                 onPress={() => addUser(item)}
               >
-                <Text style={styles.userText}>{item.email}</Text> 
+                <Text style={styles.userText}>{item.name}</Text>
               </TouchableOpacity>
             )}
             style={styles.userList}
@@ -106,7 +112,7 @@ const NewPrivateGroupScreen = ({ navigation }) => {
         <View style={styles.addedUsersContainer}>
           {addedUsers.map((user) => (
             <View style={styles.addedUserItem} key={user.id}>
-              <Text style={styles.addedUserText}>{user.email}</Text>
+              <Text style={styles.addedUserText}>{user.name}</Text>
               <TouchableOpacity onPress={() => removeUser(user)}>
                 <Icon name="times" size={20} color="#f00" />
               </TouchableOpacity>
@@ -123,7 +129,6 @@ const NewPrivateGroupScreen = ({ navigation }) => {
     </SafeAreaView>
   );
 };
-
 
 const styles = StyleSheet.create({
   container: {
