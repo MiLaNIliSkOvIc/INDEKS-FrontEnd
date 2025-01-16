@@ -16,6 +16,7 @@ import HeaderComponent from "../components/HeaderComponent";
 import HttpService from "../services/HttpService";
 import ElementaryGroup from "../model/ElementaryGroup";
 import ModalDeletingElementaryGroup from "../components/ModalDeletingElementaryGroup";
+import ModalAddGroup from "../components/ModalAddElementaryGroupChat";
 
 const ElementaryGroupsListScreen = ({ navigation }) => {
   const [isSidebarVisible, setSidebarVisible] = useState(false);
@@ -25,37 +26,52 @@ const ElementaryGroupsListScreen = ({ navigation }) => {
 
   const [isModalVisible, setModalVisible] = useState(false);
   const [selectedGroup, setSelectedGroup] = useState(null);
-
+  const [isAddModalVisible, setAddModalVisible] = useState(false);
   const handleLongPressDelete = (item) => {
     setSelectedGroup(item);
     setModalVisible(true);
   };
-  
+
   const handleModalClose = () => {
     setModalVisible(false);
     setBlurredItem(null);
   };
-  
+  const handlePlusPress = () => setAddModalVisible(true);
+  const handleAddGroup = async (groupName) => {
+    try {
+      const response = await HttpService.create("elementaryGroup", {
+        name: groupName,
+      });
+      console.log("Odgovor servera:", response);
+      if (response) {
+        const newGroup = new ElementaryGroup(response.id, groupName);
+        setData((prevData) => [...prevData, newGroup]);
+        setAddModalVisible(false);
+      } else {
+        console.error("Greška pri dodavanju grupe");
+      }
+    } catch (error) {
+      console.error("Greška pri slanju POST zahteva:", error);
+    }
+  };
   const handleModalConfirm = async () => {
     try {
       if (!selectedGroup?.id) {
         console.error("ID grupe nije definisan.");
         return;
       }
-  
-      const response = await HttpService.delete(
-        `elementaryGroup/${selectedGroup.id}`,
-        
-      );
-      
 
-      if (response==null) {
+      const response = await HttpService.delete(
+        `elementaryGroup/${selectedGroup.id}`
+      );
+
+      if (response == null) {
         console.log(`Grupa "${selectedGroup?.title}" je uspešno obrisana.`);
         setData((prevData) =>
           prevData.filter((group) => group.id !== selectedGroup.id)
         );
         setModalVisible(false);
-        setBlurredItem(null); 
+        setBlurredItem(null);
       } else {
         console.error(
           `Nepoznat odgovor servera. Status: ${
@@ -67,7 +83,6 @@ const ElementaryGroupsListScreen = ({ navigation }) => {
       console.error("Greška pri slanju DELETE zahteva:", error);
     }
   };
-  
 
   useEffect(() => {
     const fetchData = async () => {
@@ -104,51 +119,42 @@ const ElementaryGroupsListScreen = ({ navigation }) => {
     setBlurredItem(null);
   };
 
+  const renderItem = ({ item }) => {
+    console.log(item);
+    return (
+      <TouchableOpacity onLongPress={() => handleLongPress(item)}>
+        <View style={styles.cardContainer}>
+          {blurredItem === item.id ? (
+            <BlurView style={styles.absoluteBlur} intensity={50}>
+              <View style={styles.iconOverlayContainer}>
+                <TouchableOpacity onPress={() => handleLongPressDelete(item)}>
+                  <View style={styles.iconCircle}>
+                    <Icon name="trash-o" size={15} color="#fff" />
+                  </View>
+                </TouchableOpacity>
 
-  const handleChatPress = (chat) => {
-    console.log(chat);
-     navigation.navigate("Chat", {
-       chatId: chat.id,
-       name: chat.title,
-       group : chat.group,
-       elementary : true,
-       fromElementary : true
-     });
-  };
-
-  const renderItem = ({ item }) => (
-    <TouchableOpacity  onPress={() => handleChatPress(item)} onLongPress={() => handleLongPress(item)}  >
-      <View style={styles.cardContainer}>
-        {blurredItem === item.id ? (
-          <BlurView style={styles.absoluteBlur} intensity={50}>
-            <View style={styles.iconOverlayContainer}>
-              <TouchableOpacity onPress={() => handleLongPressDelete(item)}>
-                <View style={styles.iconCircle}>
-                  <Icon name="trash-o" size={15} color="#fff" />
-                </View>
-              </TouchableOpacity>
-
-              <TouchableOpacity onPress={handleClose}>
-                <View style={styles.iconCircle}>
-                  <Icon name="close" size={15} color="#fff" />
-                </View>
-              </TouchableOpacity>
-            </View>
-          </BlurView>
-        ) : null}
-
-        <View style={styles.iconContainer}>
-          <Icon name="group" size={30} color="#013868" />
-        </View>
-        <View style={styles.textContainer}>
-          <Text style={styles.titleText}>{item.title}</Text>
-          {item.description ? (
-            <Text style={styles.descriptionText}>{item.description}</Text>
+                <TouchableOpacity onPress={handleClose}>
+                  <View style={styles.iconCircle}>
+                    <Icon name="close" size={15} color="#fff" />
+                  </View>
+                </TouchableOpacity>
+              </View>
+            </BlurView>
           ) : null}
+
+          <View style={styles.iconContainer}>
+            <Icon name="group" size={30} color="#013868" />
+          </View>
+          <View style={styles.textContainer}>
+            <Text style={styles.titleText}>{item.title}</Text>
+            {item.description ? (
+              <Text style={styles.descriptionText}>{item.description}</Text>
+            ) : null}
+          </View>
         </View>
-      </View>
-    </TouchableOpacity>
-  );
+      </TouchableOpacity>
+    );
+  };
 
   const loading = () => {
     if (isLoading) {
@@ -164,13 +170,12 @@ const ElementaryGroupsListScreen = ({ navigation }) => {
         <FlatList
           data={data}
           renderItem={renderItem}
-          keyExtractor={(item) => item.id}
+          keyExtractor={(item) => (item.id ? item.id.toString() : item.name)}
           contentContainerStyle={styles.cardList}
         />
       );
     }
   };
-
   return (
     <TouchableWithoutFeedback onPress={handleOutsidePress}>
       <View style={styles.container}>
@@ -182,6 +187,17 @@ const ElementaryGroupsListScreen = ({ navigation }) => {
         />
         <Text style={styles.screenTitle}>Osnovne grupe</Text>
         {loading()}
+        <TouchableOpacity
+          style={styles.floatingButton}
+          onPress={handlePlusPress}
+        >
+          <Text style={styles.floatingButtonText}>+</Text>
+        </TouchableOpacity>
+        <ModalAddGroup
+          visible={isAddModalVisible}
+          onClose={() => setAddModalVisible(false)}
+          onAdd={handleAddGroup}
+        />
         <Sidebar visible={isSidebarVisible} onClose={toggleSidebar} />
         <ModalDeletingElementaryGroup
           visible={isModalVisible}
@@ -294,6 +310,23 @@ const styles = StyleSheet.create({
   },
   loadingIndicator: {
     marginTop: 300,
+  },
+  floatingButton: {
+    position: "absolute",
+    right: 20,
+    bottom: 40,
+    width: 60,
+    height: 60,
+    borderRadius: 30,
+    backgroundColor: "#013868",
+    justifyContent: "center",
+    alignItems: "center",
+    elevation: 8,
+  },
+  floatingButtonText: {
+    color: "#fff",
+    fontSize: 30,
+    fontWeight: "bold",
   },
 });
 
