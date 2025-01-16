@@ -76,6 +76,7 @@ const App = () => {
   );
 
   function renderAppNavigator(accountType) {
+     console.log("Account type:", accountType);
     switch (accountType) {
       case "STUDENT":
         return <StudentAppNavigator />;

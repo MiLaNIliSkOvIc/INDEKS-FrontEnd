@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { View, Text, FlatList, StyleSheet } from "react-native";
-import Sidebar from "../components/SidebarComponent";
+import Sidebar from "../components/AdminSideBarComponent";
 import HeaderComponent from "../components/HeaderComponent";
 import { useNavigation } from "@react-navigation/native";
 import ReportedProblemGenericComponent from "../components/ReportedProblemGenericComponent";
