@@ -7,7 +7,7 @@ import {
   TouchableOpacity,
 } from "react-native";
 import Icon from "react-native-vector-icons/FontAwesome";
-import Sidebar from "../components/SidebarComponent";
+import Sidebar from "../components/AdminSideBarComponent";
 import HeaderComponent from "../components/HeaderComponent";
 import { useNavigation } from "@react-navigation/native";
 import ModalForReportedUser from "../components/ModalForReportedUser";

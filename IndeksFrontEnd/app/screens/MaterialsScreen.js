@@ -4,13 +4,12 @@ import {
   Text,
   FlatList,
   StyleSheet,
-  Image,
   TouchableOpacity,
 } from "react-native";
 import Sidebar from "../components/SidebarComponent";
-import Icon from "react-native-vector-icons/FontAwesome";
 import { useNavigation } from "@react-navigation/native";
 import HeaderComponent from "../components/HeaderComponent";
+
 const data = [
   { id: "1", year: "I", title: "Prva godina" },
   { id: "2", year: "II", title: "Druga godina" },
@@ -20,14 +19,17 @@ const data = [
 
 const MaterialsScreen = () => {
   const [isSidebarVisible, setSidebarVisible] = useState(false);
+  const navigation = useNavigation();
+
   const toggleSidebar = () => {
     setSidebarVisible(!isSidebarVisible);
   };
-  const navigation = useNavigation();
 
   const handleItemPress = (id) => {
+    const selectedYear = data.find((item) => item.id === id);
     navigation.navigate("MaterialsYearsItemsScreen", {
-      title: data.find((item) => item.id === id).title,
+      year: id,
+      title: selectedYear.title, // Šaljemo title
     });
   };
 
@@ -41,9 +43,7 @@ const MaterialsScreen = () => {
           <Text style={styles.numberText}>{item.year}</Text>
         </View>
       </View>
-      <View style={styles.detailsContainer}>
-        <Text style={styles.itemTitle}>{item.title}</Text>
-      </View>
+      <Text style={styles.itemTitle}>{item.title}</Text>
     </TouchableOpacity>
   );
 
@@ -81,16 +81,11 @@ const styles = StyleSheet.create({
   itemContainer: {
     flexDirection: "row",
     alignItems: "center",
-    paddingVertical: 15,
-    paddingHorizontal: 15,
     backgroundColor: "#fff",
     marginVertical: 5,
     marginHorizontal: 20,
     borderRadius: 8,
-    shadowColor: "#000",
-    shadowOpacity: 0.1,
-    shadowOffset: { width: 0, height: 2 },
-    shadowRadius: 8,
+    padding: 15,
     elevation: 2,
   },
   iconContainer: {
@@ -109,34 +104,10 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
     color: "#013868",
   },
-  detailsContainer: {
-    flex: 1,
-  },
   itemTitle: {
     fontSize: 16,
     fontWeight: "bold",
     color: "#013868",
-  },
-  floatingButton: {
-    position: "absolute",
-    right: 20,
-    bottom: 60,
-    width: 60,
-    height: 60,
-    backgroundColor: "#013868",
-    borderRadius: 30,
-    justifyContent: "center",
-    alignItems: "center",
-    elevation: 8,
-  },
-  floatingButtonText: {
-    color: "#fff",
-    fontSize: 30,
-    fontWeight: "bold",
-  },
-  icon: {
-    width: 30,
-    height: 30,
   },
 });
 

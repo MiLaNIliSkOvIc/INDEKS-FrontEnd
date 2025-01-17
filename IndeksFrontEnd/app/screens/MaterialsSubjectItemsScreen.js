@@ -4,14 +4,13 @@ import {
   Text,
   FlatList,
   StyleSheet,
-  Image,
   TouchableOpacity,
 } from "react-native";
 import Sidebar from "../components/SidebarComponent";
 import Icon from "react-native-vector-icons/FontAwesome";
 import HeaderComponent from "../components/HeaderComponent";
 
-// Podaci za dokumente
+// Sample document data
 const documents = [
   { id: "1", icon: "file-text", title: "Priručnik za vežbe" },
   { id: "2", icon: "file-text", title: "Skripta za predavanja" },
@@ -28,7 +27,7 @@ const documents = [
 ];
 
 const MaterialsSubjectItemsScreen = ({ route, navigation }) => {
-  const { subjectTitle } = route.params; // Dobijanje naziva predmeta iz navigacije
+  const { subjectTitle } = route.params; // Getting subject title from params
   const [isSidebarVisible, setSidebarVisible] = useState(false);
 
   const toggleSidebar = () => {
@@ -37,22 +36,22 @@ const MaterialsSubjectItemsScreen = ({ route, navigation }) => {
 
   const handleDownload = (documentTitle) => {
     console.log(`Downloading: ${documentTitle}`);
-    // Ovde možete dodati funkcionalnost za preuzimanje fajla.
+    // You can add the file download functionality here
   };
 
   const renderItem = ({ item }) => (
-    <View style={styles.cardContainer}>
+    <TouchableOpacity
+      style={styles.itemContainer}
+      onPress={() => handleDownload(item.title)}
+    >
       <View style={styles.iconContainer}>
         <Icon name={item.icon} size={22} color="#013868" />
       </View>
-      <Text style={styles.itemText}>{item.title}</Text>
-      <TouchableOpacity
-        style={styles.downloadButton}
-        onPress={() => handleDownload(item.title)}
-      >
+      <Text style={styles.itemTitle}>{item.title}</Text>
+      <TouchableOpacity style={styles.downloadButton}>
         <Icon name="download" size={20} color="#013868" />
       </TouchableOpacity>
-    </View>
+    </TouchableOpacity>
   );
 
   return (
@@ -84,7 +83,7 @@ const styles = StyleSheet.create({
     backgroundColor: "#c7c7c7",
   },
   title: {
-    fontSize: 20,
+    fontSize: 22,
     fontWeight: "bold",
     color: "#013868",
     textAlign: "center",
@@ -92,41 +91,34 @@ const styles = StyleSheet.create({
   },
   cardList: {
     marginTop: -10,
-    padding: 20,
+    paddingHorizontal: 20,
   },
-  cardContainer: {
+  itemContainer: {
     flexDirection: "row",
     alignItems: "center",
     backgroundColor: "#fff",
+    marginVertical: 5,
     borderRadius: 8,
-    padding: 13,
-    marginBottom: 10,
-    shadowColor: "#000",
-    shadowOffset: {
-      width: 0,
-      height: 1,
-    },
-    shadowOpacity: 0.1,
-    shadowRadius: 2,
-    elevation: 3,
+    padding: 15,
+    elevation: 2,
   },
   iconContainer: {
+    marginRight: 15,
     width: 45,
     height: 45,
     justifyContent: "center",
     alignItems: "center",
-    backgroundColor: "#EDEDED",
-    borderRadius: 90,
+    backgroundColor: "#E8EAF6",
+    borderRadius: 20,
   },
-  itemText: {
-    flex: 1, // Omogućava tekstu da zauzme preostali prostor između ikonica
-    marginLeft: 20,
+  itemTitle: {
     fontSize: 16,
     fontWeight: "bold",
     color: "#013868",
+    flex: 1,
   },
   downloadButton: {
-    padding: 10, // Daje prostor oko ikonice za lakše klikanje
+    padding: 10,
   },
   floatingButton: {
     position: "absolute",

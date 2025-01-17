@@ -1,12 +1,8 @@
 import { createStackNavigator } from "@react-navigation/stack";
-import ChatScreen from "../screens/ChatScreen";
 import MaterialsScreen from "../screens/MaterialsScreen";
 import ViewProblemsScreen from "../screens/ViewProblemsScreen";
-import MaterialsYearsItemsScreen from "../screens/MaterialsYearsItemsScreen";
 import InstructionsListScreen from "../screens/InstructionsListScreen";
-import InstructionDetailsScreen from "../screens/InstructionDetailsScreen";
 import ElementaryGroupChatScreen from "../screens/ElementaryGroupsListScreen";
-import InstructorProfileScreen from "../screens/InstructorProfileScreen";
 
 import ReportedCommentsScreen from "../screens/ReportedCommentsScreen";
 import ReportedMaterialsScreen from "../screens/ReportedMaterialsScreen";
@@ -16,6 +12,7 @@ import RegisteredUsersScreen from "../screens/RegisteredUsersScreen";
 const Stack = createStackNavigator();
 
 export default function AdminAppNavigator() {
+  console.log("Rendering AdminAppNavigator");
   return (
     <Stack.Navigator screenOptions={{ headerShown: false }}>
       <Stack.Screen
@@ -39,6 +36,10 @@ export default function AdminAppNavigator() {
       <Stack.Screen
         name="ReportedUsersScreen"
         component={ReportedUsersScreen}
+      />
+      <Stack.Screen
+        name="InstructionsListScreen"
+        component={InstructionsListScreen}
       />
     </Stack.Navigator>
   );

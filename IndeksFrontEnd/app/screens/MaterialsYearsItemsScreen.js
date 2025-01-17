@@ -1,26 +1,37 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
   View,
   Text,
   FlatList,
   StyleSheet,
-  Image,
   TouchableOpacity,
+  ActivityIndicator,
 } from "react-native";
 import Sidebar from "../components/SidebarComponent";
-import Icon from "react-native-vector-icons/FontAwesome";
 import HeaderComponent from "../components/HeaderComponent";
-
-const data = [
-  { id: "1", icon: "calculator", title: "Matematika 1" },
-  { id: "2", icon: "flask", title: "Fizika" },
-  { id: "3", icon: "bolt", title: "Elektrotehnika" },
-  { id: "4", icon: "desktop", title: "Osnovi racunarske tehnike" },
-];
+import HttpService from "../services/HttpService";
 
 const MaterialsYearsItemsScreen = ({ route, navigation }) => {
-  const { title } = route.params;
+  const { year, title } = route.params; // Getting year and title from params
   const [isSidebarVisible, setSidebarVisible] = useState(false);
+  const [data, setData] = useState([]);
+  const [isLoading, setIsLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const response = await HttpService.get(`subject/year/${year}`);
+        console.log(response);
+        setData(response);
+      } catch (error) {
+        console.error("Error fetching data:", error);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    fetchData();
+  }, [year]);
 
   const toggleSidebar = () => {
     setSidebarVisible(!isSidebarVisible);
@@ -28,17 +39,19 @@ const MaterialsYearsItemsScreen = ({ route, navigation }) => {
 
   const renderItem = ({ item }) => (
     <TouchableOpacity
-      style={styles.cardContainer}
+      style={styles.itemContainer}
       onPress={() =>
         navigation.navigate("MaterialsSubjectItemsScreen", {
-          subjectTitle: item.title,
+          subjectTitle: item.name,
         })
       }
     >
       <View style={styles.iconContainer}>
-        <Icon name={item.icon} size={22} color="#013868" />
+        <View style={styles.numberCircle}>
+          <Text style={styles.numberText}>{item.name[0].toUpperCase()}</Text>
+        </View>
       </View>
-      <Text style={styles.itemText}>{item.title}</Text>
+      <Text style={styles.itemTitle}>{item.name}</Text>
     </TouchableOpacity>
   );
 
@@ -51,12 +64,16 @@ const MaterialsYearsItemsScreen = ({ route, navigation }) => {
         centerText="Indeks"
       />
       <Text style={styles.title}>{title}</Text>
-      <FlatList
-        data={data}
-        renderItem={renderItem}
-        keyExtractor={(item) => item.id}
-        contentContainerStyle={styles.cardList}
-      />
+
+      {isLoading ? (
+        <ActivityIndicator size="large" color="#013868" style={styles.loader} />
+      ) : (
+        <FlatList
+          data={data}
+          renderItem={renderItem}
+          keyExtractor={(item) => item.id.toString()}
+        />
+      )}
       <Sidebar visible={isSidebarVisible} onClose={toggleSidebar} />
     </View>
   );
@@ -67,92 +84,46 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: "#c7c7c7",
   },
-  header: {
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "space-between",
-    backgroundColor: "#013868",
-    paddingTop: 37,
-    paddingVertical: 10,
-    paddingHorizontal: 15,
-    borderBottomWidth: 1,
-    borderBottomColor: "#C7C7C7",
-  },
-  headerIcon: {
-    width: 50,
-    height: 40,
-  },
-  headerLogo: {
-    width: 100,
-    height: 40,
-    marginRight: 30,
-  },
-  headerText: {
-    marginRight: 30,
-    marginLeft: -100,
-    fontSize: 18,
-    fontWeight: "bold",
-    color: "#fff",
-  },
   title: {
-    fontSize: 20,
+    fontSize: 22,
     fontWeight: "bold",
     color: "#013868",
     textAlign: "center",
     marginVertical: 15,
   },
-  cardList: {
-    marginTop: -10,
-    padding: 20,
-  },
-  cardContainer: {
+  itemContainer: {
     flexDirection: "row",
     alignItems: "center",
     backgroundColor: "#fff",
+    marginVertical: 5,
+    marginHorizontal: 20,
     borderRadius: 8,
-    padding: 13,
-    marginBottom: 10,
-    shadowColor: "#000",
-    shadowOffset: {
-      width: 0,
-      height: 1,
-    },
-    shadowOpacity: 0.1,
-    shadowRadius: 2,
-    elevation: 3,
+    padding: 15,
+    elevation: 2,
   },
   iconContainer: {
-    width: 45,
-    height: 45,
+    marginRight: 15,
+  },
+  numberCircle: {
+    backgroundColor: "#E8EAF6",
+    width: 40,
+    height: 40,
+    borderRadius: 20,
     justifyContent: "center",
     alignItems: "center",
-    backgroundColor: "#EDEDED",
-    borderRadius: 90,
   },
-  itemText: {
-    marginLeft: 20,
+  numberText: {
+    fontSize: 18,
+    fontWeight: "bold",
+    color: "#013868",
+  },
+  itemTitle: {
     fontSize: 16,
     fontWeight: "bold",
     color: "#013868",
   },
-  floatingButton: {
-    position: "absolute",
-    right: 30,
-    bottom: 60,
-    width: 60,
-    height: 60,
-    backgroundColor: "#013868",
-    borderRadius: 30,
-    justifyContent: "center",
-    alignItems: "center",
-    elevation: 8,
-  },
-  floatingButtonText: {
-    color: "#fff",
-    fontSize: 30,
-    fontWeight: "bold",
-    textAlign: "center",
-    lineHeight: 33,
+  loader: {
+    marginTop: 50,
   },
 });
 

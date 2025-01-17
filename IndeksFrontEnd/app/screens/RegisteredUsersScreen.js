@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { View, Text, FlatList, StyleSheet, ActivityIndicator,TouchableOpacity } from "react-native";
-import Sidebar from "../components/SidebarComponent";
+import Sidebar from "../components/AdminSideBarComponent";
 import IconFeather from "react-native-vector-icons/Feather";
 import HeaderComponent from "../components/HeaderComponent";
 import httpService from "../services/HttpService"; 
