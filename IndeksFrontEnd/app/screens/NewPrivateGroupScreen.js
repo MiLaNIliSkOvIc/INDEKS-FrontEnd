@@ -24,7 +24,7 @@ const NewPrivateGroupScreen = ({ navigation }) => {
     const fetchUsers = async () => {
       try {
         const users = await HttpService.get("userAccount");
-        setAllUsers(users.map((user) => ({ id: user.account.id, email: user.account.email })));
+        setAllUsers(users.map((user) => ({ id: user.account.id, email: user.account.email,username: user.firstName })));
         setLoading(false);
       } catch (err) {
         setError("Greška prilikom učitavanja korisnika.");
@@ -54,7 +54,9 @@ const NewPrivateGroupScreen = ({ navigation }) => {
   const createGroup = () => {
     if (addedUsers.length > 0) {
       console.log("Grupa kreirana sa korisnicima:", addedUsers);
-      navigation.navigate("Chat", { otherUserId: addedUsers[0].id });
+      const userIds = addedUsers.map(user => user.id);
+     
+      navigation.navigate("Chat", {otherUserId: userIds });
     }
   };
 

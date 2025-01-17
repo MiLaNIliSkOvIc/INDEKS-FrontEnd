@@ -43,11 +43,21 @@ const ChatScreen = () => {
 
   useEffect(() => {
     userId = user.accountId;
+    
     const fetchMessages = async () => {
       try {
         IdChat = chatId;
         let response;
-    
+        try {
+          var id = await HttpService.get(
+            `singleChat/exists?firstParticipantId=${userId}&secondParticipantId=${route.params.otherUserId[0]}`
+          );
+          console.log(id);
+        } catch (error) {
+        }
+        if(id)
+          chatId=id;
+
         if(elementary)
         {
           response = await HttpService.get(
@@ -70,28 +80,51 @@ const ChatScreen = () => {
             `singleChat/${chatId}/messages?userId=${userId}`
           );
         }
-       
-        if (response.error && !group) {
+     
+        
+        if (response.error) {
           console.log("Chat ne postoji. Kreiram novi chat...");
   
           const otherUserId = route.params.otherUserId;
           console.log(otherUserId);
           console.log(userId);
-  
-          const resp = await HttpService.create("singleChat", {
+          let resp;
+          console.log(otherUserId)
+          if (Array.isArray(otherUserId) && otherUserId.length > 1) {
+            console.log("Više korisnika pronađeno. Kreiram grupni chat...");
+            
+             resp = await HttpService.create("privateGroup", {
+              name: "GRABAS1232", 
+              memberIds: [userId, ...otherUserId],
+            });
+              chatId = resp.id;
+            console.log(resp)
+            navigation.navigate("Chat", {
+              chatId: chatId,
+              elementary : false,
+              name: "Milan",
+              group: true,
+            });
+          }
+          else
+          {
+             resp = await HttpService.create("singleChat", {
             firstParticipantId: userId,
-            secondParticipantId: otherUserId,
+            secondParticipantId: otherUserId[0],
+            
           });
-  
-         
           chatId = resp.id;
-  
+          console.log(resp)
           navigation.navigate("Chat", {
             chatId: chatId,
             otherUserId: otherUserId,
             name: resp.secondParticipant.firstName,
             group: false,
           });
+        }
+          
+         
+       
           setMessages([]);
           console.log("Novi chat kreiran uspešno.");
         } else {
@@ -136,14 +169,30 @@ const ChatScreen = () => {
   const sendMessage = async (chatId) => {
     if (messageText.trim() === "") return;
     setMessageText("");
-    const newMessage = {
+    let newMessage;
+    if(group)
+     {
+      newMessage = {
       text: messageText,
       time: new Date().toISOString(),
-      singleChatId: chatId,
-      groupChatId: 0,
+      singleChatId: 0,
+      groupChatId: chatId,
       status: "SENT",
       userAccountId: user.accountId,
     };
+  }
+    else
+    {
+      newMessage = {
+        text: messageText,
+        time: new Date().toISOString(),
+        singleChatId: chatId,
+        groupChatId: 0,
+        status: "SENT",
+        userAccountId: user.accountId,
+      };
+    }
+
     console.log(newMessage)
     const mess = {
       id: generateUniqueId(),
@@ -168,13 +217,16 @@ const ChatScreen = () => {
       }
       else if (group) { 
         response = await HttpService.get(
-          `privateGroup/${chatId}/messages?userId=${userId}`
+          `privateGroup/${chatId}/messages?userId=${user.accountId}`
         );
       } else {  
-     
+        
         response = await HttpService.get(
-          `singleChat/${chatId}/messages?userId=${userId}`
+          `singleChat/${chatId}/messages?userId=${user.accountId}`
+          
         );
+        console.log(response)
+
       }
       const sortedMessages = response.sort(
         (a, b) => new Date(b.time) - new Date(a.time)

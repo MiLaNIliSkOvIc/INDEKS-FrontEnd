@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import {
   View,
   Text,
@@ -7,61 +7,43 @@ import {
   FlatList,
   StyleSheet,
   TouchableOpacity,
+  ActivityIndicator,
 } from "react-native";
 import Icon from "react-native-vector-icons/MaterialIcons";
 import { useNavigation } from "@react-navigation/native";
-import { useState } from "react";
+import HttpService from "../services/HttpService"; // Import the HTTP service
 import CourseMaterialsComponent from "../components/CourseMaterialsComponent";
 
-// const courseData = {
-//   courseTitle: "Matematika 1",
-//   instructor: "Ime Prezime Instruktora",
-//   description: "Lorem ipsum dolor sit amet, consectetur adipiscing elit.",
-// };
-const reviews = [
-  { id: "1", user: "Marko Petrović", comment: "Sve preporuke", rating: 5 },
-  {
-    id: "2",
-    user: "Jelena Jovanović",
-    comment: "Profesionalno, jasno",
-    rating: 4,
-  },
-  { id: "3", user: "Nikola Nikolić", comment: "Nije loše", rating: 3 },
-  {
-    id: "4",
-    user: "Milica Stojanović",
-    comment: "Odlično iskustvo!",
-    rating: 5,
-  },
-  { id: "5", user: "Stefan Đorđević", comment: "Dobar proizvod", rating: 4 },
-  { id: "6", user: "Ana Ilić", comment: "Moglo bi biti bolje", rating: 3 },
-  { id: "7", user: "Ivana Vasić", comment: "Sjajna usluga", rating: 5 },
-  {
-    id: "8",
-    user: "Miloš Kostić",
-    comment: "Nije ispunilo očekivanja",
-    rating: 2,
-  },
-  {
-    id: "9",
-    user: "Dragana Mitrović",
-    comment: "Preporučujem svima",
-    rating: 4,
-  },
-  {
-    id: "10",
-    user: "Vladimir Pavlović",
-    comment: "Nezadovoljan sam",
-    rating: 1,
-  },
-];
-
 const InstructionDetailsScreen = ({ route }) => {
-  const { navigate, courseTitle, instructor, description } = route.params;
+  const { navigate, id, courseTitle, instructor, description } = route.params;
   const navigation = useNavigation();
 
+  const [reviews, setReviews] = useState([]);
+  const [editableDescription, setEditableDescription] = useState(description);
+  const [isEditing, setIsEditing] = useState(false);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        console.log(id)
+        const data = await HttpService.get(`tutoringOffer/${id}/with-reviews`);
+        console.log(data)
+        if (data) {
+          setReviews(data.reviews || []);
+          setEditableDescription(data.description || description);
+        }
+      } catch (error) {
+        console.error("Error fetching data:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchData();
+  }, [description]);
+
   const back = () => {
-    console.log(navigate);
     navigation.navigate(navigate);
   };
 
@@ -80,19 +62,25 @@ const InstructionDetailsScreen = ({ route }) => {
     }
     return stars;
   };
-  const [isEditing, setIsEditing] = useState(false);
-  const [editableDescription, setEditableDescription] = useState(description);
 
   const renderReview = ({ item }) => (
     <View style={styles.reviewContainer}>
       <Icon name="person" size={40} color="#888" style={styles.userIcon} />
       <View style={styles.reviewTextContainer}>
-        <Text style={styles.userName}>{item.user}</Text>
-        <Text style={styles.comment}>{item.comment}</Text>
+        <Text style={styles.userName}>{item.reviewerName}</Text>
+        <Text style={styles.comment}>{item.description}</Text>
       </View>
-      <View style={styles.ratingContainer}>{renderStars(item.rating)}</View>
+      <View style={styles.ratingContainer}>{renderStars(item.grade)}</View>
     </View>
   );
+
+  if (loading) {
+    return (
+      <View style={styles.loadingContainer}>
+        <ActivityIndicator size="large" color="#003366" />
+      </View>
+    );
+  }
 
   return (
     <View style={styles.container}>
@@ -140,7 +128,9 @@ const InstructionDetailsScreen = ({ route }) => {
             </TouchableOpacity>
           )}
         </View>
-        <CourseMaterialsComponent></CourseMaterialsComponent>
+
+        <CourseMaterialsComponent />
+
         <Text style={styles.sectionTitle}>Recenzije</Text>
         <FlatList
           data={reviews}
@@ -194,7 +184,6 @@ const styles = StyleSheet.create({
     marginVertical: 10,
     color: "#fff",
   },
-
   content: {
     flex: 1,
     padding: 16,
@@ -265,6 +254,11 @@ const styles = StyleSheet.create({
   },
   starIcon: {
     marginHorizontal: 2,
+  },
+  loadingContainer: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
   },
 });
 

@@ -39,19 +39,6 @@ const ChangePasswordScreen = () => {
     console.log("Potvrđena lozinka:", confirmPassword);
   };
 
-  // const renderItem = ({ item }) => (
-  //   <TouchableOpacity
-  //     style={styles.itemContainer}
-  //     onPress={() => handleItemPress(item.screen)}
-  //   >
-  //     <View style={styles.iconContainer}>
-  //       {renderIcon(item.family, item.icon)}
-  //     </View>
-  //     <View style={styles.detailsContainer}>
-  //       <Text style={styles.itemTitle}>{item.title}</Text>
-  //     </View>
-  //   </TouchableOpacity>
-  // );
 
   return (
     <View style={styles.container}>

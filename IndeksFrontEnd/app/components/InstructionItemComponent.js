@@ -9,7 +9,7 @@ import {
 import Icon from "react-native-vector-icons/FontAwesome";
 import { useNavigation } from "@react-navigation/native";
 
-const InstructionItemComponent = ({ navigate, course, teacher, rating, icon }) => {
+const InstructionItemComponent = ({ navigate, Offerid, course, teacher, rating, icon }) => {
   const navigation = useNavigation();
   const [showActions, setShowActions] = useState(false);
 
@@ -30,8 +30,9 @@ const InstructionItemComponent = ({ navigate, course, teacher, rating, icon }) =
   };
 
   const CourseInfo = (course) => {
-    // Podaci za novu rutu
+    
     const courseData = {
+      id:Offerid,
       courseTitle: course,
       instructor: teacher,
       description: "Zovem se Milan i držaću vam instrukcije iz matematike 1.",

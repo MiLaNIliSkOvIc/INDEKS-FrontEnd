@@ -48,8 +48,8 @@ const SearchScreen = ({ navigation }) => {
 
   const handleUserSelect = (user) => {
     navigation.navigate("Chat", {
-      chatId: null, 
-      otherUserId: user.id,
+     
+      otherUserId: [user.id],
       name: user.name,
     });
   };
