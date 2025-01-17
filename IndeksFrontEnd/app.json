@@ -17,17 +17,15 @@
     },
     "android": {
       "adaptiveIcon": {
-        "foregroundImage": "./app/assets/images/adaptive-icon.png",
+        "foregroundImage": "./app/assets/images/logo.png",
         "backgroundColor": "#ffffff"
-      }
+      },
+      "package": "com.indeks.aplikacija.IndeksFrontEnd"
     },
     "web": {
       "favicon": "./app/assets/images/favicon.png"
     },
-    "plugins": [
-      "expo-font",
-      "expo-secure-store"
-    ],
+    "plugins": ["expo-font", "expo-secure-store"],
     "extra": {
       "eas": {
         "projectId": "38e1ad20-eda9-4cb6-89fc-c66fc5b276c7"
