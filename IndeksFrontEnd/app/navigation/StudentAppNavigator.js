@@ -37,7 +37,7 @@ import useNotifications from "../hooks/useNotifications";
 const Stack = createStackNavigator();
 
 export default function StudentAppNavigator() {
-  useNotifications(useUser());
+  useNotifications();
   return (
     <Stack.Navigator screenOptions={{ headerShown: false }}>
       <Stack.Screen name="ChatList" component={ChatList} />
