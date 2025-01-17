@@ -20,7 +20,8 @@
         "foregroundImage": "./app/assets/images/logo.png",
         "backgroundColor": "#ffffff"
       },
-      "package": "com.indeks.aplikacija.IndeksFrontEnd"
+      "package": "com.indeks.aplikacija.IndeksFrontEnd",
+      "googleServicesFile": "./google-services.json"
     },
     "web": {
       "favicon": "./app/assets/images/favicon.png"

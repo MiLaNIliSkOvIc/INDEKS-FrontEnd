@@ -55,7 +55,12 @@ export default useNotifications = (user) => {
       console.log("permissions granted!");
 
       const token = await Notifications.getExpoPushTokenAsync();
-      expoPushTokensApi.register(token.data, user.accountId);
+      console.log("Bitno:");
+      console.log(token);
+      expoPushTokensApi.register(
+        encodeURIComponent(token.data),
+        user.accountId
+      );
     } catch (error) {
       console.log("Error getting a push token", error);
     }
