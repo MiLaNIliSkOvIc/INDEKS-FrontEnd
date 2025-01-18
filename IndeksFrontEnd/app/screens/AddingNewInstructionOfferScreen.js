@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect, useContext } from "react";
 import {
   View,
   Text,
@@ -10,34 +10,74 @@ import { Picker } from "@react-native-picker/picker";
 import Sidebar from "../components/SidebarComponent";
 import HeaderComponent from "../components/HeaderComponent";
 import { useNavigation } from "@react-navigation/native";
+import HttpService from "../services/HttpService";
+import { useUser } from "../hooks/useUser";
 
 const AddingNewInstructionOfferScreen = () => {
+  const user = useUser();
+  const studentAccountId = user?.accountId;
+  const [data, setData] = useState([]);
   const [isSidebarVisible, setSidebarVisible] = useState(false);
+  const [selectedSubject, setSelectedSubject] = useState("");
+  const [description, setDescription] = useState("");
+  const navigation = useNavigation();
   const toggleSidebar = () => {
     setSidebarVisible(!isSidebarVisible);
   };
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const response = await HttpService.get("subject");
+        console.log(response);
+        if (response) {
+          setData(response);
+        } else {
+          console.error("Nema dostupnih podataka za predmete.");
+        }
+      } catch (error) {
+        console.error("Greška prilikom učitavanja predmeta:", error);
+      } finally {
+        setIsLoading(false);
+      }
+    };
 
-  const [selectedSubject, setSelectedSubject] = useState(""); // Izabrani predmet
-  const [description, setDescription] = useState(""); // Tekst opisa
-  const navigation = useNavigation();
+    fetchData();
+  }, []);
 
-  const subjects = [
-    "Matematika 1",
-    "Matematika 2",
-    "Programiranje 1",
-    "Programiranje 2",
-    "Fizika 1",
-    "Fizika 2",
-    "Elektronika",
-  ]; // Lista predmeta
-
-  const handleAdd = () => {
+  const handleAdd = async () => {
     if (!selectedSubject || !description) {
       console.error("Popunite sve podatke pre dodavanja.");
       return;
     }
-    // Logika za obradu unosa - ovde možete dodati HTTP zahtev ili navigaciju
-    console.log("Dodavanje ponude:", { selectedSubject, description });
+    if (!studentAccountId) {
+      console.error("Korisnički ID nije pronađen. Proverite autentifikaciju.");
+      return;
+    }
+
+    try {
+      const subjectId = data.find(
+        (subject) => subject.name === selectedSubject
+      )?.id;
+      console.log("SUBJECT ID:", subjectId);
+
+      if (!subjectId) {
+        console.error("Predmet nije pronađen.");
+        return;
+      }
+
+      const body = {
+        description,
+        subjectId,
+        studentAccountId,
+      };
+      console.log("BODY:", body);
+      const response = await HttpService.create(`tutoringfOffer`, body);
+      console.log("RESPONSE", response);
+
+      navigation.goBack();
+    } catch (error) {
+      console.error("Greška pri dodavanju ponude:", error);
+    }
   };
 
   return (
@@ -45,8 +85,6 @@ const AddingNewInstructionOfferScreen = () => {
       <HeaderComponent toggleSidebar={toggleSidebar} />
       <View style={styles.inputContainer}>
         <Text style={styles.headerTitle}>Nova ponuda</Text>
-
-        {/* Picker za odabir predmeta */}
         <View style={styles.pickerWrapper}>
           <Picker
             selectedValue={selectedSubject}
@@ -54,24 +92,26 @@ const AddingNewInstructionOfferScreen = () => {
             style={styles.picker}
           >
             <Picker.Item label="Predmet" value="" />
-            {subjects.map((subject, index) => (
-              <Picker.Item key={index} label={subject} value={subject} />
+            {data.map((subject) => (
+              <Picker.Item
+                key={subject.id}
+                label={subject.name}
+                value={subject.name}
+              />
             ))}
           </Picker>
         </View>
 
         {/* TextInput za unos opisa */}
         <TextInput
-          style={[styles.input, { height: 120 }]} // Dodavanje veće visine
+          style={[styles.input, { height: 120 }]}
           placeholder="Opis"
           value={description}
           onChangeText={setDescription}
-          multiline={true} // Omogućava višeredni unos
-          textAlignVertical="top" // Tekst počinje od vrha
+          multiline={true}
+          textAlignVertical="top"
         />
       </View>
-
-      {/* Dugme za potvrdu */}
       <TouchableOpacity style={styles.button} onPress={handleAdd}>
         <Text style={styles.buttonText}>Dodaj</Text>
       </TouchableOpacity>
@@ -123,8 +163,8 @@ const styles = StyleSheet.create({
     shadowOffset: { width: 0, height: 2 },
     shadowRadius: 5,
     elevation: 2,
-    height: 120, // Povećava visinu za višeredni unos
-    textAlignVertical: "top", // Poravnava tekst ka vrhu
+    height: 120,
+    textAlignVertical: "top",
   },
   button: {
     backgroundColor: "#013868",
