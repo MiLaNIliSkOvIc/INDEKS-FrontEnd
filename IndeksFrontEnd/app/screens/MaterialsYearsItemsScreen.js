@@ -42,6 +42,7 @@ const MaterialsYearsItemsScreen = ({ route, navigation }) => {
       style={styles.itemContainer}
       onPress={() =>
         navigation.navigate("MaterialsSubjectItemsScreen", {
+          id: item.id,
           subjectTitle: item.name,
         })
       }
