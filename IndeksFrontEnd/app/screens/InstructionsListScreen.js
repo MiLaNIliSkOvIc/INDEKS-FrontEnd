@@ -1,17 +1,30 @@
-import React, { useState, useEffect } from "react";
-import { View, Text, StyleSheet, FlatList, ActivityIndicator, Alert } from "react-native";
-import Sidebar from "../components/SidebarComponent";
+import React, { useState, useEffect, useContext } from "react";
+import {
+  View,
+  Text,
+  StyleSheet,
+  FlatList,
+  ActivityIndicator,
+} from "react-native";
+import SidebarComponent from "../components/SidebarComponent";
+import AdminSidebarComponent from "../components/AdminSideBarComponent";
 import HeaderComponent from "../components/HeaderComponent";
 import InstructionItemComponent from "../components/InstructionItemComponent";
 import HttpService from "../services/HttpService";
-import Icon from "react-native-vector-icons/FontAwesome";
+import AuthContext from "../auth/context";
 
 const InstructionsListScreen = () => {
+  const { user } = useContext(AuthContext);
   const [isSidebarVisible, setSidebarVisible] = useState(false);
+  const [isAdmin, setIsAdmin] = useState(false);
   const [instructions, setInstructions] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);
-
+  useEffect(() => {
+    if (user) {
+      setIsAdmin(user.accountType === "ADMIN");
+    }
+  }, [user]);
   const toggleSidebar = () => {
     setSidebarVisible(!isSidebarVisible);
   };
@@ -26,14 +39,14 @@ const InstructionsListScreen = () => {
       const response = await HttpService.get("tutoringOffer/details");
    //   console.log(response)
       if (response.error) {
-      //  throw new Error(response.message || "Failed to fetch instructions");
+        //  throw new Error(response.message || "Failed to fetch instructions");
       }
       setInstructions(response);
       console.log("CCCCCCCCCCCCC")
       console.log(instructions)
     } catch (err) {
       console.error(err);
-     // setError(err.message);
+      // setError(err.message);
       //Alert.alert("Error", err.message || "An error occurred while fetching data.");
     } finally {
       setIsLoading(false);
@@ -55,7 +68,9 @@ const InstructionsListScreen = () => {
   if (error) {
     return (
       <View style={styles.errorContainer}>
-        <Text style={styles.errorText}>Failed to load instructions: {error}</Text>
+        <Text style={styles.errorText}>
+          Failed to load instructions: {error}
+        </Text>
       </View>
     );
   }
@@ -86,8 +101,11 @@ const InstructionsListScreen = () => {
         )}
         keyExtractor={(item) => item.tutoringOfferId.toString()}
       />
-
-      <Sidebar visible={isSidebarVisible} onClose={toggleSidebar} />
+      {isAdmin ? (
+        <AdminSidebarComponent visible={isSidebarVisible} onClose={toggleSidebar} />
+      ) : (
+        <SidebarComponent visible={isSidebarVisible} onClose={toggleSidebar} />
+      )}
     </View>
   );
 };
