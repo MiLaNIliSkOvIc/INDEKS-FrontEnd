@@ -126,10 +126,21 @@ const ElementaryGroupsListScreen = ({ navigation }) => {
   const handleOutsidePress = () => {
     setBlurredItem(null);
   };
+  
+  const handleChatPress = (chat) => {
+    console.log(chat);
+     navigation.navigate("Chat", {
+       chatId: chat.id,
+       name: chat.title,
+       group : chat.group,
+       elementary : true,
+       fromElementary : true
+     });
+  };
 
   const renderItem = ({ item }) => {
     return (
-      <TouchableOpacity onLongPress={() => handleLongPress(item)}>
+      <TouchableOpacity onLongPress={() => handleLongPress(item)} onPress={() => {handleChatPress(item)}}>
         <View style={styles.cardContainer}>
           {blurredItem === item.id
             ? isAdmin && (
