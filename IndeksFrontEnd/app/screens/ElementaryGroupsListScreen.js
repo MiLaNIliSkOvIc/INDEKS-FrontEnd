@@ -1,10 +1,9 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useContext } from "react";
 import {
   View,
   Text,
   FlatList,
   StyleSheet,
-  Image,
   TouchableOpacity,
   TouchableWithoutFeedback,
   ActivityIndicator,
@@ -12,13 +11,17 @@ import {
 import Icon from "react-native-vector-icons/FontAwesome";
 import { BlurView } from "expo-blur";
 import Sidebar from "../components/SidebarComponent";
+import AdminSidebarComponent from "../components/AdminSideBarComponent";
 import HeaderComponent from "../components/HeaderComponent";
 import HttpService from "../services/HttpService";
 import ElementaryGroup from "../model/ElementaryGroup";
 import ModalDeletingElementaryGroup from "../components/ModalDeletingElementaryGroup";
 import ModalAddGroup from "../components/ModalAddElementaryGroupChat";
+import AuthContext from "../auth/context";
 
 const ElementaryGroupsListScreen = ({ navigation }) => {
+  const { user } = useContext(AuthContext);
+  const [isAdmin, setIsAdmin] = useState(false);
   const [isSidebarVisible, setSidebarVisible] = useState(false);
   const [blurredItem, setBlurredItem] = useState(null);
   const [data, setData] = useState([]);
@@ -27,6 +30,11 @@ const ElementaryGroupsListScreen = ({ navigation }) => {
   const [isModalVisible, setModalVisible] = useState(false);
   const [selectedGroup, setSelectedGroup] = useState(null);
   const [isAddModalVisible, setAddModalVisible] = useState(false);
+  useEffect(() => {
+    if (user) {
+      setIsAdmin(user.accountType === "ADMIN");
+    }
+  }, [user]);
   const handleLongPressDelete = (item) => {
     setSelectedGroup(item);
     setModalVisible(true);
@@ -120,27 +128,30 @@ const ElementaryGroupsListScreen = ({ navigation }) => {
   };
 
   const renderItem = ({ item }) => {
-    console.log(item);
     return (
       <TouchableOpacity onLongPress={() => handleLongPress(item)}>
         <View style={styles.cardContainer}>
-          {blurredItem === item.id ? (
-            <BlurView style={styles.absoluteBlur} intensity={50}>
-              <View style={styles.iconOverlayContainer}>
-                <TouchableOpacity onPress={() => handleLongPressDelete(item)}>
-                  <View style={styles.iconCircle}>
-                    <Icon name="trash-o" size={15} color="#fff" />
-                  </View>
-                </TouchableOpacity>
+          {blurredItem === item.id
+            ? isAdmin && (
+                <BlurView style={styles.absoluteBlur} intensity={50}>
+                  <View style={styles.iconOverlayContainer}>
+                    <TouchableOpacity
+                      onPress={() => handleLongPressDelete(item)}
+                    >
+                      <View style={styles.iconCircle}>
+                        <Icon name="trash-o" size={15} color="#fff" />
+                      </View>
+                    </TouchableOpacity>
 
-                <TouchableOpacity onPress={handleClose}>
-                  <View style={styles.iconCircle}>
-                    <Icon name="close" size={15} color="#fff" />
+                    <TouchableOpacity onPress={handleClose}>
+                      <View style={styles.iconCircle}>
+                        <Icon name="close" size={15} color="#fff" />
+                      </View>
+                    </TouchableOpacity>
                   </View>
-                </TouchableOpacity>
-              </View>
-            </BlurView>
-          ) : null}
+                </BlurView>
+              )
+            : null}
 
           <View style={styles.iconContainer}>
             <Icon name="group" size={30} color="#013868" />
@@ -187,18 +198,28 @@ const ElementaryGroupsListScreen = ({ navigation }) => {
         />
         <Text style={styles.screenTitle}>Osnovne grupe</Text>
         {loading()}
-        <TouchableOpacity
-          style={styles.floatingButton}
-          onPress={handlePlusPress}
-        >
-          <Text style={styles.floatingButtonText}>+</Text>
-        </TouchableOpacity>
+        {isAdmin && (
+          <TouchableOpacity
+            style={styles.floatingButton}
+            onPress={handlePlusPress}
+          >
+            <Text style={styles.floatingButtonText}>+</Text>
+          </TouchableOpacity>
+        )}
         <ModalAddGroup
           visible={isAddModalVisible}
           onClose={() => setAddModalVisible(false)}
           onAdd={handleAddGroup}
         />
-        <Sidebar visible={isSidebarVisible} onClose={toggleSidebar} />
+        {isSidebarVisible &&
+          (isAdmin ? (
+            <AdminSidebarComponent
+              visible={isSidebarVisible}
+              onClose={toggleSidebar}
+            />
+          ) : (
+            <Sidebar visible={isSidebarVisible} onClose={toggleSidebar} />
+          ))}
         <ModalDeletingElementaryGroup
           visible={isModalVisible}
           onClose={handleModalClose}

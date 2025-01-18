@@ -54,20 +54,6 @@ export default function StudentAppNavigator() {
         component={ElementaryGroupChatScreen}
       />
       <Stack.Screen name="Ads" component={AnnouncementsListScreen} />
-      <Stack.Screen name="Problems" component={ViewProblemsScreen} />
-
-      <Stack.Screen
-        name="ReportedCommentsScreen"
-        component={ReportedCommentsScreen}
-      />
-      <Stack.Screen
-        name="ReportedMaterialsScreen"
-        component={ReportedMaterialsScreen}
-      />
-      <Stack.Screen
-        name="ReportedUsersScreen"
-        component={ReportedUsersScreen}
-      />
       <Stack.Screen name="SearchScreen" component={SearchScreen} />
       <Stack.Screen
         name="NewPrivateGroupScreen"
@@ -90,10 +76,6 @@ export default function StudentAppNavigator() {
       <Stack.Screen
         name="AnnouncementsSelectionScreen"
         component={AnnouncementsSelectionScreen}
-      />
-      <Stack.Screen
-        name="RegisteredUsersScreen"
-        component={RegisteredUsersScreen}
       />
       <Stack.Screen name="BlockedUsersScreen" component={BlockedUsersScreen} />
       <Stack.Screen

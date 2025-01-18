@@ -41,12 +41,6 @@ const SidebarComponent = ({ visible, onClose }) => {
       iconType: "FontAwesome",
     },
     {
-      label: "Prijavljeni problemi",
-      icon: "alert-triangle",
-      route: "Problems",
-      iconType: "Feather",
-    },
-    {
       label: "Moja ponuda",
       icon: "book",
       route: "ListOfMyInstructionsScreen",
@@ -56,12 +50,6 @@ const SidebarComponent = ({ visible, onClose }) => {
       label: "Podešavanja",
       icon: "settings",
       route: "SettingsScreen",
-      iconType: "Feather",
-    },
-    {
-      label: "Registrovani korisnici",
-      icon: "settings",
-      route: "RegisteredUsersScreen",
       iconType: "Feather",
     },
   ];

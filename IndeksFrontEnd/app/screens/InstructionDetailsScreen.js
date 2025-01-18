@@ -11,7 +11,7 @@ import {
 } from "react-native";
 import Icon from "react-native-vector-icons/MaterialIcons";
 import { useNavigation } from "@react-navigation/native";
-import HttpService from "../services/HttpService"; // Import the HTTP service
+import HttpService from "../services/HttpService"; 
 import CourseMaterialsComponent from "../components/CourseMaterialsComponent";
 
 const InstructionDetailsScreen = ({ route }) => {
@@ -26,7 +26,7 @@ const InstructionDetailsScreen = ({ route }) => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        console.log(id)
+  
         const data = await HttpService.get(`tutoringOffer/${id}/with-reviews`);
         console.log(data)
         if (data) {
@@ -129,7 +129,7 @@ const InstructionDetailsScreen = ({ route }) => {
           )}
         </View>
 
-        <CourseMaterialsComponent />
+      
 
         <Text style={styles.sectionTitle}>Recenzije</Text>
         <FlatList

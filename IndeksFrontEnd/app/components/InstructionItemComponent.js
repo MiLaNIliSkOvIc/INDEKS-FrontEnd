@@ -9,12 +9,12 @@ import {
 import Icon from "react-native-vector-icons/FontAwesome";
 import { useNavigation } from "@react-navigation/native";
 
-const InstructionItemComponent = ({ navigate, Offerid, course, teacher, rating, icon }) => {
+const InstructionItemComponent = ({ navigate, id, course, teacher, rating, icon }) => {
   const navigation = useNavigation();
   const [showActions, setShowActions] = useState(false);
 
   const renderStars = () => {
-    if (showActions) return null; // Sakrij zvezdice ako su dugmad za akcije vidljiva
+    if (showActions) return null; 
     const stars = [];
     for (let i = 1; i <= 5; i++) {
       stars.push(
@@ -30,20 +30,21 @@ const InstructionItemComponent = ({ navigate, Offerid, course, teacher, rating, 
   };
 
   const CourseInfo = (course) => {
-    
+    console.log("AAAAAAAAAAa")
+    console.log(navigate)
+    console.log(id)
     const courseData = {
-      id:Offerid,
+      id:id,
       courseTitle: course,
       instructor: teacher,
       description: "Zovem se Milan i držaću vam instrukcije iz matematike 1.",
     };
 
-    // Navigacija sa nazivom rute
     navigation.navigate("InstructionInfo", { navigate, ...courseData });
   };
 
   const handlePressOutside = () => {
-    setShowActions(false); // Sakrij dugmad za akcije i prikaži zvezdice
+    setShowActions(false); 
   };
 
   return (
@@ -59,7 +60,7 @@ const InstructionItemComponent = ({ navigate, Offerid, course, teacher, rating, 
             styles.itemContainer,
             showActions && styles.blurredContainer,
           ]}
-          onPress={() => CourseInfo(course)} // Omogući klik na karticu
+          onPress={() => CourseInfo(course)} 
           onLongPress={() => setShowActions(true)}
         >
           {/* Ikona kursa */}

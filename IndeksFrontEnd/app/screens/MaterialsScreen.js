@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState,useEffect,useContext} from "react";
 import {
   View,
   Text,
@@ -9,6 +9,9 @@ import {
 import Sidebar from "../components/SidebarComponent";
 import { useNavigation } from "@react-navigation/native";
 import HeaderComponent from "../components/HeaderComponent";
+import AdminSidebarComponent from "../components/AdminSideBarComponent";
+import AuthContext from "../auth/context";
+import SidebarComponent from "../components/SidebarComponent";
 
 const data = [
   { id: "1", year: "I", title: "Prva godina" },
@@ -18,9 +21,15 @@ const data = [
 ];
 
 const MaterialsScreen = () => {
+  const { user } = useContext(AuthContext);
   const [isSidebarVisible, setSidebarVisible] = useState(false);
+  const [isAdmin, setIsAdmin] = useState(false);
   const navigation = useNavigation();
-
+  useEffect(() => {
+      if (user) {
+        setIsAdmin(user.accountType === "ADMIN");
+      }
+    }, [user]);
   const toggleSidebar = () => {
     setSidebarVisible(!isSidebarVisible);
   };
@@ -61,7 +70,11 @@ const MaterialsScreen = () => {
         renderItem={renderItem}
         keyExtractor={(item) => item.id}
       />
-      <Sidebar visible={isSidebarVisible} onClose={toggleSidebar} />
+      {isAdmin ? (
+        <AdminSidebarComponent visible={isSidebarVisible} onClose={toggleSidebar} />
+      ) : (
+        <SidebarComponent visible={isSidebarVisible} onClose={toggleSidebar} />
+      )}
     </View>
   );
 };
