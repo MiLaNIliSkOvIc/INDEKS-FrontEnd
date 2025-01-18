@@ -24,11 +24,13 @@ const InstructionsListScreen = () => {
     try {
       setIsLoading(true);
       const response = await HttpService.get("tutoringOffer/details");
-      console.log(response)
+   //   console.log(response)
       if (response.error) {
       //  throw new Error(response.message || "Failed to fetch instructions");
       }
-      setInstructions(response); // Assuming the response is an array of instructions
+      setInstructions(response);
+      console.log("CCCCCCCCCCCCC")
+      console.log(instructions)
     } catch (err) {
       console.error(err);
      // setError(err.message);
