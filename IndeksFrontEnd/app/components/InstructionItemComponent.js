@@ -63,21 +63,21 @@ const InstructionItemComponent = ({ navigate, id, course, teacher, rating, icon 
           onPress={() => CourseInfo(course)} 
           onLongPress={() => setShowActions(true)}
         >
-          {/* Ikona kursa */}
+        
           <View style={styles.courseIconContainer}>
             <Icon name={icon} size={28} color="#013868" />
           </View>
 
-          {/* Informacije o kursu */}
+          
           <View style={styles.courseInfo}>
             <Text style={styles.courseTitle}>{course}</Text>
             <Text style={styles.teacherName}>{teacher}</Text>
           </View>
 
-          {/* Zvezdice za ocenu */}
+         
           <View style={styles.ratingContainer}>{renderStars()}</View>
 
-          {/* Dugmad za akcije */}
+       
           {showActions && (
             <View style={styles.actionButtons}>
               <TouchableOpacity

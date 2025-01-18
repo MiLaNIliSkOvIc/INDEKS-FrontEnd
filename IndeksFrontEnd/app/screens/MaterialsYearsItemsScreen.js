@@ -12,7 +12,7 @@ import HeaderComponent from "../components/HeaderComponent";
 import HttpService from "../services/HttpService";
 
 const MaterialsYearsItemsScreen = ({ route, navigation }) => {
-  const { year, title } = route.params; // Getting year and title from params
+  const { year, title } = route.params; 
   const [isSidebarVisible, setSidebarVisible] = useState(false);
   const [data, setData] = useState([]);
   const [isLoading, setIsLoading] = useState(true);

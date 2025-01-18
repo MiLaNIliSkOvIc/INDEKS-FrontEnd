@@ -5,38 +5,72 @@ import {
   FlatList,
   StyleSheet,
   TouchableOpacity,
+  Alert,
 } from "react-native";
 import Sidebar from "../components/SidebarComponent";
 import Icon from "react-native-vector-icons/FontAwesome";
 import HeaderComponent from "../components/HeaderComponent";
+import * as DocumentPicker from "expo-document-picker";
+import * as FileSystem from "expo-file-system";
+import { useUser } from "../hooks/useUser";
+import HttpService from "../services/HttpService";
 
-// Sample document data
 const documents = [
   { id: "1", icon: "file-text", title: "Priručnik za vežbe" },
   { id: "2", icon: "file-text", title: "Skripta za predavanja" },
   { id: "3", icon: "file-text", title: "Zbirka zadataka" },
   { id: "4", icon: "file-text", title: "Prezentacije" },
-  { id: "5", icon: "file-text", title: "Priručnik za vežbe" },
-  { id: "6", icon: "file-text", title: "Skripta za predavanja" },
-  { id: "7", icon: "file-text", title: "Zbirka zadataka" },
-  { id: "8", icon: "file-text", title: "Prezentacije" },
-  { id: "9", icon: "file-text", title: "Priručnik za vežbe" },
-  { id: "10", icon: "file-text", title: "Skripta za predavanja" },
-  { id: "11", icon: "file-text", title: "Zbirka zadataka" },
-  { id: "12", icon: "file-text", title: "Prezentacije" },
 ];
 
 const MaterialsSubjectItemsScreen = ({ route, navigation }) => {
-  const { subjectTitle } = route.params; // Getting subject title from params
+  const { subjectTitle } = route.params;
   const [isSidebarVisible, setSidebarVisible] = useState(false);
-
+  var user = useUser()
   const toggleSidebar = () => {
     setSidebarVisible(!isSidebarVisible);
   };
 
+  const handlePlusClick = async () => {
+    try {
+    
+      const result = await DocumentPicker.getDocumentAsync({ type: "*/*" });
+  
+      if (result.canceled) {
+        console.log("File selection canceled");
+        return;
+      }
+  
+      const file = result.assets[0];
+      const fileUri = file.uri;
+  
+  
+      const base64 = await FileSystem.readAsStringAsync(fileUri, {
+        encoding: FileSystem.EncodingType.Base64,
+      });
+      
+   
+      const payload = {
+        base64: base64,
+        name: file.name,
+        subjectId: 10, 
+        ownerAccountId: user.accountId, 
+      };
+  
+      
+      const response = await HttpService.create("material/upload", payload);
+      console.log(response)
+      if (response.error) {
+        console.error("Failed to upload file:", response.message);
+      } else {
+        console.log("File uploaded successfully:", response);
+      }
+    } catch (error) {
+      console.error("Error handling file upload:", error);
+    }
+  };
+
   const handleDownload = (documentTitle) => {
     console.log(`Downloading: ${documentTitle}`);
-    // You can add the file download functionality here
   };
 
   const renderItem = ({ item }) => (
@@ -69,7 +103,7 @@ const MaterialsSubjectItemsScreen = ({ route, navigation }) => {
         keyExtractor={(item) => item.id}
         contentContainerStyle={styles.cardList}
       />
-      <TouchableOpacity style={styles.floatingButton}>
+      <TouchableOpacity style={styles.floatingButton} onPress={handlePlusClick}>
         <Text style={styles.floatingButtonText}>+</Text>
       </TouchableOpacity>
       <Sidebar visible={isSidebarVisible} onClose={toggleSidebar} />

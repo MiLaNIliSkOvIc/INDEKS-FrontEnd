@@ -94,7 +94,7 @@ const ChatScreen = () => {
             console.log("Više korisnika pronađeno. Kreiram grupni chat...");
             
              resp = await HttpService.create("privateGroup", {
-              name: "GRABAS1232", 
+              name: "GRABASMARKO",  
               memberIds: [userId, ...otherUserId],
             });
               chatId = resp.id;
