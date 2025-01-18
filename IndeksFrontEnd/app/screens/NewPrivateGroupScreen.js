@@ -13,8 +13,10 @@ import {
 } from "react-native";
 import Icon from "react-native-vector-icons/FontAwesome";
 import HttpService from "../services/HttpService";
+
 const NewPrivateGroupScreen = ({ navigation }) => {
   const [searchText, setSearchText] = useState("");
+  const [groupName, setGroupName] = useState("");
   const [addedUsers, setAddedUsers] = useState([]);
   const [allUsers, setAllUsers] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -24,7 +26,14 @@ const NewPrivateGroupScreen = ({ navigation }) => {
     const fetchUsers = async () => {
       try {
         const users = await HttpService.get("userAccount");
-        setAllUsers(users.map((user) => ({ id: user.account.id, email: user.account.email,username: user.firstName })));
+        console.log("API response:", users);
+
+        setAllUsers(
+          users.map((user) => ({
+            id: user.account.id,
+            name: `${user.firstName || "N/A"} ${user.lastName || "N/A"}`,
+          }))
+        );
         setLoading(false);
       } catch (err) {
         setError("Greška prilikom učitavanja korisnika.");
@@ -34,7 +43,6 @@ const NewPrivateGroupScreen = ({ navigation }) => {
 
     fetchUsers();
   }, []);
-  
 
   const filteredUsers = allUsers.filter(
     (user) =>
@@ -52,12 +60,19 @@ const NewPrivateGroupScreen = ({ navigation }) => {
   };
 
   const createGroup = () => {
-    if (addedUsers.length > 0) {
-      console.log("Grupa kreirana sa korisnicima:", addedUsers);
-      const userIds = addedUsers.map(user => user.id);
-     
-      navigation.navigate("Chat", {otherUserId: userIds });
+    if (addedUsers.length < 2) {
+      alert("Morate dodati najmanje 2 korisnika.");
+      return;
     }
+
+    if (!groupName.trim()) {
+      alert("Unesite naziv grupe.");
+      return;
+    }
+
+    console.log("Grupa kreirana sa nazivom:", groupName);
+    console.log("Korisnici u grupi:", addedUsers);
+    navigation.navigate("Chat", { otherUserId: addedUsers[0].id });
   };
 
   return (
@@ -83,6 +98,20 @@ const NewPrivateGroupScreen = ({ navigation }) => {
           />
         </View>
 
+        <View style={styles.searchContainer}>
+          <Icon name="users" size={20} color="#aaa" />
+          <TextInput
+            style={[
+              styles.input,
+              addedUsers.length < 2 && styles.disabledInput,
+            ]}
+            placeholder="Unesite naziv grupe"
+            value={groupName}
+            onChangeText={setGroupName}
+            editable={addedUsers.length >= 2}
+          />
+        </View>
+
         {loading ? (
           <ActivityIndicator size="large" color="#007AFF" />
         ) : error ? (
@@ -105,6 +134,7 @@ const NewPrivateGroupScreen = ({ navigation }) => {
           <Text style={styles.noResultsText}>Nema rezultata za pretragu.</Text>
         )}
 
+        {/* Prikaz dodanih korisnika */}
         <View style={styles.addedUsersContainer}>
           {addedUsers.map((user) => (
             <View style={styles.addedUserItem} key={user.id}>
@@ -192,6 +222,10 @@ const styles = StyleSheet.create({
   },
   addedUserText: {
     marginRight: 10,
+  },
+  disabledInput: {
+    backgroundColor: "#e0e0e0",
+    color: "#aaa",
   },
   createButton: {
     position: "absolute",
