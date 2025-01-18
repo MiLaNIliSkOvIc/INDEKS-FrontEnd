@@ -4,7 +4,6 @@ import {
   Text,
   FlatList,
   StyleSheet,
-  Image,
   TouchableOpacity,
   TouchableWithoutFeedback,
   ActivityIndicator,
@@ -12,6 +11,7 @@ import {
 import Icon from "react-native-vector-icons/FontAwesome";
 import { BlurView } from "expo-blur";
 import Sidebar from "../components/SidebarComponent";
+import AdminSidebarComponent from "../components/AdminSideBarComponent";
 import HeaderComponent from "../components/HeaderComponent";
 import HttpService from "../services/HttpService";
 import ElementaryGroup from "../model/ElementaryGroup";
@@ -211,7 +211,15 @@ const ElementaryGroupsListScreen = ({ navigation }) => {
           onClose={() => setAddModalVisible(false)}
           onAdd={handleAddGroup}
         />
-        <Sidebar visible={isSidebarVisible} onClose={toggleSidebar} />
+        {isSidebarVisible &&
+          (isAdmin ? (
+            <AdminSidebarComponent
+              visible={isSidebarVisible}
+              onClose={toggleSidebar}
+            />
+          ) : (
+            <Sidebar visible={isSidebarVisible} onClose={toggleSidebar} />
+          ))}
         <ModalDeletingElementaryGroup
           visible={isModalVisible}
           onClose={handleModalClose}

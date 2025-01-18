@@ -72,7 +72,7 @@ const ScheduleScreen = () => {
     Array(times.length).fill(Array(days.length).fill(""))
   );
   const [dimensions, setDimensions] = useState(Dimensions.get("window"));
-  const [selectedOption, setSelectedOption] = useState("Option 1");
+  const [selectedOption, setSelectedOption] = useState("1");
   const [isEditable, setIsEditable] = useState(false); // Dodato stanje za omogućavanje/onemogućavanje editovanja
 
   useEffect(() => {
@@ -138,7 +138,7 @@ const ScheduleScreen = () => {
       day: dayMapping[days[dayIndex]],
       time: times[timeIndex],
       content: text,
-      scheduleId: 5, // ID rasporeda vezan za korisnika
+      scheduleId: 5,
       option: selectedOption,
     };
 
@@ -158,22 +158,16 @@ const ScheduleScreen = () => {
   };
 
   const toggleEditMode = async () => {
-    // Prebacivanje režima editovanja
     setIsEditable((prevState) => !prevState);
 
     if (isEditable) {
-      // Ako se izlazi iz režima uređivanja, poziva se API za ažuriranje podataka
       try {
-        const scheduleId = 5; // Pretpostavljeni ID rasporeda
-        const queryParam = `?option=${selectedOption.value}`; // Dodavanje query parametra
-
-        console.log("Šalje se API zahtev sa podacima:");
-
-        // Slanje PUT zahteva sa query parametrom
-        await HttpService.update(`schedule/${scheduleId}/update${queryParam}`);
-        // console.log(data);
-
-        console.log("Raspored uspešno ažuriran.");
+        const scheduleId = 5;
+        await HttpService.update(`schedule`, {
+          id: scheduleId,
+          num: selectedOption,
+        });
+        fetchScheduleData(scheduleId);
       } catch (error) {
         console.error("Greška pri ažuriranju rasporeda:", error);
       }
@@ -192,19 +186,22 @@ const ScheduleScreen = () => {
 
       <View style={styles.dropdownContainer}>
         <View style={styles.pickerWrapper}>
-        <Picker
-          selectedValue={selectedOption}
-          onValueChange={(itemValue) => setSelectedOption(itemValue)}
-          style={[styles.picker, !isEditable && styles.disabledPicker]}
-          enabled={isEditable}
-          dropdownIconColor={isEditable ? "#013868" : "#aaa"}
-          mode="dropdown" // Ovo može pomoći
-        >
-          {options.map((option, index) => (
-            <Picker.Item key={index} label={option.label} value={option.value} />
-          ))}
+          <Picker
+            selectedValue={selectedOption}
+            onValueChange={(itemValue) => setSelectedOption(itemValue)}
+            style={[styles.picker, !isEditable && styles.disabledPicker]}
+            enabled={isEditable}
+            dropdownIconColor={isEditable ? "#013868" : "#aaa"}
+            mode="dropdown" // Ovo može pomoći
+          >
+            {options.map((option, index) => (
+              <Picker.Item
+                key={index}
+                label={option.label}
+                value={option.value}
+              />
+            ))}
           </Picker>
-
         </View>
 
         <TouchableOpacity

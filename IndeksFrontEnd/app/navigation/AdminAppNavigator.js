@@ -10,6 +10,7 @@ import ReportedUsersScreen from "../screens/ReportedUsersScreen";
 import RegisteredUsersScreen from "../screens/RegisteredUsersScreen";
 import MaterialsSubjectItemsScreen from "../screens/MaterialsSubjectItemsScreen";
 import MaterialsYearsItemsScreen from "../screens/MaterialsYearsItemsScreen";
+import InstructionDetailsScreen from "../screens/InstructionDetailsScreen";
 const Stack = createStackNavigator();
 
 export default function AdminAppNavigator() {
@@ -38,9 +39,10 @@ export default function AdminAppNavigator() {
         name="ReportedUsersScreen"
         component={ReportedUsersScreen}
       />
+      <Stack.Screen name="Instruction" component={InstructionsListScreen} />
       <Stack.Screen
-        name="InstructionsListScreen"
-        component={InstructionsListScreen}
+        name="InstructionInfo"
+        component={InstructionDetailsScreen}
       />
       <Stack.Screen
         name="MaterialsYearsItemsScreen"
