@@ -3,6 +3,7 @@ import * as Notifications from "expo-notifications";
 
 import expoPushTokensApi from "../api/expoPushTokens";
 import { useUser } from "./useUser";
+import { useNavigation } from "@react-navigation/native";
 
 // Required
 Notifications.setNotificationHandler({
@@ -13,10 +14,12 @@ Notifications.setNotificationHandler({
   }),
 });
 
-export default useNotifications = (user) => {
+export default useNotifications = () => {
   const [notification, setNotification] = useState(false);
   const notificationListener = useRef();
   const responseListener = useRef();
+  const navigation = useNavigation();
+  const user = useUser();
 
   useEffect(() => {
     registerForPushNotifications();
@@ -30,8 +33,21 @@ export default useNotifications = (user) => {
     // This listener is fired whenever a user taps on or interacts with a notification (works when app is foregrounded, backgrounded, or killed)
     responseListener.current =
       Notifications.addNotificationResponseReceivedListener((response) => {
-        console.log("a");
-        console.log(response);
+        console.log(response.notification.request.content.data);
+        console.log(response.notification.request.content.body);
+        const type = response.notification.request.content.data.type;
+        if (type === "message") {
+          navigation.navigate("Chat", {
+            chatId: response.notification.request.content.data.chatId,
+            userId: user.accountId,
+            name: response.notification.request.content.data.chatName,
+            group: response.notification.request.content.data.isGroup,
+            elementary:
+              response.notification.request.content.data.isElementaryGroup,
+          });
+        } else if (type === "announcement") {
+          navigation.navigate("Ads");
+        }
       });
 
     return () => {
