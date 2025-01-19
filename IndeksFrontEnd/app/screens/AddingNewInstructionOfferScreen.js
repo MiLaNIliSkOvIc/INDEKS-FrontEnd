@@ -59,6 +59,7 @@ const AddingNewInstructionOfferScreen = () => {
         (subject) => subject.name === selectedSubject
       )?.id;
       console.log("SUBJECT ID:", subjectId);
+      console.log(subjectId);
 
       if (!subjectId) {
         console.error("Predmet nije pronađen.");
@@ -71,7 +72,7 @@ const AddingNewInstructionOfferScreen = () => {
         studentAccountId,
       };
       console.log("BODY:", body);
-      const response = await HttpService.create(`tutoringfOffer`, body);
+      const response = await HttpService.create("tutoringOffer", body);
       console.log("RESPONSE", response);
 
       navigation.goBack();
