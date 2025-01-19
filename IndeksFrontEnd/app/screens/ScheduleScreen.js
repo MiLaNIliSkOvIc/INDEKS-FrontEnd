@@ -73,7 +73,7 @@ const ScheduleScreen = () => {
   );
   const [dimensions, setDimensions] = useState(Dimensions.get("window"));
   const [selectedOption, setSelectedOption] = useState("1");
-  const [isEditable, setIsEditable] = useState(false); // Dodato stanje za omogućavanje/onemogućavanje editovanja
+  const [isEditable, setIsEditable] = useState(false);
 
   useEffect(() => {
     const handleResize = () => {
@@ -86,6 +86,7 @@ const ScheduleScreen = () => {
       // Dimensions.removeEventListener("change", handleResize);
     };
   }, []);
+
   const fetchScheduleData = async (scheduleId) => {
     try {
       const data = await HttpService.get(`schedule/${scheduleId}/items`);
@@ -111,6 +112,7 @@ const ScheduleScreen = () => {
       setScheduleData(fallbackSchedule);
     }
   };
+
   useEffect(() => {
     const scheduleId = 5; // Pretpostavljeni ID rasporeda
     fetchScheduleData(scheduleId);
@@ -192,7 +194,6 @@ const ScheduleScreen = () => {
             style={[styles.picker, !isEditable && styles.disabledPicker]}
             enabled={isEditable}
             dropdownIconColor={isEditable ? "#013868" : "#aaa"}
-            mode="dropdown" // Ovo može pomoći
           >
             {options.map((option, index) => (
               <Picker.Item
@@ -212,6 +213,19 @@ const ScheduleScreen = () => {
           onPress={toggleEditMode}
         >
           <Icon name="edit" size={24} color="#fff" />
+        </TouchableOpacity>
+
+        <TouchableOpacity
+          style={[styles.fetchButton, { opacity: isEditable ? 1 : 0.5 }]}
+          onPress={() => {
+            if (isEditable) {
+              const scheduleId = 5;
+              fetchScheduleData(scheduleId);
+            }
+          }}
+          disabled={!isEditable}
+        >
+          <Icon name="save-alt" size={24} color="#fff" />
         </TouchableOpacity>
       </View>
 
@@ -322,7 +336,6 @@ const styles = StyleSheet.create({
   picker: {
     height: 54,
     color: "#013868",
-    fontSize: 10,
   },
   disabledPicker: {
     backgroundColor: "#e0e0e0",
@@ -341,6 +354,20 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.2,
     shadowRadius: 3,
     elevation: 5,
+  },
+  fetchButton: {
+    width: 50,
+    height: 50,
+    backgroundColor: "#28a745",
+    borderRadius: 25,
+    justifyContent: "center",
+    alignItems: "center",
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.2,
+    shadowRadius: 3,
+    elevation: 5,
+    marginLeft: 10,
   },
   daysRow: {
     flexDirection: "row",
@@ -382,11 +409,6 @@ const styles = StyleSheet.create({
   timeText: {
     fontWeight: "bold",
   },
-  picker: {
-    height: 54,
-    width: "100%", // ili precizna širina
-    color: "#013868",
-  },
   scheduleCell: {
     width: 120,
     height: 100,
@@ -411,5 +433,3 @@ const styles = StyleSheet.create({
 });
 
 export default ScheduleScreen;
-
-// idemoooo
