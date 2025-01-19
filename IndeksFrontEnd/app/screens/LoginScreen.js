@@ -5,10 +5,12 @@ import {
   TouchableOpacity,
   StyleSheet,
   Keyboard,
+  ActivityIndicator,
 } from "react-native";
 import { useNavigation } from "@react-navigation/native";
 import { Formik } from "formik";
 import * as Yup from "yup";
+import { BlurView } from "expo-blur";
 
 import fonts from "../config/fonts";
 import IndeksBackground from "../components/IndeksBackground";
@@ -42,6 +44,7 @@ const LoginScreen = () => {
 
   const [keyboardVisible, setKeyboardVisible] = useState(false);
   const [loginError, setLoginError] = useState("");
+  const [loading, setLoading] = useState(false);
 
   useEffect(() => {
     const showKeyboard = Keyboard.addListener("keyboardDidShow", () => {
@@ -58,10 +61,10 @@ const LoginScreen = () => {
   }, []);
 
   const handleLoginPress = async ({ email, password }) => {
+    setLoading(true);
     try {
       setLoginError(""); // Reset error state
       const response = await authApi.login(email, password);
-      console.log(response);
       if (response.token) {
         authStorage.storeToken(response.token);
         const user = jwtDecode(response.token);
@@ -71,6 +74,8 @@ const LoginScreen = () => {
       }
     } catch (error) {
       setLoginError("Greška u prijavi. Molimo proverite vaše podatke.");
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -84,8 +89,15 @@ const LoginScreen = () => {
 
   return (
     <IndeksBackground>
+      {loading && (
+        <BlurView
+          style={StyleSheet.absoluteFill}
+          blurType="light"
+          blurAmount={10}
+        />
+      )}
       <LogoWithTitleComponent style={styles.logoContainer} />
-      <View style={styles.container}>
+      <View style={[styles.container, loading && styles.disabledContainer]}>
         <Text style={styles.title}>Prijava</Text>
         <Formik
           initialValues={{ email: "", password: "" }}
@@ -131,6 +143,7 @@ const LoginScreen = () => {
               <BigBasicButtonComponent
                 style={styles.loginButton}
                 onPress={handleSubmit}
+                disabled={loading}
               >
                 PRIJAVI SE
               </BigBasicButtonComponent>
@@ -138,7 +151,7 @@ const LoginScreen = () => {
           )}
         </Formik>
       </View>
-      {keyboardVisible ? null : (
+      {!keyboardVisible && !loading && (
         <View style={styles.loginLink}>
           <Text style={styles.accountText}>Nemate nalog?</Text>
           <TouchableOpacity onPress={handleRegisterPress}>
@@ -146,10 +159,14 @@ const LoginScreen = () => {
           </TouchableOpacity>
         </View>
       )}
+      {loading && (
+        <View style={styles.activityIndicator}>
+          <ActivityIndicator size="large" color={colors.primary} />
+        </View>
+      )}
     </IndeksBackground>
   );
 };
-
 const styles = StyleSheet.create({
   accountText: {
     color: colors.black,
@@ -217,6 +234,15 @@ const styles = StyleSheet.create({
   },
   usernameInput: {
     marginBottom: 25,
+  },
+  activityIndicator: {
+    position: "absolute",
+    top: "50%",
+    left: "50%",
+    transform: [{ translateX: -25 }, { translateY: -25 }],
+  },
+  disabledContainer: {
+    opacity: 0.5,
   },
 });
 

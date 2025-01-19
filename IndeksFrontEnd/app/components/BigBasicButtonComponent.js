@@ -2,9 +2,18 @@ import { StyleSheet, TouchableOpacity, Text } from "react-native";
 import colors from "../config/colors";
 import fonts from "../config/fonts";
 
-export default function BigBasicButtonComponent({ children, style, onPress }) {
+export default function BigBasicButtonComponent({
+  children,
+  style,
+  onPress,
+  disabled,
+}) {
   return (
-    <TouchableOpacity style={[styles.loginButton, style]} onPress={onPress}>
+    <TouchableOpacity
+      style={[styles.loginButton, style]}
+      onPress={onPress}
+      disabled={disabled}
+    >
       <Text style={styles.loginText}>{children}</Text>
     </TouchableOpacity>
   );
