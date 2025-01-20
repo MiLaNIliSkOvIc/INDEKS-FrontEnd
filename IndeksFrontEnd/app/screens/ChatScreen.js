@@ -40,6 +40,55 @@ const ChatScreen = () => {
     const minutes = date.getMinutes().toString().padStart(2, "0");
     return `${hours}:${minutes}`;
   };
+  
+
+  useEffect(() => {
+    const fetchMessages = async () => {
+      let response;
+  
+      try {
+        if (elementary) {
+          response = await HttpService.get(
+            `elementaryGroup/${chatId}/messages?userId=${userId}`
+          );
+          if (response.error) {
+            navigation.navigate("ElementaryGroupChat");
+            return;
+          }
+        } else if (group) {
+          response = await HttpService.get(
+            `privateGroup/${chatId}/messages?userId=${userId}`
+          );
+        } else {
+          response = await HttpService.get(
+            `singleChat/${chatId}/messages?userId=${userId}`
+          );
+        }
+  
+        const sortedMessages = response.sort(
+          (a, b) => new Date(b.time) - new Date(a.time)
+        );
+  
+        setMessages((prevMessages) => {
+          const existingIds = new Set(prevMessages.map((msg) => msg.id)); 
+          const newMessages = sortedMessages.filter(
+            (msg) => !existingIds.has(msg.id) 
+          );
+          const updatedMessages = [...prevMessages, ...newMessages];
+  
+         //console.log("radi")
+          return updatedMessages.sort((a, b) => new Date(b.time) - new Date(a.time));
+        });
+      } catch (error) {
+        console.error("Error fetching messages:", error);
+      }
+    };
+  
+    const intervalId = setInterval(fetchMessages, 5000);
+  
+    return () => clearInterval(intervalId);
+  }, [chatId, userId, elementary, group, navigation]);
+
 
   useEffect(() => {
     userId = user.accountId;
@@ -148,6 +197,7 @@ const ChatScreen = () => {
     const updatedMessages = [newMessage, ...messages];
     setMessages(updatedMessages);
   };
+  
   const generateUniqueId = () => {
     let newId;
     let exists = true;

@@ -17,6 +17,7 @@ import HttpService from "../services/HttpService";
 import * as MediaLibrary from 'expo-media-library';
 import { Alert } from 'react-native';
 import * as Permissions from 'expo-permissions';
+import * as Sharing from 'expo-sharing';
 
 const MaterialsSubjectItemsScreen = ({ route, navigation }) => {
   const { id, subjectTitle } = route.params; // Preuzimanje subjectId iz route.params
@@ -52,80 +53,44 @@ const MaterialsSubjectItemsScreen = ({ route, navigation }) => {
 
 
 
-const handleDownload = async (material) => {
-  try {
-    console.log("Material info:", material);
+  
+  const handleDownload = async (material) => {
+    try {
+      console.log("Material info:", material);
+  
 
-    // Fetch material data
-    const response = await HttpService.get(`material/material/${material.id}`);
-    if (response.error) {
-      console.error("Failed to fetch material:", response.message);
-      Alert.alert("Download Failed", response.message || "Unknown error occurred");
-      return;
+      const response = await HttpService.get(`material/material/${material.id}`);
+      if (response.error) {
+        Alert.alert("Download Failed", response.message || "Unknown error occurred");
+        return;
+      }
+  
+      const base64 = response.base64Content;
+      const tempUri = FileSystem.documentDirectory + material.name;
+  
+      await FileSystem.writeAsStringAsync(tempUri, base64, {
+        encoding: FileSystem.EncodingType.Base64,
+      });
+  
+      const fileInfo = await FileSystem.getInfoAsync(tempUri);
+      if (!fileInfo.exists) {
+        Alert.alert("Error", "Temporary file could not be created.");
+        return;
+      }
+
+      if (!(await Sharing.isAvailableAsync())) {
+        Alert.alert("Error", "Sharing is not available on this device.");
+        return;
+      }
+  
+      await Sharing.shareAsync(tempUri);
+      Alert.alert("Success", `${material.name} has been shared successfully.`);
+    } catch (error) {
+      console.error("Error during file handling:", error);
+      Alert.alert("Error", error.message || "An unexpected error occurred.");
     }
-
-    const base64 = response.base64Content;
-    const tempUri = FileSystem.documentDirectory + material.name;
-
-    // Save file temporarily
-    await FileSystem.writeAsStringAsync(tempUri, base64, {
-      encoding: FileSystem.EncodingType.Base64,
-    });
-
-    const fileInfo = await FileSystem.getInfoAsync(tempUri);
-    console.log("Temporary file info:", fileInfo);
-
-    if (!fileInfo.exists) {
-      console.error("File does not exist at temporary URI:", tempUri);
-      Alert.alert("Error", "Temporary file could not be created.");
-      return;
-    }
-
-    // Request Media Library permissions
-    const { status } = await MediaLibrary.requestPermissionsAsync();
-    if (status !== 'granted') {
-      Alert.alert("Permission Denied", "Cannot save file to Media Library.");
-      return;
-    }
-
-    // Define the destination path in the Downloads directory (for Android)
-    const destinationUri = FileSystem.documentDirectory + "Downloads/" + material.name;
-
-    // Try copying the file to the public directory (Android)
-    await FileSystem.copyAsync({ from: tempUri, to: destinationUri });
-
-    // Check if the file was successfully copied
-    const copiedFileInfo = await FileSystem.getInfoAsync(destinationUri);
-    if (!copiedFileInfo.exists) {
-      throw new Error("Failed to copy file to Downloads directory.");
-    }
-
-    // Create asset from copied file in public directory
-    const asset = await MediaLibrary.createAssetAsync(destinationUri);
-    if (!asset) {
-      throw new Error("Failed to create asset.");
-    }
-
-    // Get or create the album
-    let album = await MediaLibrary.getAlbumAsync("Download");
-
-    if (!album) {
-      console.log("Album 'Download' does not exist. Creating...");
-      album = await MediaLibrary.createAlbumAsync("Download", asset, false);
-    } else {
-      console.log("Adding asset to existing album...");
-      await MediaLibrary.addAssetsToAlbumAsync([asset], album, false);
-    }
-
-    Alert.alert("Download Complete", `${material.name} saved to Media Library.`);
-  } catch (error) {
-    console.error("Error during file handling:", error);
-    Alert.alert("Error", error.message || "An unexpected error occurred.");
-  }
-};
-
-
-
+  };
+  
 
   const handlePlusClick = async () => {
     try {
