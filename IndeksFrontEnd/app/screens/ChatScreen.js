@@ -22,16 +22,27 @@ const ChatScreen = () => {
   const route = useRoute();
   const user = useUser();
   var IdChat;
-  var { chatId, userId, name, group,elementary,fromElementary } = route.params;
+  var { chatId, userId, name, group, elementary, fromElementary } =
+    route.params;
   var br = 0;
   const [messages, setMessages] = useState([]);
   const [loading, setLoading] = useState(true);
   const [messageText, setMessageText] = useState("");
   const [isModalVisible, setIsModalVisible] = useState(false);
 
-  const handleBlockUser = () => {
-    setIsModalVisible(false);
-    // Logika za blokiranje korisnika
+  const handleBlockUser = async () => {
+    console.log(route.params);
+    try {
+      console.log("USER id: ", user.accountId);
+      const response = await HttpService.create(
+        `blocked-accounts/${userId}/block/${chatId}`
+      );
+      console.log("RESPONSE", response);
+    } catch (error) {
+      console.error("Greška prilikom pokušaja blokiranja korisnika:", error);
+    } finally {
+      setIsModalVisible(false); // Zatvori modal
+    }
   };
 
   const formatTime = (isoDate) => {
@@ -92,7 +103,7 @@ const ChatScreen = () => {
 
   useEffect(() => {
     userId = user.accountId;
-    
+
     const fetchMessages = async () => {
       try {
         IdChat = chatId;
@@ -102,85 +113,72 @@ const ChatScreen = () => {
             `singleChat/exists?firstParticipantId=${userId}&secondParticipantId=${route.params.otherUserId[0]}`
           );
           console.log(id);
-        } catch (error) {
-        }
-        if(id)
-          chatId=id;
+        } catch (error) {}
+        if (id) chatId = id;
 
-        if(elementary)
-        {
+        if (elementary) {
           response = await HttpService.get(
             `elementaryGroup/${chatId}/messages?userId=${userId}`
           );
-          if(response.error)
-           { navigation.navigate("ElementaryGroupChat");
+          if (response.error) {
+            navigation.navigate("ElementaryGroupChat");
             return;
-           }
-            
-        }
-        else if (group) {
-         
+          }
+        } else if (group) {
           response = await HttpService.get(
             `privateGroup/${chatId}/messages?userId=${userId}`
           );
         } else {
-          
           response = await HttpService.get(
             `singleChat/${chatId}/messages?userId=${userId}`
           );
         }
-     
-        
+
         if (response.error) {
           console.log("Chat ne postoji. Kreiram novi chat...");
-  
+
           const otherUserId = route.params.otherUserId;
           console.log(otherUserId);
           console.log(userId);
           let resp;
-          console.log(otherUserId)
+          console.log(otherUserId);
           if (Array.isArray(otherUserId) && otherUserId.length > 1) {
             console.log("Više korisnika pronađeno. Kreiram grupni chat...");
-            
-             resp = await HttpService.create("privateGroup", {
-              name: "GRABASMARKO",  
+
+            resp = await HttpService.create("privateGroup", {
+              name: "GRABASMARKO",
               memberIds: [userId, ...otherUserId],
             });
-              chatId = resp.id;
-            console.log(resp)
+            chatId = resp.id;
+            console.log(resp);
             navigation.navigate("Chat", {
               chatId: chatId,
-              elementary : false,
+              elementary: false,
               name: "Milan",
               group: true,
             });
+          } else {
+            resp = await HttpService.create("singleChat", {
+              firstParticipantId: userId,
+              secondParticipantId: otherUserId[0],
+            });
+            chatId = resp.id;
+            console.log(resp);
+            navigation.navigate("Chat", {
+              chatId: chatId,
+              otherUserId: otherUserId,
+              name: resp.secondParticipant.firstName,
+              group: false,
+            });
           }
-          else
-          {
-             resp = await HttpService.create("singleChat", {
-            firstParticipantId: userId,
-            secondParticipantId: otherUserId[0],
-            
-          });
-          chatId = resp.id;
-          console.log(resp)
-          navigation.navigate("Chat", {
-            chatId: chatId,
-            otherUserId: otherUserId,
-            name: resp.secondParticipant.firstName,
-            group: false,
-          });
-        }
-          
-         
-       
+
           setMessages([]);
           console.log("Novi chat kreiran uspešno.");
         } else {
           const sortedMessages = response.sort(
             (a, b) => new Date(b.time) - new Date(a.time)
           );
-          console.log(sortedMessages)
+          console.log(sortedMessages);
           setMessages(sortedMessages);
         }
       } catch (error) {
@@ -189,7 +187,7 @@ const ChatScreen = () => {
         setLoading(false);
       }
     };
-  
+
     fetchMessages();
   }, [chatId, userId, group]);
 
@@ -197,7 +195,7 @@ const ChatScreen = () => {
     const updatedMessages = [newMessage, ...messages];
     setMessages(updatedMessages);
   };
-  
+
   const generateUniqueId = () => {
     let newId;
     let exists = true;
@@ -209,30 +207,24 @@ const ChatScreen = () => {
 
     return newId;
   };
-  const back = () =>
-  {
-    if(!fromElementary)
-      navigation.navigate("ChatList")
-    else
-    navigation.navigate("ElementaryGroupChat")
-  }
+  const back = () => {
+    if (!fromElementary) navigation.navigate("ChatList");
+    else navigation.navigate("ElementaryGroupChat");
+  };
   const sendMessage = async (chatId) => {
     if (messageText.trim() === "") return;
     setMessageText("");
     let newMessage;
-    if(group)
-     {
+    if (group) {
       newMessage = {
-      text: messageText,
-      time: new Date().toISOString(),
-      singleChatId: 0,
-      groupChatId: chatId,
-      status: "SENT",
-      userAccountId: user.accountId,
-    };
-  }
-    else
-    {
+        text: messageText,
+        time: new Date().toISOString(),
+        singleChatId: 0,
+        groupChatId: chatId,
+        status: "SENT",
+        userAccountId: user.accountId,
+      };
+    } else {
       newMessage = {
         text: messageText,
         time: new Date().toISOString(),
@@ -243,7 +235,7 @@ const ChatScreen = () => {
       };
     }
 
-    console.log(newMessage)
+    console.log(newMessage);
     const mess = {
       id: generateUniqueId(),
       text: messageText,
@@ -257,26 +249,20 @@ const ChatScreen = () => {
       console.log(user.accountId);
       console.log(chatId);
       let response;
-      if(elementary)
-      {
-        
-         response = await HttpService.get(
-            `elementaryGroup/${chatId}/messages?userId=${user.accountId}`
+      if (elementary) {
+        response = await HttpService.get(
+          `elementaryGroup/${chatId}/messages?userId=${user.accountId}`
         );
-        console.log(response)
-      }
-      else if (group) { 
+        console.log(response);
+      } else if (group) {
         response = await HttpService.get(
           `privateGroup/${chatId}/messages?userId=${user.accountId}`
         );
-      } else {  
-        
+      } else {
         response = await HttpService.get(
           `singleChat/${chatId}/messages?userId=${user.accountId}`
-          
         );
-        console.log(response)
-
+        console.log(response);
       }
       const sortedMessages = response.sort(
         (a, b) => new Date(b.time) - new Date(a.time)
@@ -337,10 +323,7 @@ const ChatScreen = () => {
           <ModalBlockingUserFromChat
             visible={isModalVisible}
             onClose={() => setIsModalVisible(false)}
-            onConfirm={() => {
-              console.log("User blocked!");
-              setIsModalVisible(false);
-            }}
+            onConfirm={handleBlockUser}
             userName={name}
           />
         )}
@@ -433,7 +416,7 @@ const styles = StyleSheet.create({
     alignSelf: "flex-start",
   },
   messageText: {
-    marginLeft : 5,
+    marginLeft: 5,
     fontSize: 16,
     color: "#000",
   },
@@ -473,14 +456,14 @@ const styles = StyleSheet.create({
     fontSize: 14,
     fontWeight: "bold",
     color: "#555",
-    marginBottom: 5, 
+    marginBottom: 5,
     alignSelf: "flex-start",
   },
   senderName: {
     fontSize: 14,
     fontWeight: "bold",
     color: "#555",
-    marginBottom: 5, 
+    marginBottom: 5,
   },
 });
 
