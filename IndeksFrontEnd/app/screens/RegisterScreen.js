@@ -3,7 +3,7 @@ import {
   View,
   Text,
   TouchableOpacity,
-  TouchableHighlight,
+  ActivityIndicator,
   StyleSheet,
   Keyboard,
 } from "react-native";
@@ -11,6 +11,7 @@ import { useNavigation } from "@react-navigation/native";
 import fonts from "../config/fonts";
 import { Formik } from "formik";
 import * as Yup from "yup";
+import { BlurView } from "expo-blur";
 
 import IndeksBackground from "../components/IndeksBackground";
 import colors from "../config/colors";
@@ -47,6 +48,7 @@ const RegisterScreen = () => {
   //const [userAccountSelected, setUserAccountSelected] = useState(true);
 
   const [keyboardVisible, setKeyboardVisible] = useState(false);
+  const [loading, setLoading] = useState(false);
   useEffect(() => {
     const showKeyboard = Keyboard.addListener("keyboardDidShow", () => {
       setKeyboardVisible(true);
@@ -70,6 +72,7 @@ const RegisterScreen = () => {
     email,
     password,
   }) => {
+    setLoading(true);
     try {
       //const accountType = userAccountSelected ? "STUDENT" : "TUTOR";
       console.log(firstName + " " + lastName + " " + email + " " + password);
@@ -84,6 +87,8 @@ const RegisterScreen = () => {
       navigation.navigate("Login");
     } catch (error) {
       console.error("Registration failed", error);
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -99,7 +104,14 @@ const RegisterScreen = () => {
   // };
   return (
     <IndeksBackground>
-      <View style={styles.container}>
+      {loading && (
+        <BlurView
+          style={StyleSheet.absoluteFill}
+          blurType="light"
+          blurAmount={10}
+        />
+      )}
+      <View style={[styles.container, loading && styles.disabledContainer]}>
         <Text style={styles.title}>Registracija</Text>
         <Formik
           initialValues={{
@@ -236,6 +248,7 @@ const RegisterScreen = () => {
               <BigBasicButtonComponent
                 style={styles.registerButton}
                 onPress={handleSubmit}
+                disabled={loading}
               >
                 REGISTRUJ SE
               </BigBasicButtonComponent>
@@ -243,12 +256,17 @@ const RegisterScreen = () => {
           )}
         </Formik>
       </View>
-      {keyboardVisible ? null : (
+      {!keyboardVisible && !loading && (
         <View style={styles.footer}>
           <Text style={styles.footerText}>Imate nalog?</Text>
           <TouchableOpacity onPress={handleLoginPress}>
             <Text style={styles.footerLink}>Prijavite se</Text>
           </TouchableOpacity>
+        </View>
+      )}
+      {loading && (
+        <View style={styles.activityIndicator}>
+          <ActivityIndicator size="large" color={colors.primary} />
         </View>
       )}
     </IndeksBackground>
@@ -335,6 +353,15 @@ const styles = StyleSheet.create({
     fontFamily: fonts.primaryBold,
     width: "100%",
     marginBottom: 10,
+  },
+  activityIndicator: {
+    position: "absolute",
+    top: "50%",
+    left: "50%",
+    transform: [{ translateX: -25 }, { translateY: -25 }],
+  },
+  disabledContainer: {
+    opacity: 0.5,
   },
 });
 

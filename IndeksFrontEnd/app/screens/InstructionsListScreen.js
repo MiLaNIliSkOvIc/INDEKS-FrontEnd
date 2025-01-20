@@ -96,7 +96,6 @@ const InstructionsListScreen = () => {
             teacher={item.instructorName}
             rating={item.averageRating}
             icon="pencil"
-            onPress={() => handleCoursePress(item.course)}
           />
         )}
         keyExtractor={(item) => item.tutoringOfferId.toString()}

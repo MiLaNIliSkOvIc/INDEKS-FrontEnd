@@ -1,5 +1,4 @@
-//TODO tijana
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
   View,
   Text,
@@ -12,54 +11,91 @@ import Sidebar from "../components/SidebarComponent";
 import HeaderComponent from "../components/HeaderComponent";
 import InstructionItemComponent from "../components/InstructionItemComponent";
 import { useNavigation } from "@react-navigation/native";
+import { useUser } from "../hooks/useUser";
+import HttpService from "../services/HttpService";
+import ModalDeletingMyTutoringOffer from "../components/ModalDeletingMyTutoringOffer";
+import Icon from "react-native-vector-icons/FontAwesome";
 
-const data = [
-  {
-    id: "1",
-    course: "Matematika 1",
-
-    rating: 5,
-    icon: "calculator",
-  },
-  {
-    id: "2",
-    course: "OET 1",
-
-    rating: 5,
-    icon: "bolt",
-  },
-  {
-    id: "3",
-    course: "Matematika 2",
-
-    rating: 4,
-    icon: "calculator",
-  },
-];
 const ListOfMyInstructionsScreen = () => {
+  const user = useUser();
+  const [isModalVisible, setModalVisible] = useState(false);
+  const [selectedTutoringOffer, setSelectedTutoringOffer] = useState(null);
   const [isSidebarVisible, setSidebarVisible] = useState(false);
+  const [instructions, setInstructions] = useState([]);
   const [blurredItem, setBlurredItem] = useState(null);
+
+  const navigation = useNavigation();
+
+  useEffect(() => {
+    console.log("Ulogovani korisnik:", user);
+    const fetchInstructions = async () => {
+      if (!user?.accountId) {
+        console.warn("Korisnik nema accountId!");
+        return;
+      }
+
+      try {
+        const response = await HttpService.getById(
+          "tutoringOffer/student",
+          user.accountId
+        );
+        console.log("Odgovor API-ja:", response);
+        setInstructions(response || []);
+      } catch (err) {
+        console.log("Greška pri učitavanju podataka:", err);
+      }
+    };
+
+    fetchInstructions();
+  }, [user?.accountId]);
+
+  const handleModalClose = () => {
+    setModalVisible(false);
+    setSelectedTutoringOffer(null);
+  };
+
+  const handleModalConfirm = async (tutoringOfferId) => {
+    if (!selectedTutoringOffer?.tutoringOfferId) {
+      console.log("ID ponude nije definisan.");
+      return;
+    }
+    try {
+      const response = await HttpService.delete(
+        "tutoringOffer/",
+        tutoringOfferId
+      );
+      if (response) {
+        console.log(`Ponuda sa ID-jem ${tutoringOfferId} je obrisana.`);
+        setInstructions((prev) =>
+          prev.filter((item) => item.tutoringOfferId !== tutoringOfferId)
+        );
+        handleModalClose();
+      }
+    } catch (error) {
+      console.log("Greška pri brisanju ponude:", error);
+    }
+  };
 
   const toggleSidebar = () => {
     setSidebarVisible(!isSidebarVisible);
   };
-  const handleCoursePress = (course) => {
-    console.log("Selected course:", course);
+
+  const handleLongPress = (item) => {
+    setSelectedTutoringOffer(item);
+    setBlurredItem(item.tutoringOfferId);
   };
-  const navigation = useNavigation();
+
+  const handleClose = () => {
+    setBlurredItem(null);
+  };
 
   const handlePlusPress = () => {
     navigation.navigate("AddingNewInstructionOfferScreen");
   };
 
-  const loadData = () => {
-    return (
-      <FlatList
-        data={data}
-        renderItem={renderInstructionItem}
-        keyExtractor={(item) => item.id}
-      />
-    );
+  const handleLongPressDelete = (item) => {
+    setSelectedTutoringOffer(item);
+    setModalVisible(true);
   };
 
   const renderAddButton = () => (
@@ -67,19 +103,6 @@ const ListOfMyInstructionsScreen = () => {
       <Image
         source={require("../assets/images/plus.png")}
         style={styles.floatingButtonImage}
-      />
-    </TouchableOpacity>
-  );
-
-  const renderInstructionItem = ({ item }) => (
-    <TouchableOpacity>
-      <InstructionItemComponent
-        navigate={"ListOfMyInstructionsScreen"}
-        course={item.course}
-        rating={item.rating}
-        teacher={"444 recenzije"} //todo dodati recenzije tj prebrojavanje
-        icon={item.icon}
-        onPress={() => handleCoursePress(item.course)}
       />
     </TouchableOpacity>
   );
@@ -93,12 +116,58 @@ const ListOfMyInstructionsScreen = () => {
         centerText="Indeks"
       />
       <Text style={styles.title}>Moja ponuda</Text>
-      {loadData()}
+      <FlatList
+        data={instructions}
+        renderItem={({ item }) => (
+          <TouchableOpacity
+            onLongPress={() => handleLongPress(item)}
+            style={styles.instructionItem}
+          >
+            <InstructionItemComponent
+              navigate={"Instruction"}
+              id={item.tutoringOfferId}
+              course={item.subjectName}
+              teacher={item.instructorName}
+              rating={item.averageRating}
+              icon="pencil"
+            />
+            {blurredItem === item.tutoringOfferId && (
+              <BlurView style={styles.absoluteBlur} intensity={50}>
+                <View style={styles.iconOverlayContainer}>
+                  <TouchableOpacity
+                    onPress={() => handleLongPressDelete(item)} // Brisanje ponude
+                  >
+                    <View style={styles.iconCircle}>
+                      <Icon name="trash-o" size={15} color="#fff" />
+                    </View>
+                  </TouchableOpacity>
+
+                  <TouchableOpacity onPress={handleClose}>
+                    {" "}
+                    <View style={styles.iconCircle}>
+                      <Icon name="close" size={15} color="#fff" />
+                    </View>
+                  </TouchableOpacity>
+                </View>
+              </BlurView>
+            )}
+          </TouchableOpacity>
+        )}
+        keyExtractor={(item) => item.tutoringOfferId.toString()}
+      />
       {renderAddButton()}
+      <ModalDeletingMyTutoringOffer
+        visible={isModalVisible}
+        onClose={() => setModalVisible(false)}
+        onConfirm={handleModalConfirm}
+        tutoringOfferId={selectedTutoringOffer?.tutoringOfferId}
+        subjectName={selectedTutoringOffer?.subjectName}
+      />
       <Sidebar visible={isSidebarVisible} onClose={toggleSidebar} />
     </View>
   );
 };
+
 const styles = StyleSheet.create({
   container: {
     flex: 1,
@@ -110,6 +179,12 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
     marginVertical: 10,
     color: "#013868",
+  },
+  error: {
+    textAlign: "center",
+    fontSize: 16,
+    color: "red",
+    marginVertical: 10,
   },
   floatingButton: {
     position: "absolute",
@@ -126,21 +201,24 @@ const styles = StyleSheet.create({
     width: 70,
     height: 70,
   },
-  deleteButton: {
+  absoluteBlur: {
+    position: "absolute",
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
+  },
+  iconOverlayContainer: {
+    flexDirection: "row",
     position: "absolute",
     top: 10,
     right: 10,
-    zIndex: 1,
-    backgroundColor: "rgba(255, 255, 255, 0.7)", // Prozirna pozadina za dugme
-    borderRadius: 50,
+  },
+  iconCircle: {
+    backgroundColor: "#000",
+    borderRadius: 20,
     padding: 5,
-  },
-  blurredItem: {
-    filter: "blur(5px)", // Blur efekat
-  },
-  deleteIcon: {
-    width: 25,
-    height: 25,
+    marginLeft: 10,
   },
 });
 
