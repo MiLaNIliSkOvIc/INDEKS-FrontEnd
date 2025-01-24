@@ -36,9 +36,12 @@ const MaterialsSubjectItemsScreen = ({ route, navigation }) => {
   const fetchMaterials = async () => {
     try {
       setLoading(true);
+      console.log(id);
+      console.log(subjectTitle);
       const response = await HttpService.get(
         `material/materials/subject/${id}`
       );
+      console.log(response);
       if (response.error) {
         console.error("Failed to fetch materials:", response.message);
       } else {
@@ -48,6 +51,41 @@ const MaterialsSubjectItemsScreen = ({ route, navigation }) => {
       console.error("Error fetching materials:", error);
     } finally {
       setLoading(false);
+    }
+  };
+
+  const handlePlusClick = async () => {
+    try {
+      const result = await DocumentPicker.getDocumentAsync({ type: "*/*" });
+
+      if (result.canceled) {
+        console.log("File selection canceled");
+        return;
+      }
+
+      const file = result.assets[0];
+      const fileUri = file.uri;
+
+      const base64 = await FileSystem.readAsStringAsync(fileUri, {
+        encoding: FileSystem.EncodingType.Base64,
+      });
+
+      const payload = {
+        base64: base64,
+        name: file.name,
+        subjectId: id,
+        ownerAccountId: user.accountId,
+      };
+
+      const response = await HttpService.create("material/upload", payload);
+      if (response.error) {
+        console.error("Failed to upload file:", response.message);
+      } else {
+        console.log("File uploaded successfully:", response);
+        fetchMaterials();
+      }
+    } catch (error) {
+      console.error("Error handling file upload:", error);
     }
   };
 
@@ -155,7 +193,7 @@ const MaterialsSubjectItemsScreen = ({ route, navigation }) => {
           contentContainerStyle={styles.cardList}
         />
       )}
-      <TouchableOpacity style={styles.floatingButton} onPress={() => {}}>
+      <TouchableOpacity style={styles.floatingButton} onPress={handlePlusClick}>
         <Text style={styles.floatingButtonText}>+</Text>
       </TouchableOpacity>
       <Sidebar visible={isSidebarVisible} onClose={toggleSidebar} />
