@@ -26,6 +26,7 @@ const ChatScreen = () => {
   var br = 0;
   const [messages, setMessages] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [blocked, setBlocked] = useState(false);
   const [messageText, setMessageText] = useState("");
   const [isModalVisible, setIsModalVisible] = useState(false);
 
@@ -64,8 +65,11 @@ const ChatScreen = () => {
             `singleChat/${chatId}/messages?userId=${userId}`
           );
         }
-  
-        const sortedMessages = response.sort(
+        var sortedMessages;
+        if(response.error)
+          sortedMessages=[]
+        else
+         sortedMessages = response.sort(
           (a, b) => new Date(b.time) - new Date(a.time)
         );
   
@@ -82,20 +86,33 @@ const ChatScreen = () => {
       } catch (error) {
         console.error("Error fetching messages:", error);
       }
+     
+     
     };
   
     const intervalId = setInterval(fetchMessages, 5000);
-  
+    
     return () => clearInterval(intervalId);
   }, [chatId, userId, elementary, group, navigation]);
 
 
   useEffect(() => {
     userId = user.accountId;
-    
+   
+
     const fetchMessages = async () => {
       try {
         IdChat = chatId;
+        const block = await HttpService.get(`blocked-accounts/is-blocked/${userId}/${chatId}`)
+        if(block === true)
+         { setBlocked(true)
+          console.log("true")
+        }
+        else
+        {
+        setBlocked(false)
+        console.log(chatId)
+        }
         let response;
         try {
           var id = await HttpService.get(
@@ -143,7 +160,7 @@ const ChatScreen = () => {
             console.log("Više korisnika pronađeno. Kreiram grupni chat...");
             
              resp = await HttpService.create("privateGroup", {
-              name: "GRABASMARKO",  
+              name: route.params.groupName,  
               memberIds: [userId, ...otherUserId],
             });
               chatId = resp.id;
@@ -151,9 +168,10 @@ const ChatScreen = () => {
             navigation.navigate("Chat", {
               chatId: chatId,
               elementary : false,
-              name: "Milan",
+              name: route.params.groupName,
               group: true,
             });
+            
           }
           else
           {
@@ -177,6 +195,7 @@ const ChatScreen = () => {
           setMessages([]);
           console.log("Novi chat kreiran uspešno.");
         } else {
+          
           const sortedMessages = response.sort(
             (a, b) => new Date(b.time) - new Date(a.time)
           );
@@ -305,7 +324,7 @@ const ChatScreen = () => {
             : styles.otherMessageContainer,
         ]}
       >
-        {/* Prikaz imena unutar bijelog okvira iznad poruke */}
+        
         {!item.sentByUser && (
           <Text style={styles.senderName}>{item.senderFullName}</Text>
         )}
@@ -331,17 +350,23 @@ const ChatScreen = () => {
         </TouchableOpacity>
         <Text style={styles.headerTitle}>{name}</Text>
         <TouchableOpacity onPress={() => setIsModalVisible(true)}>
-          <Ionicons name="ellipsis-vertical-outline" size={24} color="black" />
+        <TouchableOpacity onPress={() => setIsModalVisible(true)}>
+  {!group && !blocked && (
+    <Ionicons name="ellipsis-vertical-outline" size={24} color="black" />
+  )}
+</TouchableOpacity>
+
         </TouchableOpacity>
         {isModalVisible && (
           <ModalBlockingUserFromChat
             visible={isModalVisible}
             onClose={() => setIsModalVisible(false)}
             onConfirm={() => {
-              console.log("User blocked!");
-              setIsModalVisible(false);
+              navigation.navigate("ChatList")
             }}
             userName={name}
+            userId={user.accountId}
+            chatId={chatId}
           />
         )}
       </View>
@@ -357,19 +382,27 @@ const ChatScreen = () => {
         />
       )}
       <View style={styles.inputContainer}>
-        <TextInput
-          style={styles.input}
-          placeholder="Poruka..."
-          value={messageText}
-          onChangeText={setMessageText}
-        />
-        <TouchableOpacity
-          style={styles.sendButton}
-          onPress={() => sendMessage(chatId)}
-        >
-          <Ionicons name="send-outline" size={24} color="#007aff" />
-        </TouchableOpacity>
-      </View>
+  {blocked ? (
+        <Text style={styles.blockedMessage}>Ne možete pristupiti ovom časkanju.</Text>
+      ) : (
+        <>
+          <TextInput
+            style={styles.input}
+            placeholder="Poruka..."
+            value={messageText}
+            onChangeText={setMessageText}
+            editable={!blocked}
+          />
+          <TouchableOpacity
+            style={styles.sendButton}
+            onPress={() => sendMessage(chatId)}
+            disabled={blocked}
+          >
+            <Ionicons name="send-outline" size={24} color={blocked ? "#ccc" : "#007aff"} />
+          </TouchableOpacity>
+        </>
+      )}
+    </View>
     </KeyboardAvoidingView>
   );
 };
@@ -482,6 +515,11 @@ const styles = StyleSheet.create({
     color: "#555",
     marginBottom: 5, 
   },
+  blockedMessage:
+  {
+    color:  'red',
+    marginLeft : '15%'
+  }
 });
 
 export default ChatScreen;

@@ -54,7 +54,7 @@ const BlockedUsersScreen = () => {
       blockedUsers.filter((user) => user.id !== blockedUserId)
     );
     await HttpService.delete(
-      `blocked-accounts/${user.accountId}/unblock/${blockedUserId}`
+      `blocked-accounts/unblock/chat/${user.accountId}/${blockedUserId}`
     );
   };
 

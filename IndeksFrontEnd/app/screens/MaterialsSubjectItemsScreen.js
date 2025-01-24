@@ -111,7 +111,7 @@ const MaterialsSubjectItemsScreen = ({ route, navigation }) => {
       const payload = {
         base64: base64,
         name: file.name,
-        subjectId: subjectId,
+        subjectId: id,
         ownerAccountId: user.accountId,
       };
 
