@@ -161,19 +161,6 @@ const ScheduleScreen = () => {
 
   const toggleEditMode = async () => {
     setIsEditable((prevState) => !prevState);
-
-    if (isEditable) {
-      try {
-        const scheduleId = 5;
-        await HttpService.update(`schedule`, {
-          id: scheduleId,
-          num: selectedOption,
-        });
-        fetchScheduleData(scheduleId);
-      } catch (error) {
-        console.error("Greška pri ažuriranju rasporeda:", error);
-      }
-    }
   };
 
   return (
@@ -217,10 +204,18 @@ const ScheduleScreen = () => {
 
         <TouchableOpacity
           style={[styles.fetchButton, { opacity: isEditable ? 1 : 0.5 }]}
-          onPress={() => {
+          onPress={async () => {
             if (isEditable) {
-              const scheduleId = 5;
-              fetchScheduleData(scheduleId);
+              try {
+                const scheduleId = 5;
+                await HttpService.update(`schedule`, {
+                  id: scheduleId,
+                  num: selectedOption,
+                });
+                fetchScheduleData(scheduleId);
+              } catch (error) {
+                console.error("Greška pri ažuriranju rasporeda:", error);
+              }
             }
           }}
           disabled={!isEditable}
