@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useCallback  } from "react";
 import {
   View,
   Text,
@@ -15,6 +15,7 @@ import { useUser } from "../hooks/useUser";
 import HttpService from "../services/HttpService";
 import ModalDeletingMyTutoringOffer from "../components/ModalDeletingMyTutoringOffer";
 import Icon from "react-native-vector-icons/FontAwesome";
+import { useFocusEffect } from "@react-navigation/native";
 
 const ListOfMyInstructionsScreen = () => {
   const user = useUser();
@@ -26,29 +27,30 @@ const ListOfMyInstructionsScreen = () => {
 
   const navigation = useNavigation();
 
-  useEffect(() => {
-    console.log("Ulogovani korisnik:", user);
-    const fetchInstructions = async () => {
-      if (!user?.accountId) {
-        console.warn("Korisnik nema accountId!");
-        return;
-      }
+  useFocusEffect(
+    useCallback(() => {
+      console.log("Ulogovani korisnik:", user);
+      const fetchInstructions = async () => {
+        if (!user?.accountId) {
+          console.warn("Korisnik nema accountId!");
+          return;
+        }
 
-      try {
-        const response = await HttpService.getById(
-          "tutoringOffer/student",
-          user.accountId
-        );
-        console.log("Odgovor API-ja:", response);
-        setInstructions(response || []);
-      } catch (err) {
-        console.log("Greška pri učitavanju podataka:", err);
-      }
-    };
+        try {
+          const response = await HttpService.getById(
+            "tutoringOffer/student",
+            user.accountId
+          );
+          console.log("Odgovor API-ja:", response);
+          setInstructions(response || []);
+        } catch (err) {
+          console.log("Greška pri učitavanju podataka:", err);
+        }
+      };
 
-    fetchInstructions();
-  }, [user?.accountId]);
-
+      fetchInstructions();
+    }, [user?.accountId]) 
+  );
   const handleModalClose = () => {
     setModalVisible(false);
     setSelectedTutoringOffer(null);
@@ -91,6 +93,7 @@ const ListOfMyInstructionsScreen = () => {
 
   const handlePlusPress = () => {
     navigation.navigate("AddingNewInstructionOfferScreen");
+    
   };
 
   const handleLongPressDelete = (item) => {

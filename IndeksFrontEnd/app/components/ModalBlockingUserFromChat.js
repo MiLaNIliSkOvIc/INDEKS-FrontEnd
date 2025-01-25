@@ -1,12 +1,35 @@
-import React from "react";
-import { Modal, View, Text, StyleSheet, TouchableOpacity } from "react-native";
+import React, { useState } from "react";
+import HttpService from "../services/HttpService";
+import { Modal, View, Text, StyleSheet, TouchableOpacity, Alert, ActivityIndicator } from "react-native";
 
 const ModalBlockingUserFromChat = ({
   visible,
   onClose,
   onConfirm,
   userName,
+  userId,
+  chatId,
 }) => {
+  const [isLoading, setIsLoading] = useState(false);
+
+  const handleBlockUser = async () => {
+    setIsLoading(true);
+    try {
+      console.log(userId);
+      const response = await HttpService.create(
+        `blocked-accounts/block/chat/${userId}/${chatId}`
+      );
+      console.log(response);
+      console.log(`Korisnik ${chatId} uspešno blokiran:`, response.data);
+      onConfirm();
+    } catch (error) {
+      console.error("Greška prilikom blokiranja korisnika:", error);
+      Alert.alert("Greška", "Došlo je do greške prilikom blokiranja korisnika.");
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
   return (
     <Modal
       animationType="slide"
@@ -22,17 +45,19 @@ const ModalBlockingUserFromChat = ({
             <Text style={styles.userName}>{userName}</Text>?
           </Text>
           <View style={styles.buttonContainer}>
-            <TouchableOpacity style={styles.cancelButton} onPress={onClose}>
+            <TouchableOpacity style={styles.cancelButton} onPress={onClose} disabled={isLoading}>
               <Text style={styles.cancelButtonText}>Otkaži</Text>
             </TouchableOpacity>
             <TouchableOpacity
               style={styles.confirmButton}
-              onPress={() => {
-                console.log(`Blokiran korisnik: ${userName}`);
-                onConfirm();
-              }}
+              onPress={handleBlockUser}
+              disabled={isLoading}
             >
-              <Text style={styles.confirmButtonText}>Blokiraj</Text>
+              {isLoading ? (
+                <ActivityIndicator size="small" color="#fff" />
+              ) : (
+                <Text style={styles.confirmButtonText}>Blokiraj</Text>
+              )}
             </TouchableOpacity>
           </View>
         </View>

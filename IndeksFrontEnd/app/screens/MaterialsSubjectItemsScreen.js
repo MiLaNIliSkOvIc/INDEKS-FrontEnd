@@ -6,24 +6,27 @@ import {
   StyleSheet,
   TouchableOpacity,
   ActivityIndicator,
+  Modal,
+  TextInput,
+  Alert,
 } from "react-native";
-import Sidebar from "../components/SidebarComponent";
 import Icon from "react-native-vector-icons/FontAwesome";
 import HeaderComponent from "../components/HeaderComponent";
+import Sidebar from "../components/SidebarComponent";
 import * as DocumentPicker from "expo-document-picker";
 import * as FileSystem from "expo-file-system";
 import { useUser } from "../hooks/useUser";
 import HttpService from "../services/HttpService";
-import * as MediaLibrary from 'expo-media-library';
-import { Alert } from 'react-native';
-import * as Permissions from 'expo-permissions';
-import * as Sharing from 'expo-sharing';
+import * as Sharing from "expo-sharing";
 
 const MaterialsSubjectItemsScreen = ({ route, navigation }) => {
-  const { id, subjectTitle } = route.params; // Preuzimanje subjectId iz route.params
+  const { id, subjectTitle } = route.params;
   const [isSidebarVisible, setSidebarVisible] = useState(false);
   const [materials, setMaterials] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [isModalVisible, setModalVisible] = useState(false);
+  const [selectedMaterial, setSelectedMaterial] = useState(null);
+  const [reportDescription, setReportDescription] = useState("");
   const user = useUser();
 
   const toggleSidebar = () => {
@@ -33,12 +36,12 @@ const MaterialsSubjectItemsScreen = ({ route, navigation }) => {
   const fetchMaterials = async () => {
     try {
       setLoading(true);
-      console.log(id)
-      console.log(subjectTitle)
+      console.log(id);
+      console.log(subjectTitle);
       const response = await HttpService.get(
         `material/materials/subject/${id}`
       );
-      console.log(response)
+      console.log(response);
       if (response.error) {
         console.error("Failed to fetch materials:", response.message);
       } else {
@@ -50,47 +53,6 @@ const MaterialsSubjectItemsScreen = ({ route, navigation }) => {
       setLoading(false);
     }
   };
-
-
-
-  
-  const handleDownload = async (material) => {
-    try {
-      console.log("Material info:", material);
-  
-
-      const response = await HttpService.get(`material/material/${material.id}`);
-      if (response.error) {
-        Alert.alert("Download Failed", response.message || "Unknown error occurred");
-        return;
-      }
-  
-      const base64 = response.base64Content;
-      const tempUri = FileSystem.documentDirectory + material.name;
-  
-      await FileSystem.writeAsStringAsync(tempUri, base64, {
-        encoding: FileSystem.EncodingType.Base64,
-      });
-  
-      const fileInfo = await FileSystem.getInfoAsync(tempUri);
-      if (!fileInfo.exists) {
-        Alert.alert("Error", "Temporary file could not be created.");
-        return;
-      }
-
-      if (!(await Sharing.isAvailableAsync())) {
-        Alert.alert("Error", "Sharing is not available on this device.");
-        return;
-      }
-  
-      await Sharing.shareAsync(tempUri);
-      Alert.alert("Success", `${material.name} has been shared successfully.`);
-    } catch (error) {
-      console.error("Error during file handling:", error);
-      Alert.alert("Error", error.message || "An unexpected error occurred.");
-    }
-  };
-  
 
   const handlePlusClick = async () => {
     try {
@@ -111,7 +73,7 @@ const MaterialsSubjectItemsScreen = ({ route, navigation }) => {
       const payload = {
         base64: base64,
         name: file.name,
-        subjectId: subjectId,
+        subjectId: id,
         ownerAccountId: user.accountId,
       };
 
@@ -120,11 +82,74 @@ const MaterialsSubjectItemsScreen = ({ route, navigation }) => {
         console.error("Failed to upload file:", response.message);
       } else {
         console.log("File uploaded successfully:", response);
-        fetchMaterials(); 
+        fetchMaterials();
       }
     } catch (error) {
       console.error("Error handling file upload:", error);
     }
+  };
+
+  const handleDownload = async (material) => {
+    try {
+      console.log("Material info:", material);
+
+      const response = await HttpService.get(
+        `material/material/${material.id}`
+      );
+      if (response.error) {
+        Alert.alert(
+          "Download Failed",
+          response.message || "Unknown error occurred"
+        );
+        return;
+      }
+
+      const base64 = response.base64Content;
+      const tempUri = FileSystem.documentDirectory + material.name;
+
+      await FileSystem.writeAsStringAsync(tempUri, base64, {
+        encoding: FileSystem.EncodingType.Base64,
+      });
+
+      const fileInfo = await FileSystem.getInfoAsync(tempUri);
+      if (!fileInfo.exists) {
+        Alert.alert("Error", "Temporary file could not be created.");
+        return;
+      }
+
+      if (!(await Sharing.isAvailableAsync())) {
+        Alert.alert("Error", "Sharing is not available on this device.");
+        return;
+      }
+
+      await Sharing.shareAsync(tempUri);
+      //Alert.alert("Success", `${material.name} has been shared successfully.`);
+    } catch (error) {
+      console.error("Error during file handling:", error);
+      Alert.alert("Error", error.message || "An unexpected error occurred.");
+    }
+  };
+
+  const handleLongPress = (material) => {
+    setSelectedMaterial(material);
+    setReportDescription("");
+    setModalVisible(true);
+  };
+
+  const handleSubmitReport = () => {
+    if (!reportDescription.trim()) {
+      Alert.alert("Greška", "Opis prijave ne može biti prazan.");
+      return;
+    }
+
+    console.log("Prijava za:", selectedMaterial?.name);
+    console.log("Opis:", reportDescription);
+
+    setModalVisible(false);
+    setReportDescription("");
+    setSelectedMaterial(null);
+
+    Alert.alert("Uspješno", "Vaša prijava je poslata.");
   };
 
   useEffect(() => {
@@ -133,13 +158,17 @@ const MaterialsSubjectItemsScreen = ({ route, navigation }) => {
 
   const renderItem = ({ item }) => (
     <TouchableOpacity
-      style={styles.itemContainer}  
+      style={styles.itemContainer}
+      onLongPress={() => handleLongPress(item)}
     >
       <View style={styles.iconContainer}>
         <Icon name="file-text" size={22} color="#013868" />
       </View>
       <Text style={styles.itemTitle}>{item.name}</Text>
-      <TouchableOpacity style={styles.downloadButton} onPress={ () => handleDownload(item)}>
+      <TouchableOpacity
+        style={styles.downloadButton}
+        onPress={() => handleDownload(item)}
+      >
         <Icon name="download" size={20} color="#013868" />
       </TouchableOpacity>
     </TouchableOpacity>
@@ -168,15 +197,49 @@ const MaterialsSubjectItemsScreen = ({ route, navigation }) => {
         <Text style={styles.floatingButtonText}>+</Text>
       </TouchableOpacity>
       <Sidebar visible={isSidebarVisible} onClose={toggleSidebar} />
+
+      <Modal
+        visible={isModalVisible}
+        animationType="slide"
+        transparent={true}
+        onRequestClose={() => setModalVisible(false)}
+      >
+        <View style={styles.modalOverlay}>
+          <View style={styles.modalContainer}>
+            <Text style={styles.modalTitle}>Prijava materijala</Text>
+            <Text style={styles.modalDescription}>
+              {selectedMaterial?.name}
+            </Text>
+            <TextInput
+              style={styles.textInput}
+              placeholder="Opis prijave"
+              value={reportDescription}
+              onChangeText={setReportDescription}
+              multiline
+            />
+            <View style={styles.modalActions}>
+              <TouchableOpacity
+                style={styles.modalButton}
+                onPress={handleSubmitReport}
+              >
+                <Text style={styles.modalButtonText}>Prijavi</Text>
+              </TouchableOpacity>
+              <TouchableOpacity
+                style={[styles.modalButton, styles.cancelButton]}
+                onPress={() => setModalVisible(false)}
+              >
+                <Text style={styles.modalButtonText}>Otkaži</Text>
+              </TouchableOpacity>
+            </View>
+          </View>
+        </View>
+      </Modal>
     </View>
   );
 };
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: "#c7c7c7",
-  },
+  container: { flex: 1, backgroundColor: "#c7c7c7" },
   title: {
     fontSize: 22,
     fontWeight: "bold",
@@ -184,10 +247,7 @@ const styles = StyleSheet.create({
     textAlign: "center",
     marginVertical: 15,
   },
-  cardList: {
-    marginTop: -10,
-    paddingHorizontal: 20,
-  },
+  cardList: { marginTop: -10, paddingHorizontal: 20 },
   itemContainer: {
     flexDirection: "row",
     alignItems: "center",
@@ -206,15 +266,8 @@ const styles = StyleSheet.create({
     backgroundColor: "#E8EAF6",
     borderRadius: 20,
   },
-  itemTitle: {
-    fontSize: 16,
-    fontWeight: "bold",
-    color: "#013868",
-    flex: 1,
-  },
-  downloadButton: {
-    padding: 10,
-  },
+  itemTitle: { fontSize: 16, fontWeight: "bold", color: "#013868", flex: 1 },
+  downloadButton: { padding: 10 },
   floatingButton: {
     position: "absolute",
     right: 30,
@@ -234,6 +287,38 @@ const styles = StyleSheet.create({
     textAlign: "center",
     lineHeight: 33,
   },
+  modalOverlay: {
+    flex: 1,
+    backgroundColor: "rgba(0,0,0,0.5)",
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  modalContainer: {
+    width: "80%",
+    backgroundColor: "#fff",
+    borderRadius: 10,
+    padding: 20,
+  },
+  modalTitle: { fontSize: 18, fontWeight: "bold", marginBottom: 10 },
+  modalDescription: { fontSize: 16, color: "#013868", marginBottom: 10 },
+  textInput: {
+    borderWidth: 1,
+    borderColor: "#ccc",
+    borderRadius: 5,
+    padding: 10,
+    marginBottom: 20,
+    height: 80,
+    textAlignVertical: "top",
+  },
+  modalActions: { flexDirection: "row", justifyContent: "space-between" },
+  modalButton: {
+    backgroundColor: "#013868",
+    borderRadius: 5,
+    paddingVertical: 10,
+    paddingHorizontal: 20,
+  },
+  modalButtonText: { color: "#fff", fontWeight: "bold" },
+  cancelButton: { backgroundColor: "#999" },
 });
 
 export default MaterialsSubjectItemsScreen;

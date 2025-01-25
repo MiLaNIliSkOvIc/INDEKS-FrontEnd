@@ -30,7 +30,7 @@ const NewPrivateGroupScreen = ({ navigation }) => {
 
         setAllUsers(
           users.map((user) => ({
-            id: user.account.id,
+            id: user.id,
             name: `${user.firstName || "N/A"} ${user.lastName || "N/A"}`,
           }))
         );
@@ -71,8 +71,10 @@ const NewPrivateGroupScreen = ({ navigation }) => {
     }
 
     console.log("Grupa kreirana sa nazivom:", groupName);
-    console.log("Korisnici u grupi:", addedUsers);
-    navigation.navigate("Chat", { otherUserId: addedUsers[0].id });
+    const userIds = addedUsers.map(user => user.id);
+
+    
+    navigation.navigate("Chat", { otherUserId: userIds, groupName : groupName });
   };
 
   return (
