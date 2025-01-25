@@ -8,10 +8,13 @@ import {
   StyleSheet,
   TouchableOpacity,
   ActivityIndicator,
+  Modal,
+  Alert,
 } from "react-native";
 import Icon from "react-native-vector-icons/MaterialIcons";
 import { useNavigation } from "@react-navigation/native";
-import HttpService from "../services/HttpService"; 
+import HttpService from "../services/HttpService";
+import HeaderComponent from "../components/HeaderComponent";
 import CourseMaterialsComponent from "../components/CourseMaterialsComponent";
 
 const InstructionDetailsScreen = ({ route }) => {
@@ -22,13 +25,21 @@ const InstructionDetailsScreen = ({ route }) => {
   const [editableDescription, setEditableDescription] = useState(description);
   const [isEditing, setIsEditing] = useState(false);
   const [loading, setLoading] = useState(true);
+  const [isReportReviewModalVisible, setReportReviewModalVisible] =
+    useState(false);
+  const [selectedReview, setSelectedReview] = useState(null);
+  const [reportDescription, setReportDescription] = useState("");
+
+  const [isAddReviewModalVisible, setAddReviewModalVisible] = useState(false);
+  //const [selectedReview, setSelectedReview] = useState(null);
+  const [addReviewDescription, setAddReviewDescription] = useState("");
+  const [selectedRating, setSelectedRating] = useState(0);
 
   useEffect(() => {
     const fetchData = async () => {
       try {
-  
         const data = await HttpService.get(`tutoringOffer/${id}/with-reviews`);
-        console.log(data)
+        console.log(data);
         if (data) {
           setReviews(data.reviews || []);
           setEditableDescription(data.description || description);
@@ -42,6 +53,40 @@ const InstructionDetailsScreen = ({ route }) => {
 
     fetchData();
   }, [description]);
+
+  const handleSubmitReport = () => {
+    if (!reportDescription.trim()) {
+      Alert.alert("Greška", "Opis prijave ne može biti prazan.");
+      return;
+    }
+
+    console.log("Prijava za:", selectedReview?.userName);
+    console.log("Opis:", reportDescription);
+
+    setReportReviewModalVisible(false);
+    setReportDescription("");
+    setSelectedReview(null);
+
+    Alert.alert("Uspješno", "Vaša prijava je poslata.");
+  };
+
+  const handleAddReview = () => {
+    if (!addReviewDescription.trim()) {
+      Alert.alert("Greška", "Opis recenzije ne može biti prazan.");
+      return;
+    }
+    if (selectedRating == 0) {
+      Alert.alert("Greška", "Rating ne može biti prazan.");
+      return;
+    }
+    console.log("Recenzija za:", courseTitle, " : ", instructor);
+    console.log("Opis:", addReviewDescription);
+    setAddReviewModalVisible(false);
+    setReportDescription("");
+    setSelectedReview(null);
+    Alert.alert("Uspješno", "Vaša recenzija je dodata.");
+    console.log("handleAddReview pritisnuto");
+  };
 
   const back = () => {
     navigation.navigate(navigate);
@@ -63,15 +108,49 @@ const InstructionDetailsScreen = ({ route }) => {
     return stars;
   };
 
+  const handleLongPress = (review) => {
+    setSelectedReview(review);
+    setReportDescription("");
+    setReportReviewModalVisible(true);
+  };
+
+  const renderInteractiveStars = () => {
+    let stars = [];
+    for (let i = 1; i <= 5; i++) {
+      stars.push(
+        <TouchableOpacity key={i} onPress={() => setSelectedRating(i)}>
+          <Icon
+            name={i <= selectedRating ? "star" : "star-border"}
+            size={32}
+            color={i <= selectedRating ? "#ccc" : "#ccc"} // Zlatna boja za aktivne zvezdice
+            style={styles.starIcon}
+          />
+        </TouchableOpacity>
+      );
+    }
+    return stars;
+  };
+
+  const handlePlusPress = () => {
+    setAddReviewDescription("");
+    setAddReviewModalVisible(true);
+    setSelectedRating(0);
+  };
+
   const renderReview = ({ item }) => (
-    <View style={styles.reviewContainer}>
-      <Icon name="person" size={40} color="#888" style={styles.userIcon} />
-      <View style={styles.reviewTextContainer}>
-        <Text style={styles.userName}>{item.reviewerName}</Text>
-        <Text style={styles.comment}>{item.description}</Text>
+    <TouchableOpacity
+      style={styles.itemContainer}
+      onLongPress={() => handleLongPress(item)}
+    >
+      <View style={styles.reviewContainer}>
+        <Icon name="person" size={40} color="#888" style={styles.userIcon} />
+        <View style={styles.reviewTextContainer}>
+          <Text style={styles.userName}>{item.reviewerName}</Text>
+          <Text style={styles.comment}>{item.description}</Text>
+        </View>
+        <View style={styles.ratingContainer}>{renderStars(item.grade)}</View>
       </View>
-      <View style={styles.ratingContainer}>{renderStars(item.grade)}</View>
-    </View>
+    </TouchableOpacity>
   );
 
   if (loading) {
@@ -84,19 +163,12 @@ const InstructionDetailsScreen = ({ route }) => {
 
   return (
     <View style={styles.container}>
-      <View style={styles.header}>
-        <TouchableOpacity style={styles.backButton} onPress={back}>
-          <Icon name="arrow-back" size={28} color="#fff" />
-        </TouchableOpacity>
-
-        <View style={styles.logoContainer}>
-          <Image
-            source={require("../assets/images/logo.png")}
-            style={styles.logo}
-          />
-          <Text style={styles.title}>INDEKS</Text>
-        </View>
-      </View>
+      <HeaderComponent
+        leftIcon="arrow-left"
+        leftAction={() => navigation.goBack()}
+        centerLogo={require("../assets/images/logo.png")}
+        centerText="Indeks"
+      />
 
       <View style={styles.content}>
         <View style={styles.courseInfoContainer}>
@@ -129,8 +201,6 @@ const InstructionDetailsScreen = ({ route }) => {
           )}
         </View>
 
-      
-
         <Text style={styles.sectionTitle}>Recenzije</Text>
         <FlatList
           data={reviews}
@@ -138,6 +208,92 @@ const InstructionDetailsScreen = ({ route }) => {
           keyExtractor={(item) => item.id}
         />
       </View>
+      <TouchableOpacity style={styles.floatingButton} onPress={handlePlusPress}>
+        <Text style={styles.floatingButtonText}>+</Text>
+      </TouchableOpacity>
+      <Modal
+        visible={isReportReviewModalVisible}
+        animationType="slide"
+        transparent={true}
+        onRequestClose={() => setReportReviewModalVisible(false)}
+      >
+        <View style={styles.modalOverlay}>
+          <View style={styles.modalContainer}>
+            <Text style={styles.modalTitle}>Prijava recenzije</Text>
+            {/* <Text style={styles.modalDescription}>
+              {selectedReview?.username}
+            </Text> */}
+            <TextInput
+              style={styles.textInput}
+              placeholder="Opis prijave"
+              value={reportDescription}
+              onChangeText={setReportDescription}
+              multiline
+            />
+            <View style={styles.modalActions}>
+              <TouchableOpacity
+                style={styles.modalButton}
+                onPress={handleSubmitReport}
+              >
+                <Text style={styles.modalButtonText}>Prijavi</Text>
+              </TouchableOpacity>
+              <TouchableOpacity
+                style={[styles.modalButton, styles.cancelButton]}
+                onPress={() => setReportReviewModalVisible(false)}
+              >
+                <Text style={styles.modalButtonText}>Otkaži</Text>
+              </TouchableOpacity>
+            </View>
+          </View>
+        </View>
+      </Modal>
+
+      {/* Oooovo je za dodavanje recenzijeeeeeeeee */}
+      <Modal
+        visible={isAddReviewModalVisible}
+        animationType="slide"
+        transparent={true}
+        onRequestClose={() => setAddReviewModalVisible(false)}
+      >
+        <View style={styles.modalOverlay}>
+          <View style={styles.modalContainer}>
+            <Text style={styles.modalTitle}>Dodaj recenziju</Text>
+            <Text style={styles.modalDescription}>
+              {courseTitle} : {instructor}
+            </Text>
+
+            {/* Interaktivne zvezdice */}
+            <View style={styles.ratingContainer}>
+              {renderInteractiveStars()}
+            </View>
+
+            <TextInput
+              style={styles.textInput}
+              placeholder="Opis"
+              value={addReviewDescription}
+              onChangeText={setAddReviewDescription}
+              multiline
+            />
+            <View style={styles.modalActions}>
+              <TouchableOpacity
+                style={styles.modalButton}
+                onPress={() => {
+                  console.log(`Rating: ${selectedRating}`);
+                  handleAddReview();
+                }}
+              >
+                <Text style={styles.modalButtonText}>Dodaj</Text>
+              </TouchableOpacity>
+              <TouchableOpacity
+                style={[styles.modalButton, styles.cancelButton]}
+                onPress={() => setAddReviewModalVisible(false)}
+              >
+                <Text style={styles.modalButtonText}>Otkaži</Text>
+              </TouchableOpacity>
+            </View>
+          </View>
+        </View>
+      </Modal>
     </View>
   );
 };
@@ -260,6 +416,64 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     alignItems: "center",
   },
+  floatingButton: {
+    position: "absolute",
+    right: 30,
+    bottom: 60,
+    width: 60,
+    height: 60,
+    backgroundColor: "#013868",
+    borderRadius: 30,
+    justifyContent: "center",
+    alignItems: "center",
+    elevation: 8,
+  },
+  floatingButtonText: {
+    color: "#fff",
+    fontSize: 30,
+    fontWeight: "bold",
+    textAlign: "center",
+    lineHeight: 33,
+  },
+  modalOverlay: {
+    flex: 1,
+    backgroundColor: "rgba(0,0,0,0.5)",
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  modalContainer: {
+    width: "80%",
+    backgroundColor: "#fff",
+    borderRadius: 10,
+    padding: 20,
+  },
+  modalTitle: { fontSize: 18, fontWeight: "bold", marginBottom: 10 },
+  modalDescription: { fontSize: 16, color: "#013868", marginBottom: 10 },
+  textInput: {
+    borderWidth: 1,
+    borderColor: "#ccc",
+    borderRadius: 5,
+    padding: 10,
+    marginBottom: 20,
+    height: 80,
+    textAlignVertical: "top",
+  },
+  modalActions: { flexDirection: "row", justifyContent: "space-between" },
+  modalButton: {
+    backgroundColor: "#013868",
+    borderRadius: 5,
+    paddingVertical: 10,
+    paddingHorizontal: 20,
+  },
+  modalButtonText: { color: "#fff", fontWeight: "bold" },
+  cancelButton: { backgroundColor: "#999" },
+  ratingContainer: {
+    flexDirection: "row",
+    justifyContent: "center",
+    marginVertical: 10,
+    color: "#fff",
+  },
 });
 
 export default InstructionDetailsScreen;
+//idemoooo
