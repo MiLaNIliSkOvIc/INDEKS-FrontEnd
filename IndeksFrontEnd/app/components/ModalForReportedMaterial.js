@@ -1,7 +1,14 @@
 import React from "react";
-import { View, Text, StyleSheet, Modal, TouchableOpacity } from "react-native";
+import {
+  View,
+  Text,
+  StyleSheet,
+  Modal,
+  TouchableOpacity,
+  ActivityIndicator,
+} from "react-native";
 
-const ModalForReportedMaterial = ({ modalVisible, onDelete, onCancel }) => {
+const ModalForReportedMaterial = ({ modalVisible, onDelete, onCancel, isLoading }) => {
   return (
     <Modal
       visible={modalVisible}
@@ -12,18 +19,23 @@ const ModalForReportedMaterial = ({ modalVisible, onDelete, onCancel }) => {
       <View style={styles.modalOverlay}>
         <View style={styles.modalContainer}>
           <Text style={styles.modalTitle}>Izaberite akciju</Text>
-          <TouchableOpacity style={styles.button} onPress={onDelete}>
-            <Text style={styles.buttonText}>Izbriši materijal</Text>
-          </TouchableOpacity>
-
-          <TouchableOpacity
-            style={[styles.button, styles.cancelButton]}
-            onPress={onCancel}
-          >
-            <Text style={[styles.buttonText, styles.cancelButtonText]}>
-              Otkaži
-            </Text>
-          </TouchableOpacity>
+          {isLoading ? (
+            <ActivityIndicator size="large" color="#1A4D92" style={styles.loader} />
+          ) : (
+            <>
+              <TouchableOpacity style={styles.button} onPress={onDelete}>
+                <Text style={styles.buttonText}>Izbriši materijal</Text>
+              </TouchableOpacity>
+              <TouchableOpacity
+                style={[styles.button, styles.cancelButton]}
+                onPress={onCancel}
+              >
+                <Text style={[styles.buttonText, styles.cancelButtonText]}>
+                  Otkaži
+                </Text>
+              </TouchableOpacity>
+            </>
+          )}
         </View>
       </View>
     </Modal>
@@ -71,11 +83,11 @@ const styles = StyleSheet.create({
     color: "white",
     fontWeight: "bold",
   },
-  dangerButtonText: {
-    color: "white",
-  },
   cancelButtonText: {
     color: "white",
+  },
+  loader: {
+    marginVertical: 20,
   },
 });
 

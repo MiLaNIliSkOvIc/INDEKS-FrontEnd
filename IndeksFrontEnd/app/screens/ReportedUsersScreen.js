@@ -1,16 +1,18 @@
-import React, { useState } from "react";
+import React, { useState,useEffect } from "react";
 import {
   View,
   Text,
   FlatList,
   StyleSheet,
   TouchableOpacity,
+  ActivityIndicator
 } from "react-native";
 import Icon from "react-native-vector-icons/FontAwesome";
 import Sidebar from "../components/AdminSideBarComponent";
 import HeaderComponent from "../components/HeaderComponent";
 import { useNavigation } from "@react-navigation/native";
 import ModalForReportedUser from "../components/ModalForReportedUser";
+import httpService from "../services/HttpService";
 
 const data = [
   {
@@ -24,6 +26,7 @@ const data = [
 
 const ReportedUsersScreen = () => {
   const [isSidebarVisible, setSidebarVisible] = useState(false);
+    const [data, setData] = useState([]); 
   const toggleSidebar = () => {
     setSidebarVisible(!isSidebarVisible);
   };
@@ -31,12 +34,41 @@ const ReportedUsersScreen = () => {
   const navigation = useNavigation();
   const [modalVisible, setModalVisible] = useState(false);
   const [selectedItem, setSelectedItem] = useState(null);
+  const [isLoading, setIsLoading] = useState(false);
+  const [loading, setLoading] = useState(false);
+  
+    useEffect(() => {
+      setLoading(true)
+      const fetchData = async () => {
+        try {
+          const response = await httpService.get("problemReport/type/2"); 
+          setData(response); 
+          console.log(response)
+        } catch (error) {
+          console.error("Error fetching reported materials:", error);
+        } finally {
+          setLoading(false); 
+        }
+      };
+  
+      fetchData();
+    }, []); 
+
+
   const handleMorePress = (item) => {
     setSelectedItem(item);
     setModalVisible(true);
   };
-  const handleSuspendAndDelete = () => {
+
+
+  const handleSuspendAndDelete = async () => {
+    setIsLoading(true); 
     console.log(`Korisnik ${selectedItem.title} suspendovan`);
+    const response =   await httpService.create(`userAccount/${selectedItem.reportedId}/suspend`);
+    await httpService.delete(`problemReport/${selectedItem.id}`)
+    const updatedData = data.filter(item => item.id !== selectedItem.id);
+    setData(updatedData);
+    setIsLoading(false); 
     setModalVisible(false);
   };
 
@@ -44,7 +76,18 @@ const ReportedUsersScreen = () => {
     console.log("Canceled.");
     setModalVisible(false);
   };
-
+  const formatDateTime = (isoString) => {
+    const date = new Date(isoString);
+    return `${date.getDate().toString().padStart(2, '0')}-${(date.getMonth() + 1)
+      .toString()
+      .padStart(2, '0')}-${date.getFullYear()} ${date.getHours()
+      .toString()
+      .padStart(2, '0')}:${date.getMinutes()
+      .toString()
+      .padStart(2, '0')}:${date.getSeconds()
+      .toString()
+      .padStart(2, '0')}`;
+  };
   const renderItem = ({ item }) => (
     <View style={styles.itemContainer}>
       <View>
@@ -54,9 +97,9 @@ const ReportedUsersScreen = () => {
         <TouchableOpacity onPress={() => handleMorePress(item)}>
           <Icon name="ellipsis-h" style={styles.moreIcon} />
         </TouchableOpacity>
-        <Text style={styles.itemTitle}>{item.title}</Text>
-        <Text style={styles.itemText}>{item.text}</Text>
-        <Text style={styles.itemDate}>{item.date}</Text>
+        <Text style={styles.itemTitle}>{item.reportedName + ' ' + item.reportedSurname}</Text>
+        <Text style={styles.itemText}>{item.reason}</Text>
+        <Text style={styles.itemDate}>{formatDateTime(item.time)}</Text>
       </View>
     </View>
   );
@@ -70,17 +113,21 @@ const ReportedUsersScreen = () => {
         centerText="Indeks"
       />
       <Text style={styles.headerTitle}>Prijavljeni nalozi</Text>
+      {loading ? (
+              <ActivityIndicator size="large" color="#013868" style={styles.loader} />
+            ) :(
       <FlatList
         data={data}
         renderItem={renderItem}
         keyExtractor={(item) => item.id}
-      />
+      />)}
       <Sidebar visible={isSidebarVisible} onClose={toggleSidebar} />
       <ModalForReportedUser
         modalVisible={modalVisible}
         setModalVisible={setModalVisible}
         onSuspend={handleSuspendAndDelete}
         onCancel={handleCancel}
+        isLoading={isLoading}
       ></ModalForReportedUser>
     </View>
   );

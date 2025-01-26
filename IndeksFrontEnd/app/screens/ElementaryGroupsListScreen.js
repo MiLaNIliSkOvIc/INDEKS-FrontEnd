@@ -129,6 +129,8 @@ const ElementaryGroupsListScreen = ({ navigation }) => {
   
   const handleChatPress = (chat) => {
     console.log(chat);
+    if(user.accountType === "ADMIN")
+      return
      navigation.navigate("Chat", {
        chatId: chat.id,
        name: chat.title,

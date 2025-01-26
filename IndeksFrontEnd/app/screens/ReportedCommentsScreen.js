@@ -1,17 +1,18 @@
-import React, { useState } from "react";
+import React, { useState,useEffect } from "react";
 import {
   View,
   Text,
   FlatList,
   StyleSheet,
   TouchableOpacity,
+  ActivityIndicator
 } from "react-native";
 import Icon from "react-native-vector-icons/FontAwesome";
 import Sidebar from "../components/AdminSideBarComponent";
 import HeaderComponent from "../components/HeaderComponent";
 import { useNavigation } from "@react-navigation/native";
 import ModalForReportedComments from "../components/ModalForReportedComments";
-
+import httpService from "../services/HttpService";
 const data = [
   {
     id: "1",
@@ -49,20 +50,55 @@ const ReportedCommentsScreen = () => {
   };
   const [modalVisible, setModalVisible] = useState(false);
   const [selectedItem, setSelectedItem] = useState(null);
-
+  const [data, setData] = useState(null);
+  const [loading, setLoading] = useState(true); 
+  const [isLoading, setisLoading] = useState(false); 
   const navigation = useNavigation();
+
+
+  
+    useEffect(() => {
+      const fetchData = async () => {
+        setLoading(true)
+        try {
+          const response = await httpService.get("problemReport/type/0"); 
+          setData(response); 
+          console.log(response)
+        } catch (error) {
+          console.error("Error fetching reported materials:", error);
+        } finally {
+          setLoading(false); 
+        }
+      };
+  
+      fetchData();
+    }, []); 
+
 
   const handleMorePress = (item) => {
     setSelectedItem(item);
     setModalVisible(true);
   };
 
-  const handleDelete = () => {
-    console.log(`Komentar ${selectedItem.title} izbrisan`);
-    setModalVisible(false);
+  const handleDelete = async () => {
+    setisLoading(true); 
+    try {
+      await httpService.delete(`problemReport/${selectedItem.id}`);
+      await httpService.delete(`review/${selectedItem.reviewId}`);
+      
+      const updatedData = data.filter(item => item.id !== selectedItem.id);
+      setData(updatedData); 
+    } catch (error) {
+      console.error("Error deleting comment:", error);
+    } finally {
+      setisLoading(false);
+      setModalVisible(false); 
+    }
   };
+  
 
   const handleSuspendAndDelete = () => {
+    setisLoading(false)
     console.log(
       `Komentar ${selectedItem.title} izbrisan i korisnik suspendovan`
     );
@@ -72,21 +108,35 @@ const ReportedCommentsScreen = () => {
   const handleCancel = () => {
     setModalVisible(false);
   };
-
+  const formatDateTime = (isoString) => {
+    const date = new Date(isoString);
+    return `${date.getDate().toString().padStart(2, '0')}-${(date.getMonth() + 1)
+      .toString()
+      .padStart(2, '0')}-${date.getFullYear()} ${date.getHours()
+      .toString()
+      .padStart(2, '0')}:${date.getMinutes()
+      .toString()
+      .padStart(2, '0')}:${date.getSeconds()
+      .toString()
+      .padStart(2, '0')}`;
+  };
+  
   const renderItem = ({ item }) => (
     <View style={styles.itemContainer}>
       <View>
         <Icon name={item.icon} size={24} color="#013868" />
       </View>
       <View style={styles.detailsContainer}>
-        <TouchableOpacity onPress={() => handleMorePress(item)}>
+      <TouchableOpacity
+          onPress={() => handleMorePress(item)}
+          style={{ padding: 10 }}
+        >
           <Icon name="ellipsis-h" style={styles.moreIcon} />
-        </TouchableOpacity>
-        <Text style={styles.itemTitle}>{item.title}</Text>
-        <Text style={styles.itemText}>{item.text}</Text>
-        <Text style={styles.itemCreator}>{item.creatorOfReport}</Text>
-        <Text style={styles.itemCreator}>{item.reportedUser}</Text>
-        <Text style={styles.itemDate}>{item.date}</Text>
+    </TouchableOpacity>
+        <Text style={styles.itemTitle}>{item.reviewText}</Text>
+        <Text style={styles.itemText}>{item.reason}</Text>
+        <Text style={styles.itemCreator}>{item.reporterName + ' '+item.reporterSurname}</Text>
+        <Text style={styles.itemDate}>{formatDateTime(item.time)}</Text>
       </View>
     </View>
   );
@@ -100,11 +150,14 @@ const ReportedCommentsScreen = () => {
         centerText="Indeks"
       />
       <Text style={styles.headerTitle}>Prijavljeni komentari</Text>
+      {loading ? (
+              <ActivityIndicator size="large" color="#013868" style={styles.loader} />
+            ) : (
       <FlatList
         data={data}
         renderItem={renderItem}
         keyExtractor={(item) => item.id}
-      />
+      />)}
       <Sidebar visible={isSidebarVisible} onClose={toggleSidebar} />
 
       <ModalForReportedComments
@@ -113,6 +166,7 @@ const ReportedCommentsScreen = () => {
         onDelete={handleDelete}
         onSuspendAndDelete={handleSuspendAndDelete}
         onCancel={handleCancel}
+        isLoading={isLoading}
       />
     </View>
   );

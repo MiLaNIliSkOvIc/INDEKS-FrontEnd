@@ -385,9 +385,9 @@ const ChatScreen = () => {
           <ModalOptionsForUserChat
             visible={isModalVisible}
             onClose={() => setIsModalVisible(false)}
-            // onConfirm={() => {
-            //   navigation.navigate("ChatList");
-            // }}
+            onConfirm={() => {
+              navigation.navigate("ChatList");
+            }}
             onBlockUser={handleBlockUser}
             onReportUser={handleReportUser}
             userName={name}
@@ -400,7 +400,9 @@ const ChatScreen = () => {
           <ModalBlockingUserFromChat
             visible={isBlockingUserModalVisible}
             onClose={() => setIsBlockingUserModalVisible(false)}
-            //onConfirm={handleConfirmBlock} // Poziva handleConfirmBlock nakon potvrde blokiranja
+            onConfirm={() => {
+              navigation.navigate("ChatList");
+            }}
             userName={name}
             userId={user.accountId}
             chatId={chatId}

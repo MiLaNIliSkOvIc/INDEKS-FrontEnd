@@ -1,11 +1,12 @@
 import React from "react";
-import { View, Text, StyleSheet, Modal, TouchableOpacity } from "react-native";
+import { View, Text, StyleSheet, Modal, TouchableOpacity, ActivityIndicator } from "react-native";
 
 const ModalForReportedComments = ({
   modalVisible,
   onDelete,
   onSuspendAndDelete,
   onCancel,
+  isLoading, 
 }) => {
   return (
     <Modal
@@ -17,24 +18,23 @@ const ModalForReportedComments = ({
       <View style={styles.modalOverlay}>
         <View style={styles.modalContainer}>
           <Text style={styles.modalTitle}>Izaberite akciju</Text>
-          <TouchableOpacity style={styles.button} onPress={onDelete}>
-            <Text style={styles.buttonText}>Izbriši komentar</Text>
-          </TouchableOpacity>
-
-          <TouchableOpacity style={styles.button} onPress={onSuspendAndDelete}>
-            <Text style={[styles.buttonText, styles.dangerButtonText]}>
-              Izbriši komentar i suspenduj korisnika
-            </Text>
-          </TouchableOpacity>
-
-          <TouchableOpacity
-            style={[styles.button, styles.cancelButton]}
-            onPress={onCancel}
-          >
-            <Text style={[styles.buttonText, styles.cancelButtonText]}>
-              Otkaži
-            </Text>
-          </TouchableOpacity>
+          {isLoading ? (
+           
+            <ActivityIndicator size="large" color="#1A4D92" style={styles.loader} />
+          ) : (
+            <>
+              <TouchableOpacity style={styles.button} onPress={onDelete}>
+                <Text style={styles.buttonText}>Izbriši komentar</Text>
+              </TouchableOpacity>
+             
+              <TouchableOpacity
+                style={[styles.button, styles.cancelButton]}
+                onPress={onCancel}
+              >
+                <Text style={[styles.buttonText, styles.cancelButtonText]}>Otkaži</Text>
+              </TouchableOpacity>
+            </>
+          )}
         </View>
       </View>
     </Modal>
@@ -87,6 +87,9 @@ const styles = StyleSheet.create({
   },
   cancelButtonText: {
     color: "white",
+  },
+  loader: {
+    marginVertical: 20,
   },
 });
 

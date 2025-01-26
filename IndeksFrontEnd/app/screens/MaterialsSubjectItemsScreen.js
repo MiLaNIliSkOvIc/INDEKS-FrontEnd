@@ -138,7 +138,7 @@ const MaterialsSubjectItemsScreen = ({ route, navigation }) => {
     setModalVisible(true);
   };
 
-  const handleSubmitReport = () => {
+  const handleSubmitReport = async () => {
     if (!reportDescription.trim()) {
       Alert.alert("Greška", "Opis prijave ne može biti prazan.");
       return;
@@ -147,11 +147,23 @@ const MaterialsSubjectItemsScreen = ({ route, navigation }) => {
     console.log("Prijava za:", selectedMaterial?.name);
     console.log("Opis:", reportDescription);
 
+   
+    const payload = 
+    {
+      reason: reportDescription,
+      time: new Date().toISOString(),
+      type: 1,
+      reviewId: 0,
+      materialId: selectedMaterial.id,
+      reporterId: user.accountId,
+      reportedId : 0
+    }
+    const response =await  HttpService.create("problemReport/newReport",payload)
+    console.log(payload)
+    Alert.alert("Uspješno", "Vaša prijava je poslata.");
     setModalVisible(false);
     setReportDescription("");
     setSelectedMaterial(null);
-
-    Alert.alert("Uspješno", "Vaša prijava je poslata.");
   };
 
   const handleSubmitDelete = () => {

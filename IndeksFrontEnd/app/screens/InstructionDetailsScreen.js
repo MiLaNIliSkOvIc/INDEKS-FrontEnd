@@ -16,6 +16,7 @@ import { useNavigation } from "@react-navigation/native";
 import HttpService from "../services/HttpService";
 import HeaderComponent from "../components/HeaderComponent";
 import CourseMaterialsComponent from "../components/CourseMaterialsComponent";
+import { useUser } from "../hooks/useUser";
 
 const InstructionDetailsScreen = ({ route }) => {
   const { navigate, id, courseTitle, instructor, description } = route.params;
@@ -34,7 +35,7 @@ const InstructionDetailsScreen = ({ route }) => {
   //const [selectedReview, setSelectedReview] = useState(null);
   const [addReviewDescription, setAddReviewDescription] = useState("");
   const [selectedRating, setSelectedRating] = useState(0);
-
+  const user = useUser()
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -70,7 +71,10 @@ const InstructionDetailsScreen = ({ route }) => {
     Alert.alert("Uspješno", "Vaša prijava je poslata.");
   };
 
-  const handleAddReview = () => {
+
+  
+  const handleAddReview = async () => {
+
     if (!addReviewDescription.trim()) {
       Alert.alert("Greška", "Opis recenzije ne može biti prazan.");
       return;
@@ -84,8 +88,19 @@ const InstructionDetailsScreen = ({ route }) => {
     setAddReviewModalVisible(false);
     setReportDescription("");
     setSelectedReview(null);
+    const payload = 
+    {
+      comment: addReviewDescription,
+      dateTime: new Date().toISOString(),
+      tutoringOfferId: id,
+      studentAccountId: user.accountId,
+      rating : selectedRating
+    }
+    const response = await HttpService.create('review',payload)
+    console.log(payload);
+    console.log(response);
     Alert.alert("Uspješno", "Vaša recenzija je dodata.");
-    console.log("handleAddReview pritisnuto");
+    
   };
 
   const back = () => {

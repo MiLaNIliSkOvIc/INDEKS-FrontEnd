@@ -1,16 +1,20 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
   View,
   Text,
   FlatList,
   StyleSheet,
   TouchableOpacity,
+  ActivityIndicator
 } from "react-native";
 import Icon from "react-native-vector-icons/FontAwesome";
 import Sidebar from "../components/AdminSideBarComponent";
 import HeaderComponent from "../components/HeaderComponent";
 import { useNavigation } from "@react-navigation/native";
 import ModalForReportedMaterial from "../components/ModalForReportedMaterial";
+import httpService from "../services/HttpService"; 
+import { RecyclerViewBackedScrollViewComponent } from "react-native";
+
 
 const data = [
   {
@@ -25,23 +29,57 @@ const data = [
 
 const ReportedMaterialsScreen = () => {
   const [isSidebarVisible, setSidebarVisible] = useState(false);
-  const toggleSidebar = () => {
-    setSidebarVisible(!isSidebarVisible);
-  };
+  const [data, setData] = useState([]); 
+  const [loading, setLoading] = useState(true); 
   const navigation = useNavigation();
   const [modalVisible, setModalVisible] = useState(false);
   const [selectedItem, setSelectedItem] = useState(null);
-  const handleDelete = () => {
-    console.log(`Materijal ${selectedItem.title} izbrisan`);
-    setModalVisible(false);
+  const [isLoading, setIsLoading] = useState(false);
+
+  const toggleSidebar = () => {
+    setSidebarVisible(!isSidebarVisible);
   };
+
+ 
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const response = await httpService.get("problemReport/type/1"); 
+        setData(response); 
+        console.log(response)
+      } catch (error) {
+        console.error("Error fetching reported materials:", error);
+      } finally {
+        setLoading(false); 
+      }
+    };
+
+    fetchData();
+  }, []); 
+
+  const handleDelete = async () => {
+    setIsLoading(true); 
+    console.log(selectedItem);
+    const response = await httpService.delete(`material/${selectedItem.materialId}`)
+    await httpService.delete(`problemReport/${selectedItem.id}`)
+    console.log(response)
+    const updatedData = data.filter(item => item.id !== selectedItem.id);
+    setData(updatedData);
+    setIsLoading(false); 
+    setModalVisible(false);
+    setModalVisible(false);
+    
+  };
+
   const handleMorePress = (item) => {
+    console.log(item)
     setSelectedItem(item);
     setModalVisible(true);
   };
+
   const handleSuspendAndDelete = () => {
     console.log(
-      `Materijal ${selectedItem.title} izbrisan i korisnik suspendovan`
+      `Materijal ${selectedItem.id} izbrisan i korisnik suspendovan`
     );
     setModalVisible(false);
   };
@@ -49,23 +87,37 @@ const ReportedMaterialsScreen = () => {
   const handleCancel = () => {
     setModalVisible(false);
   };
-
+  const formatDateTime = (isoString) => {
+    const date = new Date(isoString);
+    return `${date.getDate().toString().padStart(2, '0')}-${(date.getMonth() + 1)
+      .toString()
+      .padStart(2, '0')}-${date.getFullYear()} ${date.getHours()
+      .toString()
+      .padStart(2, '0')}:${date.getMinutes()
+      .toString()
+      .padStart(2, '0')}:${date.getSeconds()
+      .toString()
+      .padStart(2, '0')}`;
+  };
+  
   const renderItem = ({ item }) => (
     <View style={styles.itemContainer}>
       <View>
-        <Icon name={item.icon} size={24} color="#013868" />
+        <Icon name={item.icon || "folder"} size={24} color="#013868" />
       </View>
       <View style={styles.detailsContainer}>
-        <TouchableOpacity onPress={() => handleMorePress(item)}>
+        <TouchableOpacity onPress={() => handleMorePress(item)} style={{ padding: 5 }}>
           <Icon name="ellipsis-h" style={styles.moreIcon} />
         </TouchableOpacity>
-        <Text style={styles.itemTitle}>{item.title}</Text>
-        <Text style={styles.itemText}>{item.text}</Text>
-        <Text style={styles.itemText}>{item.reportedBy}</Text>
-        <Text style={styles.itemDate}>{item.date}</Text>
+        <Text style={styles.itemTitle}>{item.materialName}</Text>
+        <Text style={styles.itemText}>{item.reason}</Text>
+        <Text style={styles.itemText}>{item.reporterName + ' '+ item.reporterSurname}</Text>
+        <Text style={styles.itemDate}>{formatDateTime(item.time)}</Text>
       </View>
     </View>
   );
+
+ 
 
   return (
     <View style={styles.container}>
@@ -76,11 +128,15 @@ const ReportedMaterialsScreen = () => {
         centerText="Indeks"
       />
       <Text style={styles.headerTitle}>Prijavljeni materijali</Text>
-      <FlatList
-        data={data}
-        renderItem={renderItem}
-        keyExtractor={(item) => item.id}
-      />
+      {loading ? (
+        <ActivityIndicator size="large" color="#013868" style={styles.loader} />
+      ) : (
+        <FlatList
+          data={data}
+          renderItem={renderItem}
+          keyExtractor={(item) => item.id}
+        />
+      )}
       <Sidebar visible={isSidebarVisible} onClose={toggleSidebar} />
       <ModalForReportedMaterial
         modalVisible={modalVisible}
@@ -88,6 +144,7 @@ const ReportedMaterialsScreen = () => {
         onDelete={handleDelete}
         onSuspendAndDelete={handleSuspendAndDelete}
         onCancel={handleCancel}
+        isLoading={isLoading}
       />
     </View>
   );
@@ -147,6 +204,15 @@ const styles = StyleSheet.create({
     marginTop: 5,
     position: "absolute",
     right: 0,
+  },
+  loadingContainer: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  loadingText: {
+    fontSize: 18,
+    color: "#013868",
   },
 });
 
