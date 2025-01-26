@@ -13,11 +13,13 @@ import {
 import Icon from "react-native-vector-icons/FontAwesome";
 import HeaderComponent from "../components/HeaderComponent";
 import Sidebar from "../components/SidebarComponent";
+import ModalReportMaterial from "../components/ModalReportMaterial";
 import * as DocumentPicker from "expo-document-picker";
 import * as FileSystem from "expo-file-system";
 import { useUser } from "../hooks/useUser";
 import HttpService from "../services/HttpService";
 import * as Sharing from "expo-sharing";
+import ModalDeleteMaterial from "../components/ModalDeleteMaterial";
 
 const MaterialsSubjectItemsScreen = ({ route, navigation }) => {
   const { id, subjectTitle } = route.params;
@@ -152,6 +154,15 @@ const MaterialsSubjectItemsScreen = ({ route, navigation }) => {
     Alert.alert("Uspješno", "Vaša prijava je poslata.");
   };
 
+  const handleSubmitDelete = () => {
+    console.log("Obrisan dokument");
+
+    setModalVisible(false);
+    setSelectedMaterial(null);
+
+    Alert.alert("Uspješno", "Materijal je uspješno obrisan");
+  };
+
   useEffect(() => {
     fetchMaterials();
   }, []);
@@ -197,43 +208,22 @@ const MaterialsSubjectItemsScreen = ({ route, navigation }) => {
         <Text style={styles.floatingButtonText}>+</Text>
       </TouchableOpacity>
       <Sidebar visible={isSidebarVisible} onClose={toggleSidebar} />
-
-      <Modal
+      {/* AKO JE STUDENT */}
+      <ModalReportMaterial
         visible={isModalVisible}
-        animationType="slide"
-        transparent={true}
-        onRequestClose={() => setModalVisible(false)}
-      >
-        <View style={styles.modalOverlay}>
-          <View style={styles.modalContainer}>
-            <Text style={styles.modalTitle}>Prijava materijala</Text>
-            <Text style={styles.modalDescription}>
-              {selectedMaterial?.name}
-            </Text>
-            <TextInput
-              style={styles.textInput}
-              placeholder="Opis prijave"
-              value={reportDescription}
-              onChangeText={setReportDescription}
-              multiline
-            />
-            <View style={styles.modalActions}>
-              <TouchableOpacity
-                style={styles.modalButton}
-                onPress={handleSubmitReport}
-              >
-                <Text style={styles.modalButtonText}>Prijavi</Text>
-              </TouchableOpacity>
-              <TouchableOpacity
-                style={[styles.modalButton, styles.cancelButton]}
-                onPress={() => setModalVisible(false)}
-              >
-                <Text style={styles.modalButtonText}>Otkaži</Text>
-              </TouchableOpacity>
-            </View>
-          </View>
-        </View>
-      </Modal>
+        onClose={() => setModalVisible(false)}
+        onSubmit={handleSubmitReport}
+        selectedMaterial={selectedMaterial}
+        reportDescription={reportDescription}
+        setReportDescription={setReportDescription}
+      />
+      {/* AKO JE ADMIN */}
+      {/* <ModalDeleteMaterial
+        visible={isModalVisible}
+        onClose={() => setModalVisible(false)}
+        onSubmit={handleSubmitDelete}
+        selectedMaterial={selectedMaterial}
+      /> */}
     </View>
   );
 };
