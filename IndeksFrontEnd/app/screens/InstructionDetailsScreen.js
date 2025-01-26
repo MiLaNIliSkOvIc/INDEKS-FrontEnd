@@ -16,6 +16,8 @@ import { useNavigation } from "@react-navigation/native";
 import HttpService from "../services/HttpService";
 import HeaderComponent from "../components/HeaderComponent";
 import CourseMaterialsComponent from "../components/CourseMaterialsComponent";
+import ModalReportReview from "../components/ModalReportReview";
+import ModalAddReview from "../components/ModalAddReview";
 
 const InstructionDetailsScreen = ({ route }) => {
   const { navigate, id, courseTitle, instructor, description } = route.params;
@@ -211,89 +213,26 @@ const InstructionDetailsScreen = ({ route }) => {
       <TouchableOpacity style={styles.floatingButton} onPress={handlePlusPress}>
         <Text style={styles.floatingButtonText}>+</Text>
       </TouchableOpacity>
-      <Modal
+      <ModalReportReview
         visible={isReportReviewModalVisible}
-        animationType="slide"
-        transparent={true}
-        onRequestClose={() => setReportReviewModalVisible(false)}
-      >
-        <View style={styles.modalOverlay}>
-          <View style={styles.modalContainer}>
-            <Text style={styles.modalTitle}>Prijava recenzije</Text>
-            {/* <Text style={styles.modalDescription}>
-              {selectedReview?.username}
-            </Text> */}
-            <TextInput
-              style={styles.textInput}
-              placeholder="Opis prijave"
-              value={reportDescription}
-              onChangeText={setReportDescription}
-              multiline
-            />
-            <View style={styles.modalActions}>
-              <TouchableOpacity
-                style={styles.modalButton}
-                onPress={handleSubmitReport}
-              >
-                <Text style={styles.modalButtonText}>Prijavi</Text>
-              </TouchableOpacity>
-              <TouchableOpacity
-                style={[styles.modalButton, styles.cancelButton]}
-                onPress={() => setReportReviewModalVisible(false)}
-              >
-                <Text style={styles.modalButtonText}>Otkaži</Text>
-              </TouchableOpacity>
-            </View>
-          </View>
-        </View>
-      </Modal>
+        onClose={() => setReportReviewModalVisible(false)}
+        onSubmit={handleSubmitReport}
+        reportDescription={reportDescription}
+        setReportDescription={setReportDescription}
+      />
 
       {/* Oooovo je za dodavanje recenzijeeeeeeeee */}
-      <Modal
+      <ModalAddReview
         visible={isAddReviewModalVisible}
-        animationType="slide"
-        transparent={true}
-        onRequestClose={() => setAddReviewModalVisible(false)}
-      >
-        <View style={styles.modalOverlay}>
-          <View style={styles.modalContainer}>
-            <Text style={styles.modalTitle}>Dodaj recenziju</Text>
-            <Text style={styles.modalDescription}>
-              {courseTitle} : {instructor}
-            </Text>
-
-            {/* Interaktivne zvezdice */}
-            <View style={styles.ratingContainer}>
-              {renderInteractiveStars()}
-            </View>
-
-            <TextInput
-              style={styles.textInput}
-              placeholder="Opis"
-              value={addReviewDescription}
-              onChangeText={setAddReviewDescription}
-              multiline
-            />
-            <View style={styles.modalActions}>
-              <TouchableOpacity
-                style={styles.modalButton}
-                onPress={() => {
-                  console.log(`Rating: ${selectedRating}`);
-                  handleAddReview();
-                }}
-              >
-                <Text style={styles.modalButtonText}>Dodaj</Text>
-              </TouchableOpacity>
-              <TouchableOpacity
-                style={[styles.modalButton, styles.cancelButton]}
-                onPress={() => setAddReviewModalVisible(false)}
-              >
-                <Text style={styles.modalButtonText}>Otkaži</Text>
-              </TouchableOpacity>
-            </View>
-          </View>
-        </View>
-      </Modal>
+        onClose={() => setAddReviewModalVisible(false)}
+        onSubmit={handleAddReview}
+        courseTitle={courseTitle}
+        instructor={instructor}
+        renderInteractiveStars={renderInteractiveStars}
+        addReviewDescription={addReviewDescription}
+        setAddReviewDescription={setAddReviewDescription}
+        selectedRating={selectedRating}
+      />
     </View>
   );
 };
