@@ -19,6 +19,7 @@ import { useUser } from "../hooks/useUser";
 import ModalBlockingUserFromChat from "../components/ModalBlockingUserFromChat";
 import ModalOptionsForUserChat from "../components/ModalOptionsForUserChat";
 import ModalReportingUserFromChat from "../components/ModalReportingUserFromChat";
+import authStorage from "../auth/storage";
 
 const ChatScreen = () => {
   const navigation = useNavigation();
@@ -30,7 +31,8 @@ const ChatScreen = () => {
   var br = 0;
   const [messages, setMessages] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [blocked, setBlocked] = useState(false);
+  const [blocked, setBlocked] = useState(true);
+  const [load, setLoad] = useState(false);
   const [messageText, setMessageText] = useState("");
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [isBlockingUserModalVisible, setIsBlockingUserModalVisible] =
@@ -83,9 +85,10 @@ const ChatScreen = () => {
   };
 
   useEffect(() => {
+   
     const fetchMessages = async () => {
       let response;
-
+      
       try {
         if (elementary) {
           response = await HttpService.get(
@@ -104,34 +107,45 @@ const ChatScreen = () => {
             `singleChat/${chatId}/messages?userId=${userId}`
           );
         }
-        var sortedMessages;
+  
+        let sortedMessages;
         if (response.error) sortedMessages = [];
         else
           sortedMessages = response.sort(
             (a, b) => new Date(b.time) - new Date(a.time)
           );
-
+  
         setMessages((prevMessages) => {
           const existingIds = new Set(prevMessages.map((msg) => msg.id));
           const newMessages = sortedMessages.filter(
             (msg) => !existingIds.has(msg.id)
           );
           const updatedMessages = [...prevMessages, ...newMessages];
-
-          //console.log("radi")
+  
           return updatedMessages.sort(
             (a, b) => new Date(b.time) - new Date(a.time)
           );
         });
       } catch (error) {
-        console.error("Error fetching messages:", error);
+        
       }
     };
-
+  
+    
     const intervalId = setInterval(fetchMessages, 5000);
-
-    return () => clearInterval(intervalId);
+      const focusListener = navigation.addListener('focus', () => {
+      
+      fetchMessages();
+    });
+  
+  
+    return () => {
+      clearInterval(intervalId);
+      focusListener();
+     
+    };
   }, [chatId, userId, elementary, group, navigation]);
+  
 
   useEffect(() => {
     userId = user.accountId;
@@ -144,9 +158,11 @@ const ChatScreen = () => {
         );
         if (block === true) {
           setBlocked(true);
+          setLoad(true)
           console.log("true");
         } else {
           setBlocked(false);
+          setLoad(true)
           console.log(chatId);
         }
         let response;
@@ -154,10 +170,12 @@ const ChatScreen = () => {
           var id = await HttpService.get(
             `singleChat/exists?firstParticipantId=${userId}&secondParticipantId=${route.params.otherUserId[0]}`
           );
+          console.log("AAAAAAAAAAAAAAAA")
           console.log(id);
         } catch (error) {}
-        if (id) chatId = id;
-
+       
+        if (id && !group) chatId = id;
+        console.log(chatId)
         if (elementary) {
           response = await HttpService.get(
             `elementaryGroup/${chatId}/messages?userId=${userId}`
@@ -175,7 +193,7 @@ const ChatScreen = () => {
             `singleChat/${chatId}/messages?userId=${userId}`
           );
         }
-
+        
         if (response.error) {
           console.log("Chat ne postoji. Kreiram novi chat...");
 
@@ -430,34 +448,34 @@ const ChatScreen = () => {
           contentContainerStyle={styles.chatContainer}
         />
       )}
-      <View style={styles.inputContainer}>
-        {blocked ? (
-          <Text style={styles.blockedMessage}>
-            Ne možete pristupiti ovom časkanju.
-          </Text>
-        ) : (
-          <>
-            <TextInput
-              style={styles.input}
-              placeholder="Poruka..."
-              value={messageText}
-              onChangeText={setMessageText}
-              editable={!blocked}
-            />
-            <TouchableOpacity
-              style={styles.sendButton}
-              onPress={() => sendMessage(chatId)}
-              disabled={blocked}
-            >
-              <Ionicons
-                name="send-outline"
-                size={24}
-                color={blocked ? "#ccc" : "#007aff"}
-              />
-            </TouchableOpacity>
-          </>
-        )}
-      </View>
+     <View style={styles.inputContainer}>
+  {blocked && load ? (
+    <Text style={styles.blockedMessage}>
+      Ne možete pristupiti ovom časkanju.
+    </Text>
+  ) : load ? (
+    <>
+      <TextInput
+        style={styles.input}
+        placeholder="Poruka..."
+        value={messageText}
+        onChangeText={setMessageText}
+        editable={!blocked}
+      />
+      <TouchableOpacity
+        style={styles.sendButton}
+        onPress={() => sendMessage(chatId)}
+        disabled={blocked}
+      >
+        <Ionicons
+          name="send-outline"
+          size={24}
+          color={blocked ? "#ccc" : "#007aff"}
+        />
+      </TouchableOpacity>
+    </>
+  ) : null}
+</View>
     </KeyboardAvoidingView>
   );
 };

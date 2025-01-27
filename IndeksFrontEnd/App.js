@@ -11,6 +11,7 @@ import StudentAppNavigator from "./app/navigation/StudentAppNavigator";
 import TutorAppNavigator from "./app/navigation/TutorAppNavigator";
 import AdminAppNavigator from "./app/navigation/AdminAppNavigator";
 import authStorage from "./app/auth/storage";
+import {navigationRef } from "./app/services/NavigationService"
 
 SplashScreen.preventAutoHideAsync();
 
@@ -69,10 +70,10 @@ const App = () => {
 
   return (
     <AuthContext.Provider value={{ user, setUser }}>
-      <NavigationContainer>
-        {user ? renderAppNavigator(user.accountType) : <AuthNavigator />}
-      </NavigationContainer>
-    </AuthContext.Provider>
+    <NavigationContainer ref={navigationRef}>
+      {user ? renderAppNavigator(user.accountType) : <AuthNavigator />}
+    </NavigationContainer>
+  </AuthContext.Provider>
   );
 
   function renderAppNavigator(accountType) {
@@ -88,6 +89,7 @@ const App = () => {
         return <AuthNavigator />;
     }
   }
+ 
 };
 
 export default App;

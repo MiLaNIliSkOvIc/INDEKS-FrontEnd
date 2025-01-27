@@ -5,6 +5,7 @@ import {
   StyleSheet,
   FlatList,
   ActivityIndicator,
+   
 } from "react-native";
 import SidebarComponent from "../components/SidebarComponent";
 import AdminSidebarComponent from "../components/AdminSideBarComponent";
@@ -12,6 +13,7 @@ import HeaderComponent from "../components/HeaderComponent";
 import InstructionItemComponent from "../components/InstructionItemComponent";
 import HttpService from "../services/HttpService";
 import AuthContext from "../auth/context";
+import { useFocusEffect } from "@react-navigation/native";
 
 const InstructionsListScreen = () => {
   const { user } = useContext(AuthContext);
@@ -36,27 +38,30 @@ const InstructionsListScreen = () => {
   const fetchInstructions = async () => {
     try {
       setIsLoading(true);
-      const response = await HttpService.get("tutoringOffer/details");
-      console.log(response)
+      let response = await HttpService.get("tutoringOffer/details");
+      console.log(response);
+  
+      if (!response) response = [];
+  
       if (response.error) {
-        //  throw new Error(response.message || "Failed to fetch instructions");
+        // throw new Error(response.message || "Failed to fetch instructions");
       }
+  
       setInstructions(response);
-      console.log("CCCCCCCCCCCCC")
-      console.log(instructions)
+      console.log("Fetched instructions:", response);
     } catch (err) {
       console.error(err);
-      // setError(err.message);
-      //Alert.alert("Error", err.message || "An error occurred while fetching data.");
+      // Alert.alert("Error", err.message || "An error occurred while fetching data.");
     } finally {
       setIsLoading(false);
     }
   };
-
-  useEffect(() => {
-    fetchInstructions();
-  }, []);
-
+  
+  useFocusEffect(
+    React.useCallback(() => {
+      fetchInstructions();
+    }, [])
+  );
   if (isLoading) {
     return (
       <View style={styles.loadingContainer}>

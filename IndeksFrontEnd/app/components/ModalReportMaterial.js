@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import {
   Modal,
   View,
@@ -6,6 +6,7 @@ import {
   StyleSheet,
   TextInput,
   TouchableOpacity,
+  ActivityIndicator,
 } from "react-native";
 
 const ModalReportMaterial = ({
@@ -16,6 +17,19 @@ const ModalReportMaterial = ({
   reportDescription,
   setReportDescription,
 }) => {
+  const [isLoading, setIsLoading] = useState(false); // Stanje za loader
+
+  const handleSubmit = async () => {
+    setIsLoading(true); // Prikaži loader
+    try {
+      await onSubmit(); // Poziv funkcije `onSubmit`
+    } catch (error) {
+      console.error("Greška prilikom prijave:", error);
+    } finally {
+      setIsLoading(false); // Sakrij loader
+    }
+  };
+
   return (
     <Modal
       visible={visible}
@@ -35,12 +49,21 @@ const ModalReportMaterial = ({
             multiline
           />
           <View style={styles.modalActions}>
-            <TouchableOpacity style={styles.modalButton} onPress={onSubmit}>
-              <Text style={styles.modalButtonText}>Prijavi</Text>
+            <TouchableOpacity
+              style={[styles.modalButton, isLoading && styles.disabledButton]}
+              onPress={handleSubmit}
+              disabled={isLoading} // Onemogući dugme tokom učitavanja
+            >
+              {isLoading ? (
+                <ActivityIndicator color="#fff" /> // Loader indikator
+              ) : (
+                <Text style={styles.modalButtonText}>Prijavi</Text>
+              )}
             </TouchableOpacity>
             <TouchableOpacity
               style={[styles.modalButton, styles.cancelButton]}
               onPress={onClose}
+              disabled={isLoading} // Onemogući zatvaranje tokom učitavanja
             >
               <Text style={styles.modalButtonText}>Otkaži</Text>
             </TouchableOpacity>
@@ -81,9 +104,14 @@ const styles = StyleSheet.create({
     borderRadius: 5,
     paddingVertical: 10,
     paddingHorizontal: 20,
+    justifyContent: "center",
+    alignItems: "center",
   },
   modalButtonText: { color: "#fff", fontWeight: "bold" },
   cancelButton: { backgroundColor: "#999" },
+  disabledButton: {
+    backgroundColor: "#7a7a7a", // Tamnija boja za disabled dugme
+  },
 });
 
 export default ModalReportMaterial;

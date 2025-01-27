@@ -28,7 +28,7 @@ import AddingNewInstructionOfferScreen from "../screens/AddingNewInstructionOffe
 import ListOfMyInstructionsScreen from "../screens/ListOfMyInstructionsScreen";
 import MaterialsYearsItemsScreen from "../screens/MaterialsYearsItemsScreen";
 import MaterialsSubjectItemsScreen from "../screens/MaterialsSubjectItemsScreen";
-
+import LoginScreen from "../screens/LoginScreen";
 import { useEffect } from "react";
 import Constants from "expo-constants";
 import { useUser } from "../hooks/useUser";
@@ -42,6 +42,8 @@ export default function StudentAppNavigator() {
     <Stack.Navigator screenOptions={{ headerShown: false }}>
       <Stack.Screen name="ChatList" component={ChatList} />
       <Stack.Screen name="Chat" component={ChatScreen} />
+
+
       <Stack.Screen name="Materijali" component={MaterialsScreen} />
       <Stack.Screen name="Schedule" component={ScheduleScreen} />
       <Stack.Screen name="Instruction" component={InstructionsListScreen} />
@@ -49,6 +51,7 @@ export default function StudentAppNavigator() {
         name="InstructionInfo"
         component={InstructionDetailsScreen}
       />
+       
       <Stack.Screen
         name="ElementaryGroupChat"
         component={ElementaryGroupChatScreen}
@@ -95,6 +98,7 @@ export default function StudentAppNavigator() {
         name="MaterialsSubjectItemsScreen"
         component={MaterialsSubjectItemsScreen}
       />
+      
     </Stack.Navigator>
   );
 }

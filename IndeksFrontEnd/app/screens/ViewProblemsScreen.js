@@ -11,21 +11,21 @@ const data = [
     id: "1",
     iconName: "comments",
     title: "Prijavljeni komentari",
-    count: 3,
+
     screen: "ReportedCommentsScreen",
   },
   {
     id: "2",
     iconName: "folder",
     title: "Prijavljeni materijali",
-    count: 1,
+    
     screen: "ReportedMaterialsScreen",
   },
   {
     id: "3",
     iconName: "user",
     title: "Prijavljeni nalozi",
-    count: 1,
+
     screen: "ReportedUsersScreen",
   },
 ];

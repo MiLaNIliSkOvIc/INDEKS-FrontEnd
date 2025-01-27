@@ -13,6 +13,7 @@ import {
 } from "react-native";
 import Icon from "react-native-vector-icons/FontAwesome";
 import HttpService from "../services/HttpService";
+import { useUser } from "../hooks/useUser";
 
 const NewPrivateGroupScreen = ({ navigation }) => {
   const [searchText, setSearchText] = useState("");
@@ -21,15 +22,19 @@ const NewPrivateGroupScreen = ({ navigation }) => {
   const [allUsers, setAllUsers] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-
+  const user = useUser()
   useEffect(() => {
     const fetchUsers = async () => {
       try {
         const users = await HttpService.get("userAccount");
         console.log("API response:", users);
 
+        const resp = users.filter(
+          (account) => account.id !== user.accountId
+        );
+        
         setAllUsers(
-          users.map((user) => ({
+          resp.map((user) => ({
             id: user.id,
             name: `${user.firstName || "N/A"} ${user.lastName || "N/A"}`,
           }))
@@ -74,7 +79,7 @@ const NewPrivateGroupScreen = ({ navigation }) => {
     const userIds = addedUsers.map(user => user.id);
 
     
-    navigation.navigate("Chat", { otherUserId: userIds, groupName : groupName });
+    navigation.navigate("Chat", { otherUserId: userIds, groupName : groupName,group :true });
   };
 
   return (

@@ -1,10 +1,11 @@
-import React, { useState, useEffect, useContext } from "react";
+import React, { useState, useEffect } from "react";
 import {
   View,
   Text,
   TextInput,
   StyleSheet,
   TouchableOpacity,
+  ActivityIndicator,
 } from "react-native";
 import { Picker } from "@react-native-picker/picker";
 import Sidebar from "../components/SidebarComponent";
@@ -20,15 +21,17 @@ const AddingNewInstructionOfferScreen = () => {
   const [isSidebarVisible, setSidebarVisible] = useState(false);
   const [selectedSubject, setSelectedSubject] = useState("");
   const [description, setDescription] = useState("");
+  const [loading, setLoading] = useState(false); // New state for loader
   const navigation = useNavigation();
+
   const toggleSidebar = () => {
     setSidebarVisible(!isSidebarVisible);
   };
+
   useEffect(() => {
     const fetchData = async () => {
       try {
         const response = await HttpService.get("subject");
-        console.log(response);
         if (response) {
           setData(response);
         } else {
@@ -36,8 +39,6 @@ const AddingNewInstructionOfferScreen = () => {
         }
       } catch (error) {
         console.error("Greška prilikom učitavanja predmeta:", error);
-      } finally {
-        setIsLoading(false);
       }
     };
 
@@ -54,15 +55,16 @@ const AddingNewInstructionOfferScreen = () => {
       return;
     }
 
+    setLoading(true); // Start loader
+
     try {
       const subjectId = data.find(
         (subject) => subject.name === selectedSubject
       )?.id;
-      console.log("SUBJECT ID:", subjectId);
-      console.log(subjectId);
 
       if (!subjectId) {
         console.error("Predmet nije pronađen.");
+        setLoading(false); // Stop loader
         return;
       }
 
@@ -71,13 +73,14 @@ const AddingNewInstructionOfferScreen = () => {
         subjectId,
         studentAccountId,
       };
-      console.log("BODY:", body);
+
       const response = await HttpService.create("tutoringOffer", body);
-      console.log("RESPONSE", response);
 
       navigation.goBack();
     } catch (error) {
       console.error("Greška pri dodavanju ponude:", error);
+    } finally {
+      setLoading(false); // Stop loader
     }
   };
 
@@ -103,7 +106,6 @@ const AddingNewInstructionOfferScreen = () => {
           </Picker>
         </View>
 
-        {/* TextInput za unos opisa */}
         <TextInput
           style={[styles.input, { height: 120 }]}
           placeholder="Opis"
@@ -113,8 +115,17 @@ const AddingNewInstructionOfferScreen = () => {
           textAlignVertical="top"
         />
       </View>
-      <TouchableOpacity style={styles.button} onPress={handleAdd}>
-        <Text style={styles.buttonText}>Dodaj</Text>
+
+      <TouchableOpacity
+        style={[styles.button, loading && styles.disabledButton]} // Disable button styling
+        onPress={handleAdd}
+        disabled={loading} // Disable button during loading
+      >
+        {loading ? (
+          <ActivityIndicator size="small" color="#fff" /> // Loader
+        ) : (
+          <Text style={styles.buttonText}>Dodaj</Text>
+        )}
       </TouchableOpacity>
       <Sidebar visible={isSidebarVisible} onClose={toggleSidebar} />
     </View>
@@ -179,6 +190,9 @@ const styles = StyleSheet.create({
     color: "#fff",
     fontSize: 18,
     fontWeight: "bold",
+  },
+  disabledButton: {
+    opacity: 0.7, 
   },
 });
 

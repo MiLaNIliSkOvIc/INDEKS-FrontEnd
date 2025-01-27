@@ -4,27 +4,26 @@ import {
   View,
   Text,
   StyleSheet,
-  TextInput,
   TouchableOpacity,
   ActivityIndicator,
 } from "react-native";
 
-const ModalReportReview = ({
+const ModalDeleteReview = ({
   visible,
   onClose,
   onSubmit,
-  reportDescription,
-  setReportDescription,
-}) => {
-  const [isLoading, setIsLoading] = useState(false); 
 
-  const handleSubmit = async () => {
+}) => {
+  const [isLoading, setIsLoading] = useState(false);
+
+  const handleDelete = async () => {
     setIsLoading(true); 
     try {
       await onSubmit(); 
+      setIsLoading(false);
+      onClose(); 
     } catch (error) {
-      console.error("Greška prilikom prijave:", error);
-    } finally {
+      console.error(error);
       setIsLoading(false); 
     }
   };
@@ -38,30 +37,24 @@ const ModalReportReview = ({
     >
       <View style={styles.modalOverlay}>
         <View style={styles.modalContainer}>
-          <Text style={styles.modalTitle}>Prijava recenzije</Text>
-          <TextInput
-            style={styles.textInput}
-            placeholder="Opis prijave"
-            value={reportDescription}
-            onChangeText={setReportDescription}
-            multiline
-          />
+          <Text style={styles.modalTitle}>Brisanje komentara</Text>
+        
           <View style={styles.modalActions}>
             <TouchableOpacity
               style={[styles.modalButton, isLoading && styles.disabledButton]}
-              onPress={handleSubmit}
-              disabled={isLoading} // Onemogući dugme dok traje učitavanje
+              onPress={handleDelete}
+              disabled={isLoading}
             >
               {isLoading ? (
-                <ActivityIndicator color="#fff" /> // Prikaz loading indikatora
+                <ActivityIndicator size="small" color="#fff" />
               ) : (
-                <Text style={styles.modalButtonText}>Prijavi</Text>
+                <Text style={styles.modalButtonText}>Obriši</Text>
               )}
             </TouchableOpacity>
             <TouchableOpacity
               style={[styles.modalButton, styles.cancelButton]}
               onPress={onClose}
-              disabled={isLoading} // Onemogući zatvaranje dok traje učitavanje
+              disabled={isLoading}
             >
               <Text style={styles.modalButtonText}>Otkaži</Text>
             </TouchableOpacity>
@@ -86,29 +79,21 @@ const styles = StyleSheet.create({
     padding: 20,
   },
   modalTitle: { fontSize: 18, fontWeight: "bold", marginBottom: 10 },
-  textInput: {
-    borderWidth: 1,
-    borderColor: "#ccc",
-    borderRadius: 5,
-    padding: 10,
-    marginBottom: 20,
-    height: 80,
-    textAlignVertical: "top",
-  },
+  modalDescription: { fontSize: 16, color: "#013868", marginBottom: 10 },
   modalActions: { flexDirection: "row", justifyContent: "space-between" },
   modalButton: {
     backgroundColor: "#013868",
     borderRadius: 5,
     paddingVertical: 10,
     paddingHorizontal: 20,
-    justifyContent: "center",
     alignItems: "center",
+    justifyContent: "center",
+    flex: 1,
+    marginRight: 5,
   },
   modalButtonText: { color: "#fff", fontWeight: "bold" },
   cancelButton: { backgroundColor: "#999" },
-  disabledButton: {
-    backgroundColor: "#7a7a7a", // Tamnija boja za disabled dugme
-  },
+  disabledButton: { backgroundColor: "#777" },
 });
 
-export default ModalReportReview;
+export default ModalDeleteReview;

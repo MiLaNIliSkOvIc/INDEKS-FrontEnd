@@ -15,6 +15,7 @@ import { useNavigation } from "@react-navigation/native";
 import AuthContext from "../auth/context";
 import authStorage from "../auth/storage";
 import { useUser } from "../hooks/useUser";
+import HttpService from "../services/HttpService";
 
 const GenericSidebarComponent = ({ visible, onClose, menuItems }) => {
   const navigation = useNavigation();
@@ -42,8 +43,10 @@ const GenericSidebarComponent = ({ visible, onClose, menuItems }) => {
     navigation.navigate(route);
   };
 
-  const handleSignOut = () => {
+  const handleSignOut = async () => {
     setUser(null);
+    console.log("AAAAAA")
+    await HttpService.create("auth/logout");
     authStorage.removeToken();
   };
 

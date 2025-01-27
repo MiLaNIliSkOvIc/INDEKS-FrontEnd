@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect,useContext } from "react";
 import {
   View,
   Text,
@@ -12,13 +12,62 @@ import Sidebar from "../components/SidebarComponent";
 import HttpService from "../services/HttpService";
 import { useUser } from "../hooks/useUser";
 import HeaderComponent from "../components/HeaderComponent";
-
+import AuthContext from "../auth/context";
 const ChatListScreen = () => {
   const navigation = useNavigation();
   const [chats, setChats] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const [isSidebarVisible, setSidebarVisible] = useState(false);
   const user = useUser();
+  
+  const { setUser } = useContext(AuthContext);
+
+  useEffect(() => {
+    let intervalId;
+  
+    const fetchChats = async () => {
+      try {
+     
+        const response = await HttpService.get(
+          `singleChat/user/${user.accountId}/summary`,setUser
+        );
+  
+        //console.log("ChatList", response);
+  
+        const mappedChats = response.map((chat) => ({
+          id: chat.id.toString(),
+          name: chat.name,
+          sender: chat.sender,
+          lastMessage: chat.lastMessage,
+          group: chat.group,
+          elementary: chat.elementaryGroup,
+        }));
+  
+        setChats(mappedChats);
+      } catch (error) {
+        
+       // console.error("Error fetching chats:", error.message);
+      } finally {
+        
+      }
+    };
+  
+    const startFetchingChats = () => {
+      fetchChats(); 
+      intervalId = setInterval(fetchChats, 5000); 
+    };
+  
+    const unsubscribe = navigation.addListener("focus", () => {
+      startFetchingChats();
+    });
+  
+    return () => {
+      unsubscribe();
+      clearInterval(intervalId); 
+    };
+  }, [navigation, user.accountId]);
+
+  
 
   useEffect(() => {
     const unsubscribe = navigation.addListener("focus", () => {
@@ -42,7 +91,7 @@ const ChatListScreen = () => {
 
           setChats(mappedChats);
         } catch (error) {
-          console.error("Error fetching chats:", error.message);
+         // console.error("Error fetching chats:", error.message);
         } finally {
           setIsLoading(false);
         }

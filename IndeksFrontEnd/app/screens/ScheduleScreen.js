@@ -114,7 +114,7 @@ const ScheduleScreen = () => {
   };
 
   useEffect(() => {
-    const scheduleId = 5; // Pretpostavljeni ID rasporeda
+    const scheduleId = 52; 
     fetchScheduleData(scheduleId);
   }, []);
 
@@ -136,11 +136,11 @@ const ScheduleScreen = () => {
   const handleEndEditing = async (timeIndex, dayIndex) => {
     const text = scheduleData[timeIndex][dayIndex] || "";
     const payload = {
-      id: 5,
+      id: 2,
       day: dayMapping[days[dayIndex]],
       time: times[timeIndex],
       content: text,
-      scheduleId: 5,
+      scheduleId: 52,
       option: selectedOption,
     };
 

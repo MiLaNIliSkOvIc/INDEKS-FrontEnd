@@ -14,19 +14,26 @@ import {
 
 import Icon from "react-native-vector-icons/FontAwesome";
 import HttpService from "../services/HttpService";
+import { useUser } from "../hooks/useUser";
 
 const SearchScreen = ({ navigation }) => {
   const [searchText, setSearchText] = useState("");
   const [users, setUsers] = useState([]);
   const [filteredUsers, setFilteredUsers] = useState([]);
   const [loading, setLoading] = useState(true); 
-
+  const user = useUser()
   useEffect(() => {
     const fetchUsers = async () => {
       try {
         const response = await HttpService.get("userAccount"); 
-        setUsers(response);
-        setFilteredUsers(response); 
+        console.log(response)
+      
+        const resp = response.filter(
+          (account) => account.id !== user.accountId
+        );
+        
+       setUsers(resp)
+        setFilteredUsers(resp); 
         console.log(response);
       } catch (error) {
         console.error("Error fetching users:", error);
@@ -41,7 +48,7 @@ const SearchScreen = ({ navigation }) => {
   const handleSearch = (text) => {
     setSearchText(text);
     const filtered = users.filter((user) =>
-      user.account.username.toLowerCase().includes(text.toLowerCase())
+      user.firstName.toLowerCase().includes(text.toLowerCase())
     );
     setFilteredUsers(filtered);
   };
@@ -50,7 +57,7 @@ const SearchScreen = ({ navigation }) => {
     navigation.navigate("Chat", {
      
       otherUserId: [user.id],
-      name: user.name,
+      name: user.firstName + ' '+ user.lastName,
     });
   };
   const renderUserItem = ({ item }) => (

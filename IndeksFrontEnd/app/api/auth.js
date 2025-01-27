@@ -1,7 +1,7 @@
 import HttpService from "../services/HttpService";
 
 const login = (email, password) =>
-  HttpService.create("auth/login", {
+  HttpService.login("auth/login", {
     email,
     password,
   });

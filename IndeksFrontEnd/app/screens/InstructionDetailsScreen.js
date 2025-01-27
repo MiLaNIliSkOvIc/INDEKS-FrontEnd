@@ -19,6 +19,8 @@ import CourseMaterialsComponent from "../components/CourseMaterialsComponent";
 import ModalReportReview from "../components/ModalReportReview";
 import ModalAddReview from "../components/ModalAddReview";
 import { useUser } from "../hooks/useUser";
+import ModalDeleteReview from "../components/ModelDeleteReview";
+import httpService from "../services/HttpService";
 
 const InstructionDetailsScreen = ({ route }) => {
   const { navigate, id, courseTitle, instructor, description } = route.params;
@@ -57,16 +59,31 @@ const InstructionDetailsScreen = ({ route }) => {
     fetchData();
   }, [description]);
 
-  const handleSubmitReport = () => {
+  const handleSubmitReport = async () => {
     if (!reportDescription.trim()) {
       Alert.alert("Greška", "Opis prijave ne može biti prazan.");
       return;
     }
 
-    console.log("Prijava za:", selectedReview?.userName);
+    console.log(selectedReview);
     console.log("Opis:", reportDescription);
-
+    
+    const payload = 
+        {
+          reason: reportDescription,
+          time: new Date().toISOString(),
+          type: 0,
+          reviewId: selectedReview.id,
+          materialId: 0,
+          reporterId: user.accountId,
+          reportedId : 0
+        }
+        const response =await  HttpService.create("problemReport/newReport", payload)
+        console.log(response)
+        console.log(payload)
     setReportReviewModalVisible(false);
+    
+
     setReportDescription("");
     setSelectedReview(null);
 
@@ -98,9 +115,11 @@ const InstructionDetailsScreen = ({ route }) => {
       studentAccountId: user.accountId,
       rating : selectedRating
     }
+    
     const response = await HttpService.create('review',payload)
     console.log(payload);
     console.log(response);
+    reviews.push(response)
     Alert.alert("Uspješno", "Vaša recenzija je dodata.");
     
   };
@@ -124,7 +143,12 @@ const InstructionDetailsScreen = ({ route }) => {
     }
     return stars;
   };
-
+  const handleDelete = async () =>
+    {
+          await httpService.delete(`review/${selectedReview.id}`);
+          const updatedData = reviews.filter(item => item.id !== selectedReview.id);
+          setReviews(updatedData); 
+    }
   const handleLongPress = (review) => {
     setSelectedReview(review);
     setReportDescription("");
@@ -139,7 +163,7 @@ const InstructionDetailsScreen = ({ route }) => {
           <Icon
             name={i <= selectedRating ? "star" : "star-border"}
             size={32}
-            color={i <= selectedRating ? "#ccc" : "#ccc"} // Zlatna boja za aktivne zvezdice
+            color={i <= selectedRating ? "#ccc" : "#ccc"} 
             style={styles.starIcon}
           />
         </TouchableOpacity>
@@ -228,6 +252,7 @@ const InstructionDetailsScreen = ({ route }) => {
       <TouchableOpacity style={styles.floatingButton} onPress={handlePlusPress}>
         <Text style={styles.floatingButtonText}>+</Text>
       </TouchableOpacity>
+      {user.accountType === "STUDENT" ? (
       <ModalReportReview
         visible={isReportReviewModalVisible}
         onClose={() => setReportReviewModalVisible(false)}
@@ -235,8 +260,16 @@ const InstructionDetailsScreen = ({ route }) => {
         reportDescription={reportDescription}
         setReportDescription={setReportDescription}
       />
+    ) : user.accountType === "ADMIN" ? (
+      <ModalDeleteReview
+        visible={isReportReviewModalVisible}
+        onClose={() => setReportReviewModalVisible(false)}
+        onSubmit={handleDelete}
+    
+      />
+    ) : null}
 
-      {/* Oooovo je za dodavanje recenzijeeeeeeeee */}
+     
       <ModalAddReview
         visible={isAddReviewModalVisible}
         onClose={() => setAddReviewModalVisible(false)}
@@ -247,6 +280,7 @@ const InstructionDetailsScreen = ({ route }) => {
         addReviewDescription={addReviewDescription}
         setAddReviewDescription={setAddReviewDescription}
         selectedRating={selectedRating}
+   
       />
     </View>
   );

@@ -1,6 +1,8 @@
 import { create } from "apisauce";
 import { API_URL } from "@env";
 import authStorage from "../auth/storage";
+import { navigate } from "./NavigationService";
+
 
 const api = create({
   baseURL: API_URL,
@@ -11,6 +13,7 @@ const api = create({
 // napravio sam da ovaj httpService koristi apisauce pa dodje na isto pobojsano je
 
 class HttpService {
+  
   async getHeaders() {
     const token = await authStorage.getToken();
     if (token) {
@@ -18,7 +21,19 @@ class HttpService {
     }
   }
 
-  handleResponse(response) {
+  handleResponse(response,setUser) {
+    
+    console.log(response.status)
+    if(response.status === 401)
+      {
+      
+        console.log("dobro e")
+        setUser(null);
+        console.log("SSSSSSSS")
+        authStorage.removeToken();
+       
+      }
+     // console.log(response)
     if (!response.ok) {
       return {
         error: true,
@@ -26,6 +41,7 @@ class HttpService {
         message: response.statusMessage,
       };
     }
+  
     return response.data;
   }
 
@@ -36,10 +52,10 @@ class HttpService {
     return this.handleResponse(response);
   }
 
-  async get(resource) {
+  async get(resource,setUser) {
     await this.getHeaders();
     const response = await api.get(`/${resource}`);
-    return this.handleResponse(response);
+    return this.handleResponse(response,setUser);
   }
 
   async getById(resource, id) {
@@ -57,6 +73,12 @@ class HttpService {
   async delete(resource) {
     await this.getHeaders();
     const response = await api.delete(`/${resource}`);
+    return this.handleResponse(response);
+  }
+  async login(resource, data) {
+    console.log(API_URL)
+    
+    const response = await api.post(`/${resource}`, data);
     return this.handleResponse(response);
   }
 }

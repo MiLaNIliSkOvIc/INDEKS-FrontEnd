@@ -80,6 +80,7 @@ const MaterialsSubjectItemsScreen = ({ route, navigation }) => {
       };
 
       const response = await HttpService.create("material/upload", payload);
+    
       if (response.error) {
         console.error("Failed to upload file:", response.message);
       } else {
@@ -158,7 +159,8 @@ const MaterialsSubjectItemsScreen = ({ route, navigation }) => {
       reporterId: user.accountId,
       reportedId : 0
     }
-    const response =await  HttpService.create("problemReport/newReport",payload)
+    const response =await HttpService.create("problemReport/newReport",payload)
+    console.log(response)
     console.log(payload)
     Alert.alert("Uspješno", "Vaša prijava je poslata.");
     setModalVisible(false);
@@ -166,12 +168,14 @@ const MaterialsSubjectItemsScreen = ({ route, navigation }) => {
     setSelectedMaterial(null);
   };
 
-  const handleSubmitDelete = () => {
-    console.log("Obrisan dokument");
-
+  const handleSubmitDelete = async () => {
+    console.log( selectedMaterial.id);
+    await HttpService.delete(`material/${selectedMaterial.id}`)
     setModalVisible(false);
     setSelectedMaterial(null);
-
+    setMaterials((prevMaterials) =>
+      prevMaterials.filter((material) => material.id !== selectedMaterial.id)
+  );
     Alert.alert("Uspješno", "Materijal je uspješno obrisan");
   };
 
@@ -216,26 +220,31 @@ const MaterialsSubjectItemsScreen = ({ route, navigation }) => {
           contentContainerStyle={styles.cardList}
         />
       )}
-      <TouchableOpacity style={styles.floatingButton} onPress={handlePlusClick}>
-        <Text style={styles.floatingButtonText}>+</Text>
-      </TouchableOpacity>
+    {user.accountType === "STUDENT" && (
+        <TouchableOpacity style={styles.floatingButton} onPress={handlePlusClick}>
+          <Text style={styles.floatingButtonText}>+</Text>
+        </TouchableOpacity>
+      )}
       <Sidebar visible={isSidebarVisible} onClose={toggleSidebar} />
-      {/* AKO JE STUDENT */}
-      <ModalReportMaterial
-        visible={isModalVisible}
-        onClose={() => setModalVisible(false)}
-        onSubmit={handleSubmitReport}
-        selectedMaterial={selectedMaterial}
-        reportDescription={reportDescription}
-        setReportDescription={setReportDescription}
-      />
-      {/* AKO JE ADMIN */}
-      {/* <ModalDeleteMaterial
-        visible={isModalVisible}
-        onClose={() => setModalVisible(false)}
-        onSubmit={handleSubmitDelete}
-        selectedMaterial={selectedMaterial}
-      /> */}
+      {
+        user.accountType === "STUDENT" ? (
+    <ModalReportMaterial
+      visible={isModalVisible}
+      onClose={() => setModalVisible(false)}
+      onSubmit={handleSubmitReport}
+      selectedMaterial={selectedMaterial}
+      reportDescription={reportDescription}
+      setReportDescription={setReportDescription}
+    />
+  ) : user.accountType === "ADMIN" ? (
+    <ModalDeleteMaterial
+      visible={isModalVisible}
+      onClose={() => setModalVisible(false)}
+      onSubmit={handleSubmitDelete}
+      selectedMaterial={selectedMaterial}
+    />
+  ) : null
+}
     </View>
   );
 };
