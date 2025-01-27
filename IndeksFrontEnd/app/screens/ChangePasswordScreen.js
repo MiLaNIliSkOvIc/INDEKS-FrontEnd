@@ -3,42 +3,61 @@ import {
   View,
   Text,
   TextInput,
-  FlatList,
   StyleSheet,
   TouchableOpacity,
+  ActivityIndicator,
+  Alert,
 } from "react-native";
 import Sidebar from "../components/SidebarComponent";
-import Icon from "react-native-vector-icons/FontAwesome";
-import Icon5 from "react-native-vector-icons/FontAwesome5";
-import Icon6 from "react-native-vector-icons/FontAwesome6";
-import IconFeather from "react-native-vector-icons/Feather";
 import HeaderComponent from "../components/HeaderComponent";
 import { useNavigation } from "@react-navigation/native";
+import HttpService from "../services/HttpService";
+import { useUser } from "../hooks/useUser";
 
 const ChangePasswordScreen = () => {
   const [isSidebarVisible, setSidebarVisible] = useState(false);
   const toggleSidebar = () => {
     setSidebarVisible(!isSidebarVisible);
   };
+  const user = useUser()
   const [oldPassword, setOldPassword] = useState("");
   const [newPassword, setNewPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
+  const [loading, setLoading] = useState(false);
   const navigation = useNavigation();
-  const handleItemPress = (screen) => {
-    navigation.navigate(screen);
-  };
 
-  const back = () => {
-    console.log(navigate);
-    navigation.navigate(navigate);
-  };
+  const handleConfirm = async () => {
+    if (newPassword !== confirmPassword) {
+      Alert.alert("Greška", "Lozinke se ne podudaraju!");
+      return;
+    }
+    
+    
+    setLoading(true);
+    console.log("AAAAAAAa")
+    try {
+      const response = await HttpService.update("account/password", {
+        userId: user.accountId,
+        oldPassword: oldPassword,
+        newPassword: newPassword,
+      });
+      console.log(response)
+      setLoading(false);
 
-  const handleConfirm = () => {
-    console.log("Stara lozinka:", oldPassword);
-    console.log("Nova lozinka:", newPassword);
-    console.log("Potvrđena lozinka:", confirmPassword);
-  };
+      if (response.error) {
+        Alert.alert("Greška", response.message || "Došlo je do greške.");
+        return;
+      }
 
+      Alert.alert("Uspjeh", "Lozinka je uspješno izmijenjena!", [
+        { text: "OK", onPress: () => navigation.goBack() },
+      ]);
+    } catch (error) {
+      setLoading(false);
+      console.error("Greška pri izmjeni lozinke:", error);
+      Alert.alert("Greška", "Došlo je do greške. Pokušajte ponovo.");
+    }
+  };
 
   return (
     <View style={styles.container}>
@@ -73,9 +92,14 @@ const ChangePasswordScreen = () => {
         />
       </View>
 
-      <TouchableOpacity style={styles.button} onPress={handleConfirm}>
-        <Text style={styles.buttonText}>Potvrdi</Text>
-      </TouchableOpacity>
+      {loading ? (
+        <ActivityIndicator size="large" color="#013868" style={styles.loader} />
+      ) : (
+        <TouchableOpacity style={styles.button} onPress={handleConfirm}>
+          <Text style={styles.buttonText}>Potvrdi</Text>
+        </TouchableOpacity>
+      )}
+
       <Sidebar visible={isSidebarVisible} onClose={toggleSidebar} />
     </View>
   );
@@ -93,44 +117,7 @@ const styles = StyleSheet.create({
     textAlign: "center",
     marginVertical: 15,
   },
-  itemContainer: {
-    flexDirection: "row",
-    alignItems: "center",
-    paddingVertical: 15,
-    paddingHorizontal: 20,
-    backgroundColor: "#fff",
-    marginVertical: 5,
-    marginHorizontal: 15,
-    borderRadius: 8,
-    shadowColor: "#000",
-    shadowOpacity: 0.1,
-    shadowOffset: { width: 0, height: 2 },
-    shadowRadius: 8,
-    elevation: 2,
-  },
-  iconContainer: {
-    marginRight: 15,
-  },
-  detailsContainer: {
-    flex: 1,
-  },
-  itemTitle: {
-    fontSize: 16,
-    color: "#013868",
-  },
-  countContainer: {
-    backgroundColor: "#013868",
-    borderRadius: 15,
-    paddingHorizontal: 8,
-    paddingVertical: 4,
-  },
-  countText: {
-    color: "#fff",
-    fontWeight: "bold",
-    fontSize: 14,
-  },
   inputContainer: {
-    //marginTop: 30,
     paddingHorizontal: 20,
   },
   input: {
@@ -159,6 +146,10 @@ const styles = StyleSheet.create({
     color: "#fff",
     fontSize: 18,
     fontWeight: "bold",
+  },
+  loader: {
+    marginTop: 20,
+    alignSelf: "center",
   },
 });
 

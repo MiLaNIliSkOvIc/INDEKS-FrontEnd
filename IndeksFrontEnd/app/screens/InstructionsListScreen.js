@@ -37,7 +37,7 @@ const InstructionsListScreen = () => {
     try {
       setIsLoading(true);
       const response = await HttpService.get("tutoringOffer/details");
-   //   console.log(response)
+      console.log(response)
       if (response.error) {
         //  throw new Error(response.message || "Failed to fetch instructions");
       }
@@ -96,7 +96,6 @@ const InstructionsListScreen = () => {
             teacher={item.instructorName}
             rating={item.averageRating}
             icon="pencil"
-            onPress={() => handleCoursePress(item.course)}
           />
         )}
         keyExtractor={(item) => item.tutoringOfferId.toString()}

@@ -132,7 +132,7 @@ const ElementaryGroupsListScreen = ({ navigation }) => {
      navigation.navigate("Chat", {
        chatId: chat.id,
        name: chat.title,
-       group : chat.group,
+       group : true,
        elementary : true,
        fromElementary : true
      });

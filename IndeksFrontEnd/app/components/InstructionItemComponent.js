@@ -9,12 +9,17 @@ import {
 import Icon from "react-native-vector-icons/FontAwesome";
 import { useNavigation } from "@react-navigation/native";
 
-const InstructionItemComponent = ({ navigate, id, course, teacher, rating, icon }) => {
+const InstructionItemComponent = ({
+  navigate,
+  id,
+  course,
+  teacher,
+  rating,
+  icon,
+}) => {
   const navigation = useNavigation();
-  const [showActions, setShowActions] = useState(false);
 
   const renderStars = () => {
-    if (showActions) return null; 
     const stars = [];
     for (let i = 1; i <= 5; i++) {
       stars.push(
@@ -30,11 +35,11 @@ const InstructionItemComponent = ({ navigate, id, course, teacher, rating, icon 
   };
 
   const CourseInfo = (course) => {
-    console.log("AAAAAAAAAAa")
-    console.log(navigate)
-    console.log(id)
+    console.log("AAAAAAAAAAa");
+    console.log(navigate);
+    console.log(id);
     const courseData = {
-      id:id,
+      id: id,
       courseTitle: course,
       instructor: teacher,
       description: "Zovem se Milan i držaću vam instrukcije iz matematike 1.",
@@ -43,57 +48,27 @@ const InstructionItemComponent = ({ navigate, id, course, teacher, rating, icon 
     navigation.navigate("InstructionInfo", { navigate, ...courseData });
   };
 
-  const handlePressOutside = () => {
-    setShowActions(false); 
-  };
-
   return (
     <TouchableWithoutFeedback
-      onPress={handlePressOutside}
       accessible={false}
       style={{ flex: 1 }}
       keyboardShouldPersistTaps="handled"
     >
       <View>
         <TouchableOpacity
-          style={[
-            styles.itemContainer,
-            showActions && styles.blurredContainer,
-          ]}
-          onPress={() => CourseInfo(course)} 
-          onLongPress={() => setShowActions(true)}
+          style={[styles.itemContainer, styles.blurredContainer]}
+          onPress={() => CourseInfo(course)}
         >
-        
           <View style={styles.courseIconContainer}>
             <Icon name={icon} size={28} color="#013868" />
           </View>
 
-          
           <View style={styles.courseInfo}>
             <Text style={styles.courseTitle}>{course}</Text>
             <Text style={styles.teacherName}>{teacher}</Text>
           </View>
 
-         
           <View style={styles.ratingContainer}>{renderStars()}</View>
-
-       
-          {showActions && (
-            <View style={styles.actionButtons}>
-              <TouchableOpacity
-                style={styles.actionButton}
-                onPress={() => setShowActions(false)}
-              >
-                <Icon name="close" size={20} color="#fff" />
-              </TouchableOpacity>
-              <TouchableOpacity
-                style={styles.actionButton}
-                onPress={() => console.log("Alert triggered!")}
-              >
-                <Icon name="exclamation" size={20} color="#fff" />
-              </TouchableOpacity>
-            </View>
-          )}
         </TouchableOpacity>
       </View>
     </TouchableWithoutFeedback>

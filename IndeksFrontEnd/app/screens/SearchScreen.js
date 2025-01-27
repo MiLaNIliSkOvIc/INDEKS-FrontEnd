@@ -55,7 +55,7 @@ const SearchScreen = ({ navigation }) => {
   };
   const renderUserItem = ({ item }) => (
     <TouchableOpacity style={styles.userItem} onPress={() => handleUserSelect(item)}>
-      <Text style={styles.userName}>{item.account.username || "Nepoznati korisnik"}</Text>
+      <Text style={styles.userName}>{item.firstName + ' '+ item.lastName || "Nepoznati korisnik"}</Text>
     </TouchableOpacity>
   );
   

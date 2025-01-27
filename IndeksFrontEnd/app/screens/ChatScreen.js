@@ -17,21 +17,62 @@ import { useNavigation, useRoute } from "@react-navigation/native";
 import HttpService from "../services/HttpService";
 import { useUser } from "../hooks/useUser";
 import ModalBlockingUserFromChat from "../components/ModalBlockingUserFromChat";
+import ModalOptionsForUserChat from "../components/ModalOptionsForUserChat";
+import ModalReportingUserFromChat from "../components/ModalReportingUserFromChat";
+
 const ChatScreen = () => {
   const navigation = useNavigation();
   const route = useRoute();
   const user = useUser();
   var IdChat;
-  var { chatId, userId, name, group,elementary,fromElementary } = route.params;
+  var { chatId, userId, name, group, elementary, fromElementary } =
+    route.params;
   var br = 0;
   const [messages, setMessages] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [blocked, setBlocked] = useState(false);
   const [messageText, setMessageText] = useState("");
   const [isModalVisible, setIsModalVisible] = useState(false);
+  const [isBlockingUserModalVisible, setIsBlockingUserModalVisible] =
+    useState(false);
+  const [isReportingUserModalVisible, setIsReportingUserModalVisible] =
+    useState(false);
 
-  const handleBlockUser = () => {
-    setIsModalVisible(false);
-    // Logika za blokiranje korisnika
+  const handleBlockUser = async () => {
+    console.log(route.params);
+    try {
+      console.log("USER id: ", user.accountId);
+      const response = await HttpService.create(
+        `blocked-accounts/${userId}/block/${chatId}`
+      );
+      console.log("RESPONSE", response);
+    } catch (error) {
+      console.error("Greška prilikom pokušaja blokiranja korisnika:", error);
+    } finally {
+      setIsModalVisible(false); // Zatvori modal
+      setIsBlockingUserModalVisible(true);
+    }
+  };
+
+  const handleReportUser = async () => {
+    console.log(route.params);
+    try {
+      console.log("prijavljenooo");
+      //treba logika za prijavljivanje korisnika
+      // console.log("USER id: ", user.accountId);
+      // const response = await HttpService.create(
+      //   `blocked-accounts/${userId}/block/${chatId}`
+      // );
+      // console.log("RESPONSE", response);
+    } catch (error) {
+      console.error(
+        "Greška prilikom pokušaja prijavljivanja korisnika:",
+        error
+      );
+    } finally {
+      setIsModalVisible(false);
+      setIsReportingUserModalVisible(true);
+    }
   };
 
   const formatTime = (isoDate) => {
@@ -42,96 +83,144 @@ const ChatScreen = () => {
   };
 
   useEffect(() => {
+    const fetchMessages = async () => {
+      let response;
+
+      try {
+        if (elementary) {
+          response = await HttpService.get(
+            `elementaryGroup/${chatId}/messages?userId=${userId}`
+          );
+          if (response.error) {
+            navigation.navigate("ElementaryGroupChat");
+            return;
+          }
+        } else if (group) {
+          response = await HttpService.get(
+            `privateGroup/${chatId}/messages?userId=${userId}`
+          );
+        } else {
+          response = await HttpService.get(
+            `singleChat/${chatId}/messages?userId=${userId}`
+          );
+        }
+        var sortedMessages;
+        if (response.error) sortedMessages = [];
+        else
+          sortedMessages = response.sort(
+            (a, b) => new Date(b.time) - new Date(a.time)
+          );
+
+        setMessages((prevMessages) => {
+          const existingIds = new Set(prevMessages.map((msg) => msg.id));
+          const newMessages = sortedMessages.filter(
+            (msg) => !existingIds.has(msg.id)
+          );
+          const updatedMessages = [...prevMessages, ...newMessages];
+
+          //console.log("radi")
+          return updatedMessages.sort(
+            (a, b) => new Date(b.time) - new Date(a.time)
+          );
+        });
+      } catch (error) {
+        console.error("Error fetching messages:", error);
+      }
+    };
+
+    const intervalId = setInterval(fetchMessages, 5000);
+
+    return () => clearInterval(intervalId);
+  }, [chatId, userId, elementary, group, navigation]);
+
+  useEffect(() => {
     userId = user.accountId;
-    
+
     const fetchMessages = async () => {
       try {
         IdChat = chatId;
+        const block = await HttpService.get(
+          `blocked-accounts/is-blocked/${userId}/${chatId}`
+        );
+        if (block === true) {
+          setBlocked(true);
+          console.log("true");
+        } else {
+          setBlocked(false);
+          console.log(chatId);
+        }
         let response;
         try {
           var id = await HttpService.get(
             `singleChat/exists?firstParticipantId=${userId}&secondParticipantId=${route.params.otherUserId[0]}`
           );
           console.log(id);
-        } catch (error) {
-        }
-        if(id)
-          chatId=id;
+        } catch (error) {}
+        if (id) chatId = id;
 
-        if(elementary)
-        {
+        if (elementary) {
           response = await HttpService.get(
             `elementaryGroup/${chatId}/messages?userId=${userId}`
           );
-          if(response.error)
-           { navigation.navigate("ElementaryGroupChat");
+          if (response.error) {
+            navigation.navigate("ElementaryGroupChat");
             return;
-           }
-            
-        }
-        else if (group) {
-         
+          }
+        } else if (group) {
           response = await HttpService.get(
             `privateGroup/${chatId}/messages?userId=${userId}`
           );
         } else {
-          
           response = await HttpService.get(
             `singleChat/${chatId}/messages?userId=${userId}`
           );
         }
-     
-        
+
         if (response.error) {
           console.log("Chat ne postoji. Kreiram novi chat...");
-  
+
           const otherUserId = route.params.otherUserId;
           console.log(otherUserId);
           console.log(userId);
           let resp;
-          console.log(otherUserId)
+          console.log(otherUserId);
           if (Array.isArray(otherUserId) && otherUserId.length > 1) {
             console.log("Više korisnika pronađeno. Kreiram grupni chat...");
-            
-             resp = await HttpService.create("privateGroup", {
-              name: "GRABASMARKO",  
+
+            resp = await HttpService.create("privateGroup", {
+              name: route.params.groupName,
               memberIds: [userId, ...otherUserId],
             });
-              chatId = resp.id;
-            console.log(resp)
+            chatId = resp.id;
+            console.log(resp);
             navigation.navigate("Chat", {
               chatId: chatId,
-              elementary : false,
-              name: "Milan",
+              elementary: false,
+              name: route.params.groupName,
               group: true,
             });
+          } else {
+            resp = await HttpService.create("singleChat", {
+              firstParticipantId: userId,
+              secondParticipantId: otherUserId[0],
+            });
+            chatId = resp.id;
+            console.log(resp);
+            navigation.navigate("Chat", {
+              chatId: chatId,
+              otherUserId: otherUserId,
+              name: resp.secondParticipant.firstName,
+              group: false,
+            });
           }
-          else
-          {
-             resp = await HttpService.create("singleChat", {
-            firstParticipantId: userId,
-            secondParticipantId: otherUserId[0],
-            
-          });
-          chatId = resp.id;
-          console.log(resp)
-          navigation.navigate("Chat", {
-            chatId: chatId,
-            otherUserId: otherUserId,
-            name: resp.secondParticipant.firstName,
-            group: false,
-          });
-        }
-          
-         
-       
+
           setMessages([]);
-          console.log("Novi chat kreiran uspešno.");
+          console.log("Novi chat kreiran uspješno.");
         } else {
           const sortedMessages = response.sort(
             (a, b) => new Date(b.time) - new Date(a.time)
           );
-          console.log(sortedMessages)
+          console.log(sortedMessages);
           setMessages(sortedMessages);
         }
       } catch (error) {
@@ -140,7 +229,7 @@ const ChatScreen = () => {
         setLoading(false);
       }
     };
-  
+
     fetchMessages();
   }, [chatId, userId, group]);
 
@@ -148,6 +237,7 @@ const ChatScreen = () => {
     const updatedMessages = [newMessage, ...messages];
     setMessages(updatedMessages);
   };
+
   const generateUniqueId = () => {
     let newId;
     let exists = true;
@@ -159,30 +249,24 @@ const ChatScreen = () => {
 
     return newId;
   };
-  const back = () =>
-  {
-    if(!fromElementary)
-      navigation.navigate("ChatList")
-    else
-    navigation.navigate("ElementaryGroupChat")
-  }
+  const back = () => {
+    if (!fromElementary) navigation.navigate("ChatList");
+    else navigation.navigate("ElementaryGroupChat");
+  };
   const sendMessage = async (chatId) => {
     if (messageText.trim() === "") return;
     setMessageText("");
     let newMessage;
-    if(group)
-     {
+    if (group) {
       newMessage = {
-      text: messageText,
-      time: new Date().toISOString(),
-      singleChatId: 0,
-      groupChatId: chatId,
-      status: "SENT",
-      userAccountId: user.accountId,
-    };
-  }
-    else
-    {
+        text: messageText,
+        time: new Date().toISOString(),
+        singleChatId: 0,
+        groupChatId: chatId,
+        status: "SENT",
+        userAccountId: user.accountId,
+      };
+    } else {
       newMessage = {
         text: messageText,
         time: new Date().toISOString(),
@@ -193,7 +277,7 @@ const ChatScreen = () => {
       };
     }
 
-    console.log(newMessage)
+    console.log(newMessage);
     const mess = {
       id: generateUniqueId(),
       text: messageText,
@@ -207,26 +291,20 @@ const ChatScreen = () => {
       console.log(user.accountId);
       console.log(chatId);
       let response;
-      if(elementary)
-      {
-        
-         response = await HttpService.get(
-            `elementaryGroup/${chatId}/messages?userId=${user.accountId}`
+      if (elementary) {
+        response = await HttpService.get(
+          `elementaryGroup/${chatId}/messages?userId=${user.accountId}`
         );
-        console.log(response)
-      }
-      else if (group) { 
+        console.log(response);
+      } else if (group) {
         response = await HttpService.get(
           `privateGroup/${chatId}/messages?userId=${user.accountId}`
         );
-      } else {  
-        
+      } else {
         response = await HttpService.get(
           `singleChat/${chatId}/messages?userId=${user.accountId}`
-          
         );
-        console.log(response)
-
+        console.log(response);
       }
       const sortedMessages = response.sort(
         (a, b) => new Date(b.time) - new Date(a.time)
@@ -255,7 +333,6 @@ const ChatScreen = () => {
             : styles.otherMessageContainer,
         ]}
       >
-        {/* Prikaz imena unutar bijelog okvira iznad poruke */}
         {!item.sentByUser && (
           <Text style={styles.senderName}>{item.senderFullName}</Text>
         )}
@@ -280,18 +357,63 @@ const ChatScreen = () => {
           <Ionicons name="arrow-back-outline" size={24} color="black" />
         </TouchableOpacity>
         <Text style={styles.headerTitle}>{name}</Text>
-        <TouchableOpacity onPress={() => setIsModalVisible(true)}>
-          <Ionicons name="ellipsis-vertical-outline" size={24} color="black" />
+        <TouchableOpacity
+          onPress={() => {
+            setIsModalVisible(true);
+            console.log("Proba, test, test");
+          }}
+        >
+          {!group && !blocked && (
+            <Ionicons
+              name="ellipsis-vertical-outline"
+              size={24}
+              color="black"
+            />
+          )}
         </TouchableOpacity>
         {isModalVisible && (
-          <ModalBlockingUserFromChat
+          // <ModalBlockingUserFromChat
+          //   visible={isModalVisible}
+          //   onClose={() => setIsModalVisible(false)}
+          //   onConfirm={() => {
+          //     navigation.navigate("ChatList");
+          //   }}
+          //   userName={name}
+          //   userId={user.accountId}
+          //   chatId={chatId}
+          // />
+          <ModalOptionsForUserChat
             visible={isModalVisible}
             onClose={() => setIsModalVisible(false)}
-            onConfirm={() => {
-              console.log("User blocked!");
-              setIsModalVisible(false);
-            }}
+            // onConfirm={() => {
+            //   navigation.navigate("ChatList");
+            // }}
+            onBlockUser={handleBlockUser}
+            onReportUser={handleReportUser}
             userName={name}
+            userId={user.accountId}
+            chatId={chatId}
+          />
+        )}
+
+        {isBlockingUserModalVisible && (
+          <ModalBlockingUserFromChat
+            visible={isBlockingUserModalVisible}
+            onClose={() => setIsBlockingUserModalVisible(false)}
+            //onConfirm={handleConfirmBlock} // Poziva handleConfirmBlock nakon potvrde blokiranja
+            userName={name}
+            userId={user.accountId}
+            chatId={chatId}
+          />
+        )}
+        {isReportingUserModalVisible && (
+          <ModalReportingUserFromChat
+            visible={isReportingUserModalVisible}
+            onClose={() => setIsReportingUserModalVisible(false)}
+            //onConfirm={handleConfirmBlock} // Poziva handleConfirmBlock nakon potvrde blokiranja
+            userName={name}
+            userId={user.accountId}
+            chatId={chatId}
           />
         )}
       </View>
@@ -307,18 +429,32 @@ const ChatScreen = () => {
         />
       )}
       <View style={styles.inputContainer}>
-        <TextInput
-          style={styles.input}
-          placeholder="Poruka..."
-          value={messageText}
-          onChangeText={setMessageText}
-        />
-        <TouchableOpacity
-          style={styles.sendButton}
-          onPress={() => sendMessage(chatId)}
-        >
-          <Ionicons name="send-outline" size={24} color="#007aff" />
-        </TouchableOpacity>
+        {blocked ? (
+          <Text style={styles.blockedMessage}>
+            Ne možete pristupiti ovom časkanju.
+          </Text>
+        ) : (
+          <>
+            <TextInput
+              style={styles.input}
+              placeholder="Poruka..."
+              value={messageText}
+              onChangeText={setMessageText}
+              editable={!blocked}
+            />
+            <TouchableOpacity
+              style={styles.sendButton}
+              onPress={() => sendMessage(chatId)}
+              disabled={blocked}
+            >
+              <Ionicons
+                name="send-outline"
+                size={24}
+                color={blocked ? "#ccc" : "#007aff"}
+              />
+            </TouchableOpacity>
+          </>
+        )}
       </View>
     </KeyboardAvoidingView>
   );
@@ -383,7 +519,7 @@ const styles = StyleSheet.create({
     alignSelf: "flex-start",
   },
   messageText: {
-    marginLeft : 5,
+    marginLeft: 5,
     fontSize: 16,
     color: "#000",
   },
@@ -423,14 +559,18 @@ const styles = StyleSheet.create({
     fontSize: 14,
     fontWeight: "bold",
     color: "#555",
-    marginBottom: 5, 
+    marginBottom: 5,
     alignSelf: "flex-start",
   },
   senderName: {
     fontSize: 14,
     fontWeight: "bold",
     color: "#555",
-    marginBottom: 5, 
+    marginBottom: 5,
+  },
+  blockedMessage: {
+    color: "red",
+    marginLeft: "15%",
   },
 });
 

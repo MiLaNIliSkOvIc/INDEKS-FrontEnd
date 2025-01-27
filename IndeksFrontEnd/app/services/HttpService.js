@@ -30,6 +30,7 @@ class HttpService {
   }
 
   async create(resource, data) {
+    console.log(API_URL)
     await this.getHeaders();
     const response = await api.post(`/${resource}`, data);
     return this.handleResponse(response);

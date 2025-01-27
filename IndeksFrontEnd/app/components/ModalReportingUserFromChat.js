@@ -10,7 +10,7 @@ import {
   ActivityIndicator,
 } from "react-native";
 
-const ModalBlockingUserFromChat = ({
+const ModalReportingUserFromChat = ({
   visible,
   onClose,
   onConfirm,
@@ -20,25 +20,29 @@ const ModalBlockingUserFromChat = ({
 }) => {
   const [isLoading, setIsLoading] = useState(false);
 
-  const handleBlockUser = async () => {
-    setIsLoading(true);
-    try {
-      console.log(userId);
-      const response = await HttpService.create(
-        `blocked-accounts/block/chat/${userId}/${chatId}`
-      );
-      console.log(response);
-      console.log(`Korisnik ${chatId} uspješno blokiran:`, response.data);
-      onConfirm();
-    } catch (error) {
-      console.error("Greška prilikom blokiranja korisnika:", error);
-      Alert.alert(
-        "Greška",
-        "Došlo je do greške prilikom blokiranja korisnika."
-      );
-    } finally {
-      setIsLoading(false);
-    }
+  const handleReportUser = async () => {
+    console.log("uspjesno prijavljeno");
+    Alert.alert("Uspješno", "Vaša prijava je poslata.");
+    // logika ili bez logike za prijavljivanje, mozda samo treba pisati uspjesno prijavljeno, za razliku od blokiranja gdje potrebno staviti na blok listu
+    //setIsLoading(true);
+    // try {
+    //   console.log(userId);
+    //   // logika ili bez logike za prijavljivanje, mozda samo treba pisati uspjesno prijavljeno, za razliku od blokiranja gdje potrebno staviti na blok listu
+    //   //   const response = await HttpService.create(
+    //   //     `blocked-accounts/block/chat/${userId}/${chatId}`
+    //   //   );
+    //   //   console.log(response);
+    //   //   console.log(`Korisnik ${chatId} uspešno blokiran:`, response.data);
+    //   //onConfirm();
+    // } catch (error) {
+    //   console.error("Greška prilikom prijavljivanja korisnika:", error);
+    //   Alert.alert(
+    //     "Greška",
+    //     "Došlo je do greške prilikom prijavljivanja korisnika."
+    //   );
+    // } finally {
+    //   setIsLoading(false);
+    // }
   };
 
   return (
@@ -50,9 +54,9 @@ const ModalBlockingUserFromChat = ({
     >
       <View style={styles.overlay}>
         <View style={styles.modalContainer}>
-          <Text style={styles.title}>Blokiranje korisnika</Text>
+          <Text style={styles.title}>Prijavljivanje korisnika</Text>
           <Text style={styles.message}>
-            Da li ste sigurni da želite blokirati korisnika{" "}
+            Da li ste sigurni da želite prijaviti korisnika{" "}
             <Text style={styles.userName}>{userName}</Text>?
           </Text>
           <View style={styles.buttonContainer}>
@@ -65,13 +69,13 @@ const ModalBlockingUserFromChat = ({
             </TouchableOpacity>
             <TouchableOpacity
               style={styles.confirmButton}
-              onPress={handleBlockUser}
+              onPress={handleReportUser}
               disabled={isLoading}
             >
               {isLoading ? (
                 <ActivityIndicator size="small" color="#fff" />
               ) : (
-                <Text style={styles.confirmButtonText}>Blokiraj</Text>
+                <Text style={styles.confirmButtonText}>Prijavi</Text>
               )}
             </TouchableOpacity>
           </View>
@@ -144,4 +148,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default ModalBlockingUserFromChat;
+export default ModalReportingUserFromChat;

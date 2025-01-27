@@ -1,46 +1,13 @@
-import React, { useState } from "react";
-import HttpService from "../services/HttpService";
-import {
-  Modal,
-  View,
-  Text,
-  StyleSheet,
-  TouchableOpacity,
-  Alert,
-  ActivityIndicator,
-} from "react-native";
+import React from "react";
+import { Modal, View, Text, StyleSheet, TouchableOpacity } from "react-native";
 
-const ModalBlockingUserFromChat = ({
+const ModalDeletingMyTutoringOffer = ({
   visible,
   onClose,
   onConfirm,
-  userName,
-  userId,
-  chatId,
+  tutoringOfferId,
+  subjectName,
 }) => {
-  const [isLoading, setIsLoading] = useState(false);
-
-  const handleBlockUser = async () => {
-    setIsLoading(true);
-    try {
-      console.log(userId);
-      const response = await HttpService.create(
-        `blocked-accounts/block/chat/${userId}/${chatId}`
-      );
-      console.log(response);
-      console.log(`Korisnik ${chatId} uspješno blokiran:`, response.data);
-      onConfirm();
-    } catch (error) {
-      console.error("Greška prilikom blokiranja korisnika:", error);
-      Alert.alert(
-        "Greška",
-        "Došlo je do greške prilikom blokiranja korisnika."
-      );
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
   return (
     <Modal
       animationType="slide"
@@ -50,29 +17,25 @@ const ModalBlockingUserFromChat = ({
     >
       <View style={styles.overlay}>
         <View style={styles.modalContainer}>
-          <Text style={styles.title}>Blokiranje korisnika</Text>
+          <Text style={styles.title}>Brisanje ponude za instrukcije</Text>
           <Text style={styles.message}>
-            Da li ste sigurni da želite blokirati korisnika{" "}
-            <Text style={styles.userName}>{userName}</Text>?
+            Da li ste sigurni da želite izbrisati ponudu za predmet{" "}
+            <Text style={styles.subjectName}>{subjectName}</Text>?
           </Text>
           <View style={styles.buttonContainer}>
-            <TouchableOpacity
-              style={styles.cancelButton}
-              onPress={onClose}
-              disabled={isLoading}
-            >
+            <TouchableOpacity style={styles.cancelButton} onPress={onClose}>
               <Text style={styles.cancelButtonText}>Otkaži</Text>
             </TouchableOpacity>
             <TouchableOpacity
               style={styles.confirmButton}
-              onPress={handleBlockUser}
-              disabled={isLoading}
+              onPress={() => {
+                console.log(
+                  `Ponuda  "${subjectName}" sa ID-jem ${tutoringOfferId} je obrisana.`
+                );
+                onConfirm(tutoringOfferId);
+              }}
             >
-              {isLoading ? (
-                <ActivityIndicator size="small" color="#fff" />
-              ) : (
-                <Text style={styles.confirmButtonText}>Blokiraj</Text>
-              )}
+              <Text style={styles.confirmButtonText}>Izbriši</Text>
             </TouchableOpacity>
           </View>
         </View>
@@ -110,7 +73,7 @@ const styles = StyleSheet.create({
     textAlign: "center",
     marginBottom: 20,
   },
-  userName: {
+  groupName: {
     fontWeight: "bold",
     color: "#d32f2f",
   },
@@ -144,4 +107,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default ModalBlockingUserFromChat;
+export default ModalDeletingMyTutoringOffer;
