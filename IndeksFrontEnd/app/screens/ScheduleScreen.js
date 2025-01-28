@@ -14,6 +14,7 @@ import Sidebar from "../components/SidebarComponent";
 import HeaderComponent from "../components/HeaderComponent";
 import HttpService from "../services/HttpService";
 import Icon from "react-native-vector-icons/MaterialIcons";
+import { useUser } from "../hooks/useUser";
 
 const days = ["Pon", "Uto", "Sri", "Čet", "Pet", "Sub", "Ned"];
 const times = [
@@ -74,7 +75,7 @@ const ScheduleScreen = () => {
   const [dimensions, setDimensions] = useState(Dimensions.get("window"));
   const [selectedOption, setSelectedOption] = useState("1");
   const [isEditable, setIsEditable] = useState(false);
-
+  const user = useUser()
   useEffect(() => {
     const handleResize = () => {
       setDimensions(Dimensions.get("window"));
@@ -89,8 +90,9 @@ const ScheduleScreen = () => {
 
   const fetchScheduleData = async (scheduleId) => {
     try {
+      
       const data = await HttpService.get(`schedule/${scheduleId}/items`);
-
+      console.log(data)
       const initialSchedule = Array(times.length)
         .fill(null)
         .map(() => Array(days.length).fill(""));
@@ -114,7 +116,7 @@ const ScheduleScreen = () => {
   };
 
   useEffect(() => {
-    const scheduleId = 52; 
+    const scheduleId = user.accountId; 
     fetchScheduleData(scheduleId);
   }, []);
 
@@ -140,7 +142,7 @@ const ScheduleScreen = () => {
       day: dayMapping[days[dayIndex]],
       time: times[timeIndex],
       content: text,
-      scheduleId: 52,
+      scheduleId: user.accountId,
       option: selectedOption,
     };
 
@@ -207,7 +209,7 @@ const ScheduleScreen = () => {
           onPress={async () => {
             if (isEditable) {
               try {
-                const scheduleId = 5;
+                const scheduleId = user.accountId
                 await HttpService.update(`schedule`, {
                   id: scheduleId,
                   num: selectedOption,

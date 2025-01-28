@@ -45,8 +45,9 @@ const RegistredUsersScreen = () => {
       user.id === item.id ? { ...user, active: !user.active } : user
     );
     console.log(item.id)
-    await httpService.create(`userAccount/${item.id}/suspend`);
     setUsers(updatedUsers);
+    await httpService.create(`userAccount/${item.id}/suspend`);
+    
     
   };
 
