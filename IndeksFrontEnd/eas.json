@@ -1,8 +1,18 @@
 {
   "build": {
     "development": {
+      "android": {
+        "appName": "Indeks"
+      },
       "developmentClient": true,
       "distribution": "internal"
+    },
+    "release": {
+      "android": {
+        "appName": "Indeks",
+        "package": "com.indeks.aplikacija.IndeksFrontEnd",
+        "versionCode": 1
+      }
     },
     "preview": {
       "distribution": "internal"

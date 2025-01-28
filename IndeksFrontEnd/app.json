@@ -4,7 +4,7 @@
     "slug": "IndeksFrontEnd",
     "version": "1.0.0",
     "orientation": "portrait",
-    "icon": "./app/assets/images/logo-2.png",
+    "icon": "./app/assets/images/icon.png",
     "newArchEnabled": true,
     "userInterfaceStyle": "light",
     "splash": {
@@ -18,7 +18,7 @@
     },
     "android": {
       "adaptiveIcon": {
-        "foregroundImage": "./app/assets/images/logo-2.png",
+        "foregroundImage": "./app/assets/images/adaptive-icon.png",
         "backgroundColor": "#ffffff"
       },
       "package": "com.indeks.aplikacija.IndeksFrontEnd",
@@ -27,10 +27,7 @@
     "web": {
       "favicon": "./app/assets/images/favicon.png"
     },
-    "plugins": [
-      "expo-font",
-      "expo-secure-store"
-    ],
+    "plugins": ["expo-font", "expo-secure-store"],
     "extra": {
       "eas": {
         "projectId": "38e1ad20-eda9-4cb6-89fc-c66fc5b276c7"
