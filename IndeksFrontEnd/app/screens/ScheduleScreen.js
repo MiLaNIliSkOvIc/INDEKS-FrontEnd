@@ -138,12 +138,10 @@ const ScheduleScreen = () => {
   const handleEndEditing = async (timeIndex, dayIndex) => {
     const text = scheduleData[timeIndex][dayIndex] || "";
     const payload = {
-      id: 2,
       day: dayMapping[days[dayIndex]],
       time: times[timeIndex],
       content: text,
-      scheduleId: user.accountId,
-      option: selectedOption,
+      studentId: user.accountId,
     };
 
     console.log("Saljemo na backend:", payload);
