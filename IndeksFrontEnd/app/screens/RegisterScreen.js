@@ -27,14 +27,22 @@ Yup.setLocale({
   string: {
     email: "Unesite ispravnu e-mail adresu.",
     min: 'Polje "${label}" mora sadržavati najmanje ${min} karaktera.',
+    domain: "E-mail adresa mora biti od ETF studentskog naloga.",
   },
 });
 
 const validationSchema = Yup.object().shape({
   firstName: Yup.string().required().label("Ime"),
   lastName: Yup.string().required().label("Prezime"),
-  //TODO: Dodati da mora biti student.etf.unibl.org
-  email: Yup.string().required().email().label("E-Mail"),
+  email: Yup.string()
+    .required()
+    .email()
+    .matches(
+      /^[^@]+@([a-zA-Z0-9-]+\.)*etf\.unibl\.org$/,
+      "E-mail mora završavati na etf.unibl.org."
+    )
+
+    .label("E-Mail"),
   password: Yup.string().required().min(8).label("Lozinka"),
   repeatPassword: Yup.string()
     .oneOf([Yup.ref("password"), null], "Lozinke se ne poklapaju.")
