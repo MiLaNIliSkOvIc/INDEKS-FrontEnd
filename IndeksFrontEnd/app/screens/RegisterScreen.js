@@ -56,6 +56,7 @@ const RegisterScreen = () => {
   //const [userAccountSelected, setUserAccountSelected] = useState(true);
 
   const [keyboardVisible, setKeyboardVisible] = useState(false);
+  const [registerError, setRegisterError] = useState("");
   const [loading, setLoading] = useState(false);
   useEffect(() => {
     const showKeyboard = Keyboard.addListener("keyboardDidShow", () => {
@@ -91,10 +92,15 @@ const RegisterScreen = () => {
         password,
         "STUDENT"
       );
-      console.log(response.message);
-      navigation.navigate("Login");
+      console.log(response);
+      if(response.message){
+        navigation.navigate("Login");
+      }else{
+        setRegisterError("E-Mail već postoji.");
+      }
+      
     } catch (error) {
-      console.error("Registration failed", error);
+      setRegisterError("Greška prilikom registracije.");
     } finally {
       setLoading(false);
     }
@@ -250,7 +256,8 @@ const RegisterScreen = () => {
                     errors.lastName ||
                     errors.email ||
                     errors.password ||
-                    errors.repeatPassword}
+                    errors.repeatPassword ||
+                    registerError}
                 </Text>
               )}
               <BigBasicButtonComponent
