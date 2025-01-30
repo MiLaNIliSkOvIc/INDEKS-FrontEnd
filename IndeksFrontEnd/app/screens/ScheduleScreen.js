@@ -8,6 +8,7 @@ import {
   Dimensions,
   TouchableWithoutFeedback,
   TouchableOpacity,
+  Platform
 } from "react-native";
 import { Picker } from "@react-native-picker/picker";
 import Sidebar from "../components/SidebarComponent";
@@ -180,6 +181,7 @@ const ScheduleScreen = () => {
             onValueChange={(itemValue) => setSelectedOption(itemValue)}
             style={[styles.picker, !isEditable && styles.disabledPicker]}
             enabled={isEditable}
+            itemStyle={{ fontSize: 12 }}
             dropdownIconColor={isEditable ? "#013868" : "#aaa"}
           >
             {options.map((option, index) => (
@@ -327,10 +329,12 @@ const styles = StyleSheet.create({
     borderColor: "#ddd",
     overflow: "hidden",
     marginRight: 10,
+    
   },
   picker: {
-    height: 54,
+    height: Platform.OS === "android" ? 54 : 200,
     color: "#013868",
+    marginVertical:  Platform.OS === "android" ? 0  : -45
   },
   disabledPicker: {
     backgroundColor: "#e0e0e0",

@@ -23,7 +23,7 @@ class HttpService {
 
   handleResponse(response,setUser) {
     
-    console.log(response.status)
+    //console.log(response.status)
     if(response.status === 401)
       {
       

@@ -5,6 +5,7 @@ import {
   FlatList,
   StyleSheet,
   TouchableOpacity,
+  Platform
 } from "react-native";
 import Sidebar from "../components/SidebarComponent";
 import { useNavigation } from "@react-navigation/native";

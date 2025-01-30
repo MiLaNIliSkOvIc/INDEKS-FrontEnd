@@ -1,5 +1,5 @@
 import React from "react";
-import { View, Text, Image, TouchableOpacity, StyleSheet } from "react-native";
+import { View, Text, Image, TouchableOpacity, StyleSheet, Platform } from "react-native";
 import Icon from "react-native-vector-icons/FontAwesome";
 
 const HeaderComponent = ({
@@ -51,14 +51,14 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "space-between",
     backgroundColor: "#013868",
-    paddingTop: 45,
+    paddingTop: Platform.OS === 'android' ? 10 : 45,
     paddingVertical: 10,
     paddingHorizontal: 15,
     position: "relative", // Potrebno za apsolutno pozicioniranje centra
   },
   centerContainer: {
     position: "absolute", // Apsolutno centriranje
-    top: 45, // Mora biti isto kao paddingTop za pravilno poravnanje
+    top: Platform.OS === 'android' ? 5 : 45, // Mora biti isto kao paddingTop za pravilno poravnanje
     left: 0,
     right: 0,
     flexDirection: "row",

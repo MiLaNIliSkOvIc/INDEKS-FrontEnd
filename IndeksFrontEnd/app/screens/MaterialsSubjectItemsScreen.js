@@ -258,7 +258,7 @@ const styles = StyleSheet.create({
     textAlign: "center",
     marginVertical: 15,
   },
-  cardList: { marginTop: -10, paddingHorizontal: 20 },
+  cardList: { marginTop: 10, paddingHorizontal: 20 },
   itemContainer: {
     flexDirection: "row",
     alignItems: "center",
