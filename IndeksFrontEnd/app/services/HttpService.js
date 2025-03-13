@@ -75,6 +75,9 @@ class HttpService {
     const response = await api.delete(`/${resource}`);
     return this.handleResponse(response);
   }
+  
+
+
   async login(resource, data) {
     console.log(API_URL)
     

@@ -20,6 +20,7 @@ import ModalBlockingUserFromChat from "../components/ModalBlockingUserFromChat";
 import ModalOptionsForUserChat from "../components/ModalOptionsForUserChat";
 import ModalReportingUserFromChat from "../components/ModalReportingUserFromChat";
 import authStorage from "../auth/storage";
+import ModalLeaveGroup from "../components/ModalLeaveGroup";
 
 const ChatScreen = () => {
   const navigation = useNavigation();
@@ -37,6 +38,9 @@ const ChatScreen = () => {
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [isBlockingUserModalVisible, setIsBlockingUserModalVisible] =
     useState(false);
+    const [isLeavingGroupModalVisible, setIsLeavingGroupModalVisible] =
+    useState(false);
+    
   const [isReportingUserModalVisible, setIsReportingUserModalVisible] =
     useState(false);
 
@@ -218,16 +222,21 @@ const ChatScreen = () => {
               group: true,
             });
           } else {
+
             resp = await HttpService.create("singleChat", {
               firstParticipantId: userId,
               secondParticipantId: otherUserId[0],
             });
-            chatId = resp.id;
+          
+            chatId = resp.chatId;
+            
             console.log(resp);
+
+            console.log(resp.chatId)
             navigation.navigate("Chat", {
               chatId: chatId,
               otherUserId: otherUserId,
-              name: resp.secondParticipant.firstName,
+              name: resp.otherUserName,
               group: false,
             });
           }
@@ -330,7 +339,7 @@ const ChatScreen = () => {
 
       setMessages(sortedMessages);
     } catch (error) {
-      console.error("Error sending message:", error);
+     // console.error("Error sending message:", error);
     }
   };
 
@@ -377,11 +386,14 @@ const ChatScreen = () => {
         <Text style={styles.headerTitle}>{name}</Text>
         <TouchableOpacity
           onPress={() => {
-            setIsModalVisible(true);
+            if(!group)
+              setIsModalVisible(true);
+            else
+              setIsLeavingGroupModalVisible(true)
             console.log("Proba, test, test");
           }}
         >
-          {!group && !blocked && (
+          { !blocked && (
             <Ionicons
               name="ellipsis-vertical-outline"
               size={24}
@@ -434,6 +446,13 @@ const ChatScreen = () => {
             userName={name}
             userId={user.accountId}
             chatId={chatId}
+          />
+        )}
+        {isLeavingGroupModalVisible && (
+          <ModalLeaveGroup
+            visible={isLeavingGroupModalVisible}
+            onClose={() => setIsLeavingGroupModalVisible(false)}
+            chatId= {chatId}
           />
         )}
       </View>

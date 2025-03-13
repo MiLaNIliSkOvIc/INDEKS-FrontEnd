@@ -33,6 +33,7 @@ import { useEffect } from "react";
 import Constants from "expo-constants";
 import { useUser } from "../hooks/useUser";
 import useNotifications from "../hooks/useNotifications";
+import MyMaterialScreen from "../screens/MyMaterialsScreen";
 
 const Stack = createStackNavigator();
 
@@ -97,6 +98,11 @@ export default function StudentAppNavigator() {
       <Stack.Screen
         name="MaterialsSubjectItemsScreen"
         component={MaterialsSubjectItemsScreen}
+      />
+      
+      <Stack.Screen
+        name="MyMaterialScreen"
+        component={MyMaterialScreen}
       />
       
     </Stack.Navigator>
