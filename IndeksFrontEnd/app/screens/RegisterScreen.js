@@ -6,6 +6,7 @@ import {
   ActivityIndicator,
   StyleSheet,
   Keyboard,
+  TouchableHighlight,
 } from "react-native";
 import { useNavigation } from "@react-navigation/native";
 import fonts from "../config/fonts";
@@ -37,10 +38,10 @@ const validationSchema = Yup.object().shape({
   email: Yup.string()
     .required()
     .email()
-    .matches(
-      /^[^@]+@([a-zA-Z0-9-]+\.)*etf\.unibl\.org$/,
-      "E-mail mora završavati na etf.unibl.org."
-    )
+    // .matches(
+    //   /^[^@]+@([a-zA-Z0-9-]+\.)*etf\.unibl\.org$/,
+    //   "E-mail mora završavati na etf.unibl.org."
+    // )
 
     .label("E-Mail"),
   password: Yup.string().required().min(8).label("Lozinka"),
@@ -53,7 +54,7 @@ const validationSchema = Yup.object().shape({
 const RegisterScreen = () => {
   const navigation = useNavigation();
 
-  //const [userAccountSelected, setUserAccountSelected] = useState(true);
+  const [userAccountSelected, setUserAccountSelected] = useState(true);
 
   const [keyboardVisible, setKeyboardVisible] = useState(false);
   const [registerError, setRegisterError] = useState("");
@@ -83,22 +84,21 @@ const RegisterScreen = () => {
   }) => {
     setLoading(true);
     try {
-      //const accountType = userAccountSelected ? "STUDENT" : "TUTOR";
+      const accountType = userAccountSelected ? "STUDENT" : "TUTOR";
       console.log(firstName + " " + lastName + " " + email + " " + password);
       const response = await authApi.register(
         firstName,
         lastName,
         email,
         password,
-        "STUDENT"
+        userAccountSelected
       );
       console.log(response);
-      if(response.message){
+      if (response.message) {
         navigation.navigate("Login");
-      }else{
+      } else {
         setRegisterError("E-Mail već postoji.");
       }
-      
     } catch (error) {
       setRegisterError("Greška prilikom registracije.");
     } finally {
@@ -106,16 +106,16 @@ const RegisterScreen = () => {
     }
   };
 
-  // const handleUserAccountSelect = () => {
-  //   if (!userAccountSelected) {
-  //     setUserAccountSelected(true);
-  //   }
-  // };
-  // const handleInstructorAccountSelect = () => {
-  //   if (userAccountSelected) {
-  //     setUserAccountSelected(false);
-  //   }
-  // };
+  const handleUserAccountSelect = () => {
+    if (!userAccountSelected) {
+      setUserAccountSelected(true);
+    }
+  };
+  const handleInstructorAccountSelect = () => {
+    if (userAccountSelected) {
+      setUserAccountSelected(false);
+    }
+  };
   return (
     <IndeksBackground>
       {loading && (
@@ -182,68 +182,76 @@ const RegisterScreen = () => {
                 onBlur={() => setFieldTouched("repeatPassword")}
                 autoCapitalize="none"
               />
-              {/* <View style={styles.buttonsContainer}>
-          <TouchableHighlight
-            style={[
-              styles.iconButton,
-              styles.iconButtonLeft,
-              {
-                backgroundColor: userAccountSelected
-                  ? colors.white
-                  : colors.primary,
-              },
-            ]}
-            onPress={handleUserAccountSelect}
-          >
-            <View style={styles.iconButtonContent}>
-              <FontAwesome5
-                name="user-graduate"
-                size={30}
-                color={userAccountSelected ? colors.primary : colors.white}
-              />
-              <Text
-                style={[
-                  styles.iconButtonText,
-                  {
-                    color: userAccountSelected ? colors.primary : colors.white,
-                  },
-                ]}
-              >
-                Student
-              </Text>
-            </View>
-          </TouchableHighlight>
-          <TouchableHighlight
-            style={[
-              styles.iconButton,
-              styles.iconButtonRight,
-              {
-                backgroundColor: userAccountSelected
-                  ? colors.primary
-                  : colors.white,
-              },
-            ]}
-            onPress={handleInstructorAccountSelect}
-          >
-            <View style={styles.iconButtonContent}>
-              <FontAwesome5
-                name="book-reader"
-                size={30}
-                color={userAccountSelected ? colors.white : colors.primary}
-              />
-              <Text
-                style={[
-                  styles.iconButtonText,
-                  {
-                    color: userAccountSelected ? colors.white : colors.primary,
-                  },
-                ]}
-              >
-                Instruktor
-              </Text>
-            </View>
-          </TouchableHighlight>
-        </View> */}
+              <View style={styles.buttonsContainer}>
+                <TouchableHighlight
+                  style={[
+                    styles.iconButton,
+                    styles.iconButtonLeft,
+                    {
+                      backgroundColor: userAccountSelected
+                        ? colors.white
+                        : colors.primary,
+                    },
+                  ]}
+                  onPress={handleUserAccountSelect}
+                >
+                  <View style={styles.iconButtonContent}>
+                    <FontAwesome5
+                      name="user-graduate"
+                      size={30}
+                      color={
+                        userAccountSelected ? colors.primary : colors.white
+                      }
+                    />
+                    <Text
+                      style={[
+                        styles.iconButtonText,
+                        {
+                          color: userAccountSelected
+                            ? colors.primary
+                            : colors.white,
+                        },
+                      ]}
+                    >
+                      Student
+                    </Text>
+                  </View>
+                </TouchableHighlight>
+                <TouchableHighlight
+                  style={[
+                    styles.iconButton,
+                    styles.iconButtonRight,
+                    {
+                      backgroundColor: userAccountSelected
+                        ? colors.primary
+                        : colors.white,
+                    },
+                  ]}
+                  onPress={handleInstructorAccountSelect}
+                >
+                  <View style={styles.iconButtonContent}>
+                    <FontAwesome5
+                      name="book-reader"
+                      size={30}
+                      color={
+                        userAccountSelected ? colors.white : colors.primary
+                      }
+                    />
+                    <Text
+                      style={[
+                        styles.iconButtonText,
+                        {
+                          color: userAccountSelected
+                            ? colors.white
+                            : colors.primary,
+                        },
+                      ]}
+                    >
+                      Instruktor
+                    </Text>
+                  </View>
+                </TouchableHighlight>
+              </View>
 
               {(touched.firstName ||
                 touched.lastName ||
